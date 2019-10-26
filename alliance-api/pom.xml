@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.jfeat</groupId>
+    <artifactId>alliance-api</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>alliance-api</name>
+    <description>Code Generator Generated Artifact for Reference</description>
+
+    <parent>
+        <groupId>com.jfeat</groupId>
+        <artifactId>sb-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath/>
+    </parent>
+
+    <properties>
+        <skipStandalone>false</skipStandalone>
+        <!--基础系统-->
+        <saas-app-api.version>1.0.0</saas-app-api.version>
+        <!--商城子系统 -->
+        <saas-mall-api.version>1.0.0</saas-mall-api.version>
+
+        <!--produce provided -->
+        <crud-log.version>0.0.1</crud-log.version>
+        <uaas.version>2.1.0</uaas.version>
+
+    </properties>
+
+    <dependencies>
+        <!--dev provided -->
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>swagger-ui</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
+        <!--Produce provided  开发环境注释掉以下两项依赖（可免密调试，以及可访问swagger-ui.html）
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>crud-log</artifactId>
+            <version>${crud-log.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>uaas</artifactId>
+            <version>${uaas.version}</version>
+        </dependency>-->
+        <!--  END 生产环境下，依赖以上两项（日志 及 授权中心)-->
+
+
+        <!--sub-system modules-->
+<!--        <dependency>-->
+<!--            <groupId>com.jfeat</groupId>-->
+<!--            <artifactId>saas-app-api</artifactId>-->
+<!--            <version>${saas-app-api.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.jfeat</groupId>-->
+<!--            <artifactId>saas-mall-api</artifactId>-->
+<!--            <version>${saas-mall-api.version}</version>-->
+<!--        </dependency>-->
+
+        <!--business modules-->
+	    <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>alliance-core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+		<dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>bonus</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>alliance-friend</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>alliance-rpc</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>3.1.5</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>true</springmvc>
+                            <locations>
+                                <location>com.jfeat</location>
+                            </locations>
+                            <info>
+                                <title>${project.name}</title>
+                                <version>${project.version}</version>
+                                <description>${project.description}</description>
+                            </info>
+                            <swaggerDirectory>${project.build.directory}/swagger/</swaggerDirectory>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>${skipStandalone}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>standalone</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/webapp</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+</project>

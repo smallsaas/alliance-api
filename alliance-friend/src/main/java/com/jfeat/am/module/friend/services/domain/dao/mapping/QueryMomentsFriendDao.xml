@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jfeat.am.module.friend.services.domain.dao.QueryMomentsFriendDao">
+    <sql id="Base_Column_List">
+            t_moments_friend.*
+    </sql>
+    <resultMap id="findMomentsFriendPageMap"
+               type="com.jfeat.am.module.friend.services.domain.model.MomentsFriendOverOrdersRecord">
+        <id column="id" property="id"/>
+        <result column="alliance_id" property="allianceId"/>
+        <!--        <result column="user_id" property="userId" />-->
+        <result column="contact_phone" property="contactPhone"/>
+        <result column="name" property="name"/>
+        <result column="create_time" property="createTime"/>
+        <result column="alliance_user_id" property="allianceUserId"/>
+        <result column="pcd_province" property="pcdProvince"/>
+        <result column="pcd_city" property="pcdCity"/>
+        <result column="pcd_distinct" property="pcdDistinct"/>
+        <result column="post_code" property="postCode"/>
+        <result column="address" property="address"/>
+        <result column="avator" property="avator"/>
+        <result column="nick" property="nick"/>
+        <result column="remark" property="remark"/>
+        <!--        <association property="order" javaType="com.jfeat.am.module.friend.services.gen.persistence.model.Order" column="{phone=contact_phone,userId=alliance_user_id}" select="findOrdersByPhone"/>-->
+    </resultMap>
+    <sql id="QueryOwnedOrgIds">
+            SELECT children.id FROM t_sys_org, t_sys_org as children WHERE t_sys_org.left_num &lt;= children.left_num AND
+            t_sys_org.right_num >= children.left_num and t_sys_org.id=#{ownerOrgId} order by t_sys_org.node_level ASC
+     </sql>
+
+    <select id="findMomentsFriendPage" resultMap="findMomentsFriendPageMap"
+            parameterType="MomentsFriendOverOrdersRecord">
+        SELECT t_moments_friend.*
+        FROM t_moments_friend
+        <!--        <if test="record.orgId > 0">-->
+        <!--            ,(<include refid="QueryOwnedOrgIds"></include>) AS ownedOrgIds-->
+        <!--        </if>-->
+        WHERE 1=1
+        <!--        <if test="record.orgId > 0">-->
+        <!--            AND t_sys_user.org_id = ownedOrgIds.id-->
+        <!--        </if>-->
+        <if test="record.id != null and record.id>0 ">
+            AND t_moments_friend.id LIKE CONCAT('%',#{record.id},'%')
+        </if>
+        <!--<if test="record.userId != null and record.userId>0 ">
+            AND t_moments_friend.user_id LIKE CONCAT('%',#{record.userId},'%')
+        </if>-->
+        <if test="record.allianceId != null and record.allianceId>0 ">
+            AND t_moments_friend.alliance_id LIKE CONCAT('%',#{record.allianceId},'%')
+        </if>
+
+        <if test="record.contactPhone != null and record.contactPhone!= ''">
+            AND t_moments_friend.contact_phone LIKE CONCAT('%',#{record.contactPhone},'%')
+        </if>
+        <if test="record.name != null and record.name!= ''">
+            AND t_moments_friend.name LIKE CONCAT('%',#{record.name},'%')
+        </if>
+
+        <if test="record.createTime != null and record.createTime>0 ">
+            AND t_moments_friend.create_time LIKE CONCAT('%',#{record.createTime},'%')
+        </if>
+
+        <if test="record.allianceUserId != null and record.allianceUserId>0 ">
+            AND t_moments_friend.alliance_user_id LIKE CONCAT(#{record.allianceUserId})
+        </if>
+
+        <if test="record.pcdProvince != null and record.pcdProvince!= ''">
+            AND t_moments_friend.pcd_province LIKE CONCAT('%',#{record.pcdProvince},'%')
+        </if>
+
+        <if test="record.pcdCity != null and record.pcdCity!= ''">
+            AND t_moments_friend.pcd_city LIKE CONCAT('%',#{record.pcdCity},'%')
+        </if>
+
+        <if test="record.pcdDistinct != null and record.pcdDistinct!= ''">
+            AND t_moments_friend.pcd_distinct LIKE CONCAT('%',#{record.pcdDistinct},'%')
+        </if>
+
+        <if test="record.postCode != null and record.postCode!= ''">
+            AND t_moments_friend.post_code LIKE CONCAT('%',#{record.postCode},'%')
+        </if>
+        <if test="record.address != null and record.address!= ''">
+            AND t_moments_friend.address LIKE CONCAT('%',#{record.address},'%')
+        </if>
+        <if test="record.avator != null and record.avator!= ''">
+            AND t_moments_friend.avator LIKE CONCAT('%',#{record.avator},'%')
+        </if>
+        <if test="record.nick != null and record.nick!= ''">
+            AND t_moments_friend.nick LIKE CONCAT('%',#{record.nick},'%')
+        </if>
+        <if test="record.remark != null and record.remark!= ''">
+            AND t_moments_friend.remark LIKE CONCAT('%',#{record.remark},'%')
+        </if>
+        <if test="startTime != null">
+            <![CDATA[AND t_moments_friend.start_time >= DATE(#{startTime})]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[AND t_moments_friend.end_time <= DATE(#{endTime)]]>
+        </if>
+        <!--
+    <if test="search != null and search != ''">
+        OR t_moments_friend.name LIKE CONCAT('%',#{search},'%')
+    </if>
+    -->
+    </select>
+    <select id="findOrdersByPhone" resultType="com.jfeat.am.module.friend.services.gen.persistence.model.Order"
+            parameterType="java.util.Map">
+        select * from t_order where phone=#{phone}
+        and
+        (
+        status="PAID_CONFIRM_PENDING"
+        or
+        status="CONFIRMED_DELIVER_PENDING"
+        or
+        status="DELIVERING"
+        or
+        status="DELIVERED_CONFIRM_PENDING"
+        or
+        status="CLOSED_CONFIRMED"
+        )
+        and
+        user_id=#{userId}
+        order by created_date desc limit 1;
+
+    </select>
+    <select id="selectUserId" parameterType="java.lang.String" resultType="java.lang.Long">
+    select id from t_user where name=#{name}
+    </select>
+    <insert id="insertOrder" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="java.util.Map">
+        insert into t_order (user_id,total_price,phone,mname,detail) value
+        (#{userId},#{totalPrice},#{phone},#{mname},#{detail})
+    </insert>
+    <select id="selectProductId" parameterType="java.lang.String" resultType="java.lang.String">
+    select id from t_product where barcode=#{barcode}
+    </select>
+    <insert id="insertOrderItem" parameterType="java.util.Map">
+        insert into t_order_item (order_id,barcode,product_name,quantity,final_price) value
+         (#{orderId},#{barcode},#{productName},#{quantity},#{finalPrice})
+    </insert>
+</mapper>

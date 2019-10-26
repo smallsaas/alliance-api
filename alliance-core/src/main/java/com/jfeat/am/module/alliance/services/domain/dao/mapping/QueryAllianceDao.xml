@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao">
+    <sql id="Base_Column_List">
+            t_alliance.*
+    </sql>
+
+    <sql id="QueryOwnedOrgIds">
+            SELECT children.id FROM t_sys_org, t_sys_org as children WHERE t_sys_org.left_num &lt;= children.left_num AND
+            t_sys_org.right_num >= children.left_num and t_sys_org.id=#{ownerOrgId} order by t_sys_org.node_level ASC
+        </sql>
+
+    <select id="findAlliancePage" resultType="AllianceRecord" parameterType="AllianceRecord">
+        SELECT t_alliance.*
+        FROM t_alliance
+<!--        <if test="record.orgId > 0">
+            ,(<include refid="QueryOwnedOrgIds"></include>) AS ownedOrgIds
+        </if>-->
+        WHERE 1=1
+<!--        <if test="record.orgId > 0">
+            AND t_sys_user.org_id = ownedOrgIds.id
+        </if>-->
+        <if test="record.id != null and record.id>0 ">
+            AND t_alliance.id LIKE CONCAT('%',#{record.id},'%')
+        </if>
+
+        <if test="record.userId != null and record.userId>0 ">
+            AND t_alliance.user_id LIKE CONCAT('%',#{record.userId},'%')
+        </if>
+
+        <if test="record.invitorAllianceId != null and record.invitorAllianceId>0 ">
+            AND t_alliance.invitor_alliance_id LIKE CONCAT('%',#{record.invitorAllianceId},'%')
+        </if>
+
+        <if test="record.allianceShip != null and record.allianceShip>0 ">
+            AND t_alliance.alliance_ship LIKE CONCAT('%',#{record.allianceShip},'%')
+        </if>
+        <if test="record.allianceType != null and record.allianceType>0 ">
+            AND t_alliance.alliance_ship LIKE CONCAT('%',#{record.allianceType},'%')
+        </if>
+
+        <if test="record.stockholderShip != null and record.stockholderShip>0 ">
+            AND t_alliance.stockholder_ship LIKE CONCAT('%',#{record.stockholderShip},'%')
+        </if>
+
+        <if test="record.creationTime != null and record.creationTime>0 ">
+            AND t_alliance.creation_time LIKE CONCAT('%',#{record.creationTime},'%')
+        </if>
+        <if test="record.allianceRank != null and record.allianceRank>0 ">
+            AND t_alliance.creation_time LIKE CONCAT('%',#{record.alliance_rank},'%')
+        </if>
+
+        <if test="record.allianceShipTime != null and record.allianceShipTime>0 ">
+            AND t_alliance.alliance_ship_time LIKE CONCAT('%',#{record.allianceShipTime},'%')
+        </if>
+
+        <if test="record.stockholderShipTime != null and record.stockholderShipTime>0 ">
+            AND t_alliance.stockholder_ship_time LIKE CONCAT('%',#{record.stockholderShipTime},'%')
+        </if>
+
+        <if test="record.tempAllianceExpiryTime != null and record.tempAllianceExpiryTime>0 ">
+            AND t_alliance.temp_alliance_expiry_time LIKE CONCAT('%',#{record.tempAllianceExpiryTime},'%')
+        </if>
+
+        <if test="record.allianceStatus != null and record.allianceStatus>0 ">
+            AND t_alliance.alliance_status LIKE CONCAT('%',#{record.allianceStatus},'%')
+        </if>
+
+        <if test="record.allianceInventoryAmount != null and record.allianceInventoryAmount>0 ">
+            AND t_alliance.alliance_inventory_amount LIKE CONCAT('%',#{record.allianceInventoryAmount},'%')
+        </if>
+
+        <if test="record.alliancePoint != null and record.alliancePoint>0 ">
+            AND t_alliance.alliance_point LIKE CONCAT('%',#{record.alliancePoint},'%')
+        </if>
+
+        <if test="record.allianceName != null and record.allianceName!= ''">
+            AND t_alliance.alliance_name LIKE CONCAT('%',#{record.allianceName},'%')
+        </if>
+
+        <if test="record.allianceSex != null and record.allianceSex>0 ">
+            AND t_alliance.alliance_sex LIKE CONCAT('%',#{record.allianceSex},'%')
+        </if>
+
+        <if test="record.allianceOccupation != null and record.allianceOccupation!= ''">
+            AND t_alliance.alliance_occupation LIKE CONCAT('%',#{record.allianceOccupation},'%')
+        </if>
+
+        <if test="record.allianceIndustry != null and record.allianceIndustry!= ''">
+            AND t_alliance.alliance_industry LIKE CONCAT('%',#{record.allianceIndustry},'%')
+        </if>
+
+        <if test="record.allianceAddress != null and record.allianceAddress!= ''">
+            AND t_alliance.alliance_address LIKE CONCAT('%',#{record.allianceAddress},'%')
+        </if>
+
+        <if test="record.allianceBusiness != null and record.allianceBusiness!= ''">
+            AND t_alliance.alliance_business LIKE CONCAT('%',#{record.allianceBusiness},'%')
+        </if>
+
+        <if test="record.allianceHobby != null and record.allianceHobby!= ''">
+            AND t_alliance.alliance_hobby LIKE CONCAT('%',#{record.allianceHobby},'%')
+        </if>
+
+        <if test="record.alliancePhone != null and record.alliancePhone!= ''">
+            AND t_alliance.alliance_phone LIKE CONCAT('%',#{record.alliancePhone},'%')
+        </if>
+
+        <if test="record.allianceDob != null and record.allianceDob>0 ">
+            AND t_alliance.alliance_dob LIKE CONCAT('%',#{record.allianceDob},'%')
+        </if>
+        <if test="startTime != null">
+            <![CDATA[AND t_alliance.start_time >= DATE(#{startTime})]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[AND t_alliance.end_time <= DATE(#{endTime)]]>
+        </if>
+        <if test="record.startingCycle != null and record.startingCycle>0">
+            <![CDATA[AND t_alliance.end_time <= DATE(#{record.startingCycle)]]>
+        </if>
+        <if test="record.balance != null and record.balance>0">
+            <![CDATA[AND t_alliance.end_time <= DATE(#{record.balance)]]>
+        </if>
+        <!--
+    <if test="search != null and search != ''">
+        OR t_alliance.name LIKE CONCAT('%',#{search},'%')
+    </if>
+    -->
+        order by alliance_rank desc
+    </select>
+<!--    根据user_id查询当月的订单-->
+    <select id="getCurrentMonthOrderByUserId" resultType="java.util.Map">
+        select * from t_order where user_id=#{id} and DATE_FORMAT(created_date,'%Y%m')=DATE_FORMAT(CURDATE() ,'%Y%m')
+    </select>
+    <select id="selectAllianceOneByUserId" resultType="com.jfeat.am.module.alliance.services.domain.model.AllianceRecord">
+        select * from t_alliance where user_id=#{id}
+    </select>
+
+    <select id="getSelfProductByUserId" resultType="java.util.Map">
+        select p.* from t_product p,t_user_settled_merchant m where m.merchant_id=p.mid
+    </select>
+</mapper>

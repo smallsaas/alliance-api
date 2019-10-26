@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jfeat.am.module.alliance.services.gen.persistence.dao.AllianceMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance">
+		<id column="id" property="id" />
+		<result column="user_id" property="userId" />
+		<result column="invitor_alliance_id" property="invitorAllianceId" />
+		<result column="alliance_ship" property="allianceShip" />
+		<result column="stockholder_ship" property="stockholderShip" />
+		<result column="creation_time" property="creationTime" />
+		<result column="alliance_rank" property="allianceRank" />
+		<result column="alliance_type" property="allianceType" />
+		<result column="alliance_ship_time" property="allianceShipTime" />
+		<result column="stockholder_ship_time" property="stockholderShipTime" />
+		<result column="temp_alliance_expiry_time" property="tempAllianceExpiryTime" />
+		<result column="alliance_status" property="allianceStatus" />
+		<result column="alliance_inventory_amount" property="allianceInventoryAmount" />
+		<result column="alliance_point" property="alliancePoint" />
+		<result column="alliance_name" property="allianceName" />
+		<result column="alliance_sex" property="allianceSex" />
+		<result column="alliance_occupation" property="allianceOccupation" />
+		<result column="alliance_industry" property="allianceIndustry" />
+		<result column="alliance_address" property="allianceAddress" />
+		<result column="alliance_business" property="allianceBusiness" />
+		<result column="alliance_hobby" property="allianceHobby" />
+		<result column="alliance_phone" property="alliancePhone" />
+		<result column="alliance_dob" property="allianceDob" />
+		<result column="starting_cycle" property="startingCycle" />
+		<result column="balance" property="balance" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id AS userId,starting_cycle,alliance_type,balance, alliance_rank AS allianceRank,invitor_alliance_id AS invitorAllianceId, alliance_ship AS allianceShip, stockholder_ship AS stockholderShip, creation_time AS creationTime, alliance_ship_time AS allianceShipTime, stockholder_ship_time AS stockholderShipTime, temp_alliance_expiry_time AS tempAllianceExpiryTime, alliance_status AS allianceStatus, alliance_inventory_amount AS allianceInventoryAmount, alliance_point AS alliancePoint, alliance_name AS allianceName, alliance_sex AS allianceSex, alliance_occupation AS allianceOccupation, alliance_industry AS allianceIndustry, alliance_address AS allianceAddress, alliance_business AS allianceBusiness, alliance_hobby AS allianceHobby, alliance_phone AS alliancePhone, alliance_dob AS allianceDob
+    </sql>
+
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jfeat.am.module.bonus.services.gen.persistence.dao.BonusProportionMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.jfeat.am.module.bonus.services.gen.persistence.model.BonusProportion">
+		<id column="id" property="id" />
+		<result column="product_id" property="productId" />
+		<result column="bonus_proportion" property="bonusProportion" />
+		<result column="type" property="type" />
+		<result column="name" property="name" />
+		<result column="level" property="level" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, product_id AS productId, bonus_proportion AS bonusProportion, type, name, level
+    </sql>
+
+</mapper>
