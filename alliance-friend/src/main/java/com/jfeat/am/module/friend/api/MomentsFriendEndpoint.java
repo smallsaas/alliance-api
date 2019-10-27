@@ -51,6 +51,7 @@ public class MomentsFriendEndpoint {
     @PostMapping
     @ApiOperation(value = "新建 MomentsFriend", response = MomentsFriend.class)
     public Tip createMomentsFriend(@RequestBody MomentsFriend entity, @RequestHeader(name = "X-USER-ID", required = false) Long userId) {
+        entity.setCreateTime(new Date());
         if (userId != null) {
             entity.setAllianceUserId(userId);
         }

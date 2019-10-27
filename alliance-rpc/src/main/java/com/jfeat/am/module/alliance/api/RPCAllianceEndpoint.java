@@ -2,12 +2,8 @@ package com.jfeat.am.module.alliance.api;
 
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.jfeat.am.module.alliance.api.AllianceRequest;
-import com.jfeat.crud.base.tips.SuccessTip;
-import com.jfeat.crud.base.tips.Tip;
+import com.baomidou.mybatisplus.mapper.Condition;
 import com.jfeat.util.Cip;
-import com.jfeat.util.ErrorCip;
 import com.jfeat.util.SuccessCip;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -17,10 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.dao.DuplicateKeyException;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao;
-import com.jfeat.am.module.log.annotation.BusinessLog;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
-import com.jfeat.crud.plus.CRUDObject;
 
 import java.math.BigDecimal;
 
@@ -29,6 +23,7 @@ import com.jfeat.am.module.alliance.services.domain.model.AllianceRecord;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 
 import javax.annotation.Resource;
+import java.rmi.ServerException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +40,7 @@ import java.util.Map;
 @RestController
 
 @Api("Alliance")
-@RequestMapping("/rest/rpc/alliance/alliances")
+@RequestMapping("/rpc/alliance/alliances")
 public class RPCAllianceEndpoint {
 
 
@@ -58,8 +53,26 @@ public class RPCAllianceEndpoint {
     //@BusinessLog(name = "Alliance", value = "create Alliance")
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
-    public Cip createAlliance(@RequestBody Alliance entity) {
+    public Cip createAlliance(@RequestBody AllianceRequest entity) throws ServerException {
 
+        List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()));
+        if(alliance_phone.size()>0){
+            throw new ServerException("该手机号以被注册盟友，不能重复");
+        }
+        String invitorPhoneNumber = entity.getInvitorPhoneNumber();
+        if(invitorPhoneNumber!=null&&invitorPhoneNumber.length()>0){
+            Alliance invitor = queryAllianceDao.selectOne(new Alliance().setAlliancePhone(entity.getInvitorPhoneNumber()));
+            if(invitor!=null){
+                entity.setInvitorAllianceId(invitor.getId());
+            }else {
+                throw new ServerException("该手机号码的盟友不存在");
+            }
+        }
+        if(entity.getAllianceType().equals(2)){
+            entity.setAllianceInventoryAmount(new BigDecimal(2000));
+        }else if(entity.getAllianceType().equals(1)){
+            entity.setAllianceInventoryAmount(new BigDecimal(10000));
+        }
         Integer affected = 0;
         try {
             affected = allianceService.createMaster(entity);
@@ -81,17 +94,25 @@ public class RPCAllianceEndpoint {
     //@BusinessLog(name = "Alliance", value = "update Alliance")
     @PutMapping("/{id}")
     @ApiOperation(value = "修改 Alliance", response = Alliance.class)
-    public Cip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) {
+    public Cip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException {
+        entity.setCreationTime(new Date());
         entity.setId(id);
+
+        List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()).ne("id",id));
+        if(alliance_phone.size()>0){
+            throw new ServerException("该手机号以被注册盟友，不能重复");
+        }
         //根据邀请人电话查找邀请人信息
+
         Alliance alliance = null;
         if (entity.getInvitorPhoneNumber() != null) {
-            allianceService.findAllianceByPhoneNumber(entity.getInvitorPhoneNumber());
+            alliance= allianceService.findAllianceByPhoneNumber(entity.getInvitorPhoneNumber());
         }
         if (alliance != null) {
             entity.setInvitorAllianceId(alliance.getId());
         }
-
+        Alliance user = queryAllianceDao.selectById(id);
+        entity.setUserId(user.getUserId());
         return SuccessCip.create(allianceService.updateMaster(entity));
     }
 

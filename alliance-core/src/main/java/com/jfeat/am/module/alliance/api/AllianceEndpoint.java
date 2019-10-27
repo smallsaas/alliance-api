@@ -55,6 +55,7 @@ public class AllianceEndpoint {
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
     public Tip createAlliance(@RequestBody AllianceRequest entity) throws ServerException {
+        entity.setCreationTime(new Date());
         List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()));
         if(alliance_phone.size()>0){
             throw new ServerException("该手机号以被注册盟友，不能重复");
@@ -68,10 +69,10 @@ public class AllianceEndpoint {
                 throw new ServerException("该手机号码的盟友不存在");
             }
         }
-        if((entity.getAllianceInventoryAmount().compareTo(new BigDecimal(2000)))==0){
-            entity.setAllianceType(2);
-        }else if((entity.getAllianceInventoryAmount().compareTo(new BigDecimal(10000))==0)){
-            entity.setAllianceType(1);
+        if(entity.getAllianceType().equals(2)){
+            entity.setAllianceInventoryAmount(new BigDecimal(2000));
+        }else if(entity.getAllianceType().equals(1)){
+            entity.setAllianceInventoryAmount(new BigDecimal(10000));
         }
         Integer affected = 0;
         try {
@@ -95,8 +96,12 @@ public class AllianceEndpoint {
 //@BusinessLog(name = "Alliance", value = "update Alliance")
 @PutMapping("/{id}")
 @ApiOperation(value = "修改 Alliance", response = Alliance.class)
-public Tip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) {
+public Tip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException {
     entity.setId(id);
+    List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()).ne("id",id));
+    if(alliance_phone.size()>0){
+        throw new ServerException("该手机号以被注册盟友，不能重复");
+    }
     //根据邀请人电话查找邀请人信息
     Alliance alliance =null;
     if(entity.getInvitorPhoneNumber()!=null&&entity.getInvitorPhoneNumber().length()>0) {
@@ -105,7 +110,8 @@ public Tip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest en
     if (alliance != null) {
         entity.setInvitorAllianceId(alliance.getId());
     }
-
+    Alliance user = queryAllianceDao.selectById(id);
+    entity.setUserId(user.getUserId());
     return SuccessTip.create(allianceService.updateMaster(entity));
 }
 

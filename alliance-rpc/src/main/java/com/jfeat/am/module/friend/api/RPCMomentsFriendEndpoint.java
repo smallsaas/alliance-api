@@ -42,7 +42,7 @@ import java.util.List;
 @RestController
 
 @Api("MomentsFriend")
-@RequestMapping("/rest/rpc/friend/momentsFriends")
+@RequestMapping("/rpc/friend/momentsFriends")
 public class RPCMomentsFriendEndpoint {
 
 
@@ -56,6 +56,7 @@ public class RPCMomentsFriendEndpoint {
     @PostMapping
     @ApiOperation(value = "新建 MomentsFriend", response = MomentsFriend.class)
     public Tip createMomentsFriend(@RequestBody MomentsFriend entity, @RequestHeader(name = "X-USER-ID", required = false) Long userId) {
+        entity.setCreateTime(new Date());
         if (userId != null) {
             entity.setAllianceUserId(userId);
         }
@@ -185,11 +186,4 @@ public class RPCMomentsFriendEndpoint {
 
         return SuccessCip.create(page);
     }
-//    @ApiOperation(value = "根据请求头X-USER-ID获取朋友列表信息", response = MomentsFriendRecord.class)
-//    @GetMapping("/getFriendsByUserId")
-//    public Cip getFriendsByUserId(@RequestHeader("X-USER-ID") Long id){
-//        MomentsFriend entity=new MomentsFriend();
-//        entity.setAllianceUserId(id);
-//        return SuccessCip.create(queryMomentsFriendDao.selectOne(entity));
-//    }
 }
