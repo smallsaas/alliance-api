@@ -2,7 +2,6 @@ package com.jfeat.am.module.friend.services.domain.service;
 
 import com.jfeat.am.module.friend.api.RequestOrder;
 import com.jfeat.am.module.friend.services.gen.crud.service.CRUDMomentsFriendService;
-import com.jfeat.am.module.friend.services.gen.persistence.model.Order;
 
 import java.rmi.ServerException;
 

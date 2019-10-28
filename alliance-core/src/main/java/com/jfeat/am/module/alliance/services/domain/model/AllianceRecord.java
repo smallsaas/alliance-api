@@ -1,10 +1,9 @@
 package com.jfeat.am.module.alliance.services.domain.model;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 /**
  * Created by Code Generator on 2019-10-14
@@ -12,6 +11,61 @@ import java.util.List;
 public class AllianceRecord extends Alliance{
     private JSONArray currentMonthOrder;
     private JSONArray selfProducts;
+    private JSONArray allianceTeam;
+
+    //提成
+    private JSONArray commissionOrder;
+
+    public JSONArray getCommissionOrder() {
+        return commissionOrder;
+    }
+
+    public void setCommissionOrder(JSONArray commissionOrder) {
+        this.commissionOrder = commissionOrder;
+    }
+
+
+
+    //自己的总分红=自己的分红+自己团队的分红
+    private BigDecimal totalSelfBonus;
+
+    //自己团队分红
+    private BigDecimal teamSelfBonus;
+
+    //自己的分红
+    private BigDecimal selfBonus;
+
+    public BigDecimal getTotalSelfBonus() {
+        return totalSelfBonus;
+    }
+
+    public void setTotalSelfBonus(BigDecimal totalSelfBonus) {
+        this.totalSelfBonus = totalSelfBonus;
+    }
+
+    public BigDecimal getTeamSelfBonus() {
+        return teamSelfBonus;
+    }
+
+    public void setTeamSelfBonus(BigDecimal teamSelfBonus) {
+        this.teamSelfBonus = teamSelfBonus;
+    }
+
+    public BigDecimal getSelfBonus() {
+        return selfBonus;
+    }
+
+    public void setSelfBonus(BigDecimal selfBonus) {
+        this.selfBonus = selfBonus;
+    }
+
+    public JSONArray getAllianceTeam() {
+        return allianceTeam;
+    }
+
+    public void setAllianceTeam(JSONArray allianceTeam) {
+        this.allianceTeam = allianceTeam;
+    }
 
     public JSONArray getSelfProducts() {
         return selfProducts;

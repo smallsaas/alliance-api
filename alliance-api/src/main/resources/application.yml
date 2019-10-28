@@ -58,7 +58,7 @@ mybatis-plus:
 logging:
   level:
     org.springframework.security: DEBUG
-
+    com.jfeat.am.module.alliance.services.domain.dao: debug
 ---
 
 ##########################################################
@@ -76,7 +76,9 @@ spring:
       schema: classpath*:sql/**/*-schema.sql
       data: classpath*:sql/**/*-data.sql
       initialize: false
-
+  jackson:
+    date-format: yyyy-MM-dd
+    time-zone: GMT+8
 logging:
   level: debug
   file: logs/trace.log

@@ -2,7 +2,7 @@ package com.jfeat.am.module.friend.api;
 
 
 import com.jfeat.am.module.friend.services.domain.model.MomentsFriendOverOrdersRecord;
-import com.jfeat.am.module.friend.services.gen.persistence.model.Order;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -24,6 +24,7 @@ import javax.annotation.Resource;
 import java.rmi.ServerException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -175,7 +176,7 @@ public class MomentsFriendEndpoint {
             for (MomentsFriendOverOrdersRecord momentsFriendOverOrdersRecord : momentsFriendPage) {
                 if (momentsFriendOverOrdersRecord != null) {
                     if (momentsFriendOverOrdersRecord.getContactPhone() != null) {
-                        Order order = queryMomentsFriendDao.findOrdersByPhone(momentsFriendOverOrdersRecord.getContactPhone(), id);
+                        Map order = queryMomentsFriendDao.findOrdersByPhone(momentsFriendOverOrdersRecord.getContactPhone(), id);
                         momentsFriendOverOrdersRecord.setOrder(order);
                     }
                 }

@@ -121,6 +121,9 @@
         <if test="record.balance != null and record.balance>0">
             <![CDATA[AND t_alliance.end_time <= DATE(#{record.balance)]]>
         </if>
+        <if test="record.age != null and record.age>0">
+            <![CDATA[AND t_alliance.end_time <= DATE(#{record.age)]]>
+        </if>
         <!--
     <if test="search != null and search != ''">
         OR t_alliance.name LIKE CONCAT('%',#{search},'%')
@@ -131,6 +134,7 @@
 <!--    根据user_id查询当月的订单-->
     <select id="getCurrentMonthOrderByUserId" resultType="java.util.Map">
         select * from t_order where user_id=#{id} and DATE_FORMAT(created_date,'%Y%m')=DATE_FORMAT(CURDATE() ,'%Y%m')
+         order by created_date desc
     </select>
     <select id="selectAllianceOneByUserId" resultType="com.jfeat.am.module.alliance.services.domain.model.AllianceRecord">
         select * from t_alliance where user_id=#{id}

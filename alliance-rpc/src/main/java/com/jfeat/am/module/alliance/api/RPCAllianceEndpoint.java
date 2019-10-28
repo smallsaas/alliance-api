@@ -2,7 +2,11 @@ package com.jfeat.am.module.alliance.api;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.Royalty;
+import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.util.Cip;
 import com.jfeat.util.SuccessCip;
 import io.swagger.annotations.Api;
@@ -24,6 +28,8 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 
 import javax.annotation.Resource;
 import java.rmi.ServerException;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +59,10 @@ public class RPCAllianceEndpoint {
     //@BusinessLog(name = "Alliance", value = "create Alliance")
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
-    public Cip createAlliance(@RequestBody AllianceRequest entity) throws ServerException {
-
+    public Cip createAlliance(@RequestBody AllianceRequest entity) throws ServerException, ParseException {
+        if(entity.getAllianceDob()!=null){
+            entity.setAge( AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
+        }
         List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()));
         if(alliance_phone.size()>0){
             throw new ServerException("该手机号以被注册盟友，不能重复");
@@ -94,10 +102,9 @@ public class RPCAllianceEndpoint {
     //@BusinessLog(name = "Alliance", value = "update Alliance")
     @PutMapping("/{id}")
     @ApiOperation(value = "修改 Alliance", response = Alliance.class)
-    public Cip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException {
+    public Cip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException, ParseException {
         entity.setCreationTime(new Date());
         entity.setId(id);
-
         List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()).ne("id",id));
         if(alliance_phone.size()>0){
             throw new ServerException("该手机号以被注册盟友，不能重复");
@@ -231,20 +238,50 @@ public class RPCAllianceEndpoint {
     }
 
     @GetMapping("/getAllianceInformationByUserId")
-    @ApiOperation(value = "根据X-USER-ID获取我的盟友信息,可以获取当月订单currentMonthOrder", response = Alliance.class)
-    public Cip getAllianceInformationByUserId(@RequestHeader("X-USER-ID") Long id) {
+    @ApiOperation(value = "根据X-USER-ID获取我的盟友信息,可以获取当月订单currentMonthOrder和我的盟友列表", response = AllianceRecord.class)
+    public Cip getAllianceInformationByUserId(@RequestHeader("X-USER-ID") Long id) throws ParseException {
         Alliance entity = new Alliance();
         entity.setUserId(id);
         AllianceRecord alliance = queryAllianceDao.selectAllianceOneByUserId(id);
         List<Map> currentMonthOrderByUserId = queryAllianceDao.getCurrentMonthOrderByUserId(id);
+
+
         if (alliance != null) {
             if (currentMonthOrderByUserId != null && currentMonthOrderByUserId.size() > 0) {
                 alliance.setCurrentMonthOrder(JSON.parseArray(JSON.toJSONString(queryAllianceDao.getCurrentMonthOrderByUserId(id))));
+            }else {
+                alliance.setCurrentMonthOrder(new JSONArray());
             }
         } else {
             return SuccessCip.create(null);
         }
+        List<Alliance> alliancesByUserId = allianceService.getAlliancesByUserId(id);
+        if(alliancesByUserId!=null&&alliancesByUserId.size()>0){
+            alliance.setAllianceTeam(JSON.parseArray(JSON.toJSONString(alliancesByUserId)));
+        }else {
+            alliance.setAllianceTeam(new JSONArray());
+        }
+        //----------------------
+        alliance.setSelfBonus(new BigDecimal(1000.00));
+        alliance.setTeamSelfBonus(new BigDecimal(1000.00));
+        alliance.setTotalSelfBonus(new BigDecimal(2000.00));
+        JSONArray royalties=new JSONArray();
+        Royalty ls = new Royalty();
+        ls.setOrderMoney(new BigDecimal(2000.0));
+        ls.setInvitorName("李四");
+        ls.setCommission(new BigDecimal(400.0));
+        ls.setCreateTime(new Date());
+        royalties.add(ls);
+        Royalty zs = new Royalty();
+        zs.setOrderMoney(new BigDecimal(4000.0));
+        zs.setInvitorName("张三");
+        zs.setCommission(new BigDecimal(800.0));
+        zs.setCreateTime(new Date());
+        royalties.add(zs);
+        alliance.setCommissionOrder(royalties);
+
         return SuccessCip.create(alliance);
+
     }
 
     @GetMapping("/getAllianceInformationByUserId/{id}")

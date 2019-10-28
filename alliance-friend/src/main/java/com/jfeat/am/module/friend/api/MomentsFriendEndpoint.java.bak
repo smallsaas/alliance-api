@@ -1,15 +1,8 @@
 package com.jfeat.am.module.friend.api;
 
 
-import com.jfeat.am.module.friend.services.domain.dao.QueryMomentsFriendDao;
 import com.jfeat.am.module.friend.services.domain.model.MomentsFriendOverOrdersRecord;
-import com.jfeat.am.module.friend.services.domain.model.MomentsFriendRecord;
-import com.jfeat.am.module.friend.services.domain.service.MomentsFriendService;
-import com.jfeat.am.module.friend.services.gen.persistence.model.MomentsFriend;
-import com.jfeat.crud.base.tips.SuccessTip;
-import com.jfeat.crud.base.tips.Tip;
-import com.jfeat.util.Cip;
-import com.jfeat.util.SuccessCip;
+import com.jfeat.am.module.friend.services.gen.persistence.model.Order;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -17,18 +10,20 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.dao.DuplicateKeyException;
-import com.jfeat.am.module.log.annotation.BusinessLog;
+import com.jfeat.am.module.friend.services.domain.dao.QueryMomentsFriendDao;
+import com.jfeat.crud.base.tips.SuccessTip;
+import com.jfeat.crud.base.tips.Tip;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
-import com.jfeat.crud.plus.CRUDObject;
 
-import java.math.BigDecimal;
-
+import com.jfeat.am.module.friend.services.domain.service.MomentsFriendService;
+import com.jfeat.am.module.friend.services.domain.model.MomentsFriendRecord;
+import com.jfeat.am.module.friend.services.gen.persistence.model.MomentsFriend;
 
 import javax.annotation.Resource;
+import java.rmi.ServerException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -42,8 +37,8 @@ import java.util.Map;
 @RestController
 
 @Api("MomentsFriend")
-@RequestMapping("/rpc/friend/momentsFriends")
-public class RPCMomentsFriendEndpoint {
+@RequestMapping("/api/crud//friend/momentsFriends")
+public class MomentsFriendEndpoint {
 
 
     @Resource
@@ -74,23 +69,23 @@ public class RPCMomentsFriendEndpoint {
     //@BusinessLog(name = "MomentsFriend", value = "查看 MomentsFriend")
     @GetMapping("/{id}")
     @ApiOperation(value = "查看 MomentsFriend", response = MomentsFriend.class)
-    public Cip getMomentsFriend(@PathVariable Long id) {
-        return SuccessCip.create(momentsFriendService.retrieveMaster(id));
+    public Tip getMomentsFriend(@PathVariable Long id) {
+        return SuccessTip.create(momentsFriendService.retrieveMaster(id));
     }
 
     //@BusinessLog(name = "MomentsFriend", value = "update MomentsFriend")
     @PutMapping("/{id}")
     @ApiOperation(value = "修改 MomentsFriend", response = MomentsFriend.class)
-    public Cip updateMomentsFriend(@PathVariable Long id, @RequestBody MomentsFriend entity) {
+    public Tip updateMomentsFriend(@PathVariable Long id, @RequestBody MomentsFriend entity) {
         entity.setId(id);
-        return SuccessCip.create(momentsFriendService.updateMaster(entity));
+        return SuccessTip.create(momentsFriendService.updateMaster(entity));
     }
 
     //@BusinessLog(name = "MomentsFriend", value = "delete MomentsFriend")
     @DeleteMapping("/{id}")
     @ApiOperation("删除 MomentsFriend")
-    public Cip deleteMomentsFriend(@PathVariable Long id) {
-        return SuccessCip.create(momentsFriendService.deleteMaster(id));
+    public Tip deleteMomentsFriend(@PathVariable Long id) {
+        return SuccessTip.create(momentsFriendService.deleteMaster(id));
     }
 
     //@BusinessLog(name = "MomentsFriend", value = "delete MomentsFriend")
@@ -117,7 +112,7 @@ public class RPCMomentsFriendEndpoint {
             @ApiImplicitParam(name = "orderBy", dataType = "String"),
             @ApiImplicitParam(name = "sort", dataType = "String")
     })
-    public Cip queryMomentsFriends(Page<MomentsFriendOverOrdersRecord> page,
+    public Tip queryMomentsFriends(Page<MomentsFriendOverOrdersRecord> page,
                                    @RequestHeader(name = "X-USER-ID", required = false) Long userId,
                                    @RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                    @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize,
@@ -170,20 +165,37 @@ public class RPCMomentsFriendEndpoint {
         record.setRemark(remark);
         record.setAllianceUserId(userId);
         List<MomentsFriendOverOrdersRecord> momentsFriendPage = queryMomentsFriendDao.findMomentsFriendPage(page, record, search, orderBy, null, null);
-        if (momentsFriendPage != null && momentsFriendPage.size() > 0) {
+        momentsFriendPage = setOrdersRecord(momentsFriendPage, record.getAllianceUserId());
+        page.setRecords(momentsFriendPage);
+        return SuccessTip.create(page);
+    }
+
+    private List<MomentsFriendOverOrdersRecord> setOrdersRecord(List<MomentsFriendOverOrdersRecord> momentsFriendPage, Long id) {
+        if (momentsFriendPage != null) {
             for (MomentsFriendOverOrdersRecord momentsFriendOverOrdersRecord : momentsFriendPage) {
                 if (momentsFriendOverOrdersRecord != null) {
                     if (momentsFriendOverOrdersRecord.getContactPhone() != null) {
-                        Map order = queryMomentsFriendDao.findOrdersByPhone(momentsFriendOverOrdersRecord.getContactPhone(), record.getAllianceUserId());
+                        Order order = queryMomentsFriendDao.findOrdersByPhone(momentsFriendOverOrdersRecord.getContactPhone(), id);
                         momentsFriendOverOrdersRecord.setOrder(order);
                     }
                 }
             }
         }
+        return momentsFriendPage;
+    }
+//    @ApiOperation(value = "根据请求头X-USER-ID获取朋友列表信息", response = MomentsFriendRecord.class)
+//    @GetMapping("/getFriendsByUserId")
+//    public Tip getFriendsByUserId(@RequestHeader("X-USER-ID") Long id){
+//        MomentsFriend entity=new MomentsFriend();
+//        entity.setAllianceUserId(id);
+//        return SuccessTip.create(queryMomentsFriendDao.selectOne(entity));
+//    }
 
+    @PostMapping("/order/create")
+    @ApiOperation(value = "插入订单,下单人输入时必须数据库t_user表存在才行，根据name进行对比的")
+    public Tip createOrder(@RequestBody RequestOrder requestOrder) throws ServerException {
 
-        page.setRecords(momentsFriendPage);
+        return SuccessTip.create(momentsFriendService.createOrder(requestOrder));
 
-        return SuccessCip.create(page);
     }
 }

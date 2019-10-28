@@ -9,6 +9,9 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.io.Serializable;
 
 /**
@@ -67,27 +70,39 @@ public class Alliance extends Model<Alliance> {
      * creation_time
      */
 	@TableField("creation_time")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern = "YYYY-MM-DD")
 	private Date creationTime;
     /**
      */
+	@JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "YYYY-MM-DD")
 	@TableField("alliance_ship_time")
 	private Date allianceShipTime;
-
+    @DateTimeFormat(pattern = "YYYY-MM-DD")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	@TableField("starting_cycle")
 	private Date startingCycle;
     /**
      */
 	@TableField("stockholder_ship_time")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "YYYY-MM-DD")
 	private Date stockholderShipTime;
     /**
      * 临时盟友过期时间
      */
 	@TableField("temp_alliance_expiry_time")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "YYYY-MM-DD")
 	private Date tempAllianceExpiryTime;
     /**
      */
 	@TableField("alliance_status")
 	private Integer allianceStatus;
+
+	@TableField("age")
+	private Integer age;
     /**
      * 库存金额
      */
@@ -145,9 +160,17 @@ public class Alliance extends Model<Alliance> {
     /**
      * 生日
      */
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	@TableField("alliance_dob")
 	private Date allianceDob;
 
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
 
 	public Long getId() {
 		return id;

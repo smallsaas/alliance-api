@@ -4,6 +4,8 @@ package com.jfeat.am.module.alliance.api;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
+import com.jfeat.am.module.alliance.util.AllianceUtil;
+import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -25,6 +27,8 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 
 import javax.annotation.Resource;
 import java.rmi.ServerException;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -51,28 +55,35 @@ public class AllianceEndpoint {
     @Resource
     QueryAllianceDao queryAllianceDao;
 
-//@BusinessLog(name = "Alliance", value = "create Alliance")
+    @Resource
+    ConfigFieldService configFieldService;
+
+    //@BusinessLog(name = "Alliance", value = "create Alliance")
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
-    public Tip createAlliance(@RequestBody AllianceRequest entity) throws ServerException {
+    public Tip createAlliance(@RequestBody AllianceRequest entity) throws ServerException, ParseException {
         entity.setCreationTime(new Date());
+        entity.setStartingCycle(new Date());
+        if(entity.getAllianceDob()!=null){
+            entity.setAge( AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
+        }
         List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()));
-        if(alliance_phone.size()>0){
+        if (alliance_phone.size() > 0) {
             throw new ServerException("该手机号以被注册盟友，不能重复");
         }
         String invitorPhoneNumber = entity.getInvitorPhoneNumber();
-        if(invitorPhoneNumber!=null&&invitorPhoneNumber.length()>0){
+        if (invitorPhoneNumber != null && invitorPhoneNumber.length() > 0) {
             Alliance invitor = queryAllianceDao.selectOne(new Alliance().setAlliancePhone(entity.getInvitorPhoneNumber()));
-            if(invitor!=null){
+            if (invitor != null) {
                 entity.setInvitorAllianceId(invitor.getId());
-            }else {
+            } else {
                 throw new ServerException("该手机号码的盟友不存在");
             }
         }
-        if(entity.getAllianceType().equals(2)){
-            entity.setAllianceInventoryAmount(new BigDecimal(2000));
-        }else if(entity.getAllianceType().equals(1)){
-            entity.setAllianceInventoryAmount(new BigDecimal(10000));
+        if (entity.getAllianceType().equals(2)) {
+            entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("common_alliance")));
+        } else if (entity.getAllianceType().equals(1)) {
+            entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
         }
         Integer affected = 0;
         try {
@@ -89,40 +100,54 @@ public class AllianceEndpoint {
     @GetMapping("/{id}")
     @ApiOperation(value = "查看 Alliance", response = Alliance.class)
     public Tip getAlliance(@PathVariable Long id) {
-        return SuccessTip.create(allianceService.retrieveMaster(id));
+        Alliance alliance = allianceService.retrieveMaster(id);
+        if(alliance!=null){
+            JSONObject object = (JSONObject) JSON.parse(JSON.toJSONString(alliance));
+            if(alliance.getAllianceSex().equals(1)){
+                object.put("allianceSex","男");
+
+            }else {
+                object.put("allianceSex","女");
+            }
+            return SuccessTip.create(object);
+        }
+        return SuccessTip.create(null);
     }
 
 
-//@BusinessLog(name = "Alliance", value = "update Alliance")
-@PutMapping("/{id}")
-@ApiOperation(value = "修改 Alliance", response = Alliance.class)
-public Tip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException {
-    entity.setId(id);
-    List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()).ne("id",id));
-    if(alliance_phone.size()>0){
-        throw new ServerException("该手机号以被注册盟友，不能重复");
+    //@BusinessLog(name = "Alliance", value = "update Alliance")
+    @PutMapping("/{id}")
+    @ApiOperation(value = "修改 Alliance", response = Alliance.class)
+    public Tip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException, ParseException {
+        entity.setId(id);
+        if(entity.getAllianceDob()!=null){
+            entity.setAge( AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
+        }
+        List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()).ne("id", id));
+        if (alliance_phone.size() > 0) {
+            throw new ServerException("该手机号以被注册盟友，不能重复");
+        }
+        //根据邀请人电话查找邀请人信息
+        Alliance alliance = null;
+        if (entity.getInvitorPhoneNumber() != null && entity.getInvitorPhoneNumber().length() > 0) {
+            alliance = allianceService.findAllianceByPhoneNumber(entity.getInvitorPhoneNumber());
+        }
+        if (alliance != null) {
+            entity.setInvitorAllianceId(alliance.getId());
+        }
+        Alliance user = queryAllianceDao.selectById(id);
+        entity.setUserId(user.getUserId());
+        return SuccessTip.create(allianceService.updateMaster(entity));
     }
-    //根据邀请人电话查找邀请人信息
-    Alliance alliance =null;
-    if(entity.getInvitorPhoneNumber()!=null&&entity.getInvitorPhoneNumber().length()>0) {
-        alliance= allianceService.findAllianceByPhoneNumber(entity.getInvitorPhoneNumber());
-    }
-    if (alliance != null) {
-        entity.setInvitorAllianceId(alliance.getId());
-    }
-    Alliance user = queryAllianceDao.selectById(id);
-    entity.setUserId(user.getUserId());
-    return SuccessTip.create(allianceService.updateMaster(entity));
-}
 
-//@BusinessLog(name = "Alliance", value = "delete Alliance")
+    //@BusinessLog(name = "Alliance", value = "delete Alliance")
     @DeleteMapping("/{id}")
     @ApiOperation("删除 Alliance")
     public Tip deleteAlliance(@PathVariable Long id) {
         return SuccessTip.create(allianceService.deleteMaster(id));
     }
 
-//@BusinessLog(name = "Alliance", value = "delete Alliance")
+    //@BusinessLog(name = "Alliance", value = "delete Alliance")
     @ApiOperation(value = "Alliance 列表信息", response = AllianceRecord.class)
     @GetMapping
     @ApiImplicitParams({
@@ -232,32 +257,37 @@ public Tip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest en
 
         return SuccessTip.create(page);
     }
+
     @GetMapping("/getAlliancesByUserId")
     @ApiOperation(value = "根据请求头X-USER-ID获取我的盟友列表", response = Alliance.class)
-    public Tip getAlliancesByUserId(@RequestHeader("X-USER-ID") Long id){
+    public Tip getAlliancesByUserId(@RequestHeader("X-USER-ID") Long id) {
 
         return SuccessTip.create(allianceService.getAlliancesByUserId(id));
     }
+
     @GetMapping("/getAllianceInformationByUserId")
     @ApiOperation(value = "根据请求头X-USER-ID获得个人的盟友信息，currentMonthOrder是当月订单", response = Alliance.class)
     public Tip getAllianceInformationByUserId(@RequestHeader("X-USER-ID") Long id) {
-        Alliance entity=new Alliance();
+        Alliance entity = new Alliance();
         entity.setUserId(id);
-        AllianceRecord alliance =queryAllianceDao.selectAllianceOneByUserId(id);
-        if(alliance==null){
+        AllianceRecord alliance = queryAllianceDao.selectAllianceOneByUserId(id);
+        if (alliance == null) {
             return SuccessTip.create(alliance);
         }
         List<Map> currentMonthOrderByUserId = queryAllianceDao.getCurrentMonthOrderByUserId(id);
-        if(currentMonthOrderByUserId!=null&&currentMonthOrderByUserId.size()>0){
+        if (currentMonthOrderByUserId != null && currentMonthOrderByUserId.size() > 0) {
             alliance.setCurrentMonthOrder(JSON.parseArray(JSON.toJSONString(queryAllianceDao.getCurrentMonthOrderByUserId(id))));
         }
         return SuccessTip.create(alliance);
     }
+
     @GetMapping("/getAllianceInformationByUserId/{id}")
     @ApiOperation(value = "根据盟友id获取我的盟友信息,携带自营商品", response = Alliance.class)
     public Tip getSelfProductById(@PathVariable Long id) {
 
         return SuccessTip.create(allianceService.getSelfProductById(id));
     }
+
+
 
 }

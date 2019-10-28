@@ -103,7 +103,7 @@
     </if>
     -->
     </select>
-    <select id="findOrdersByPhone" resultType="com.jfeat.am.module.friend.services.gen.persistence.model.Order"
+    <select id="findOrdersByPhone" resultType="java.util.Map"
             parameterType="java.util.Map">
         select * from t_order where phone=#{phone}
         and

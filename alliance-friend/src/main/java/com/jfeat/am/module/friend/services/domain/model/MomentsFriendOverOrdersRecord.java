@@ -1,17 +1,18 @@
 package com.jfeat.am.module.friend.services.domain.model;
 
 import com.jfeat.am.module.friend.services.gen.persistence.model.MomentsFriend;
-import com.jfeat.am.module.friend.services.gen.persistence.model.Order;
+
+import java.util.Map;
 
 
 public class MomentsFriendOverOrdersRecord extends MomentsFriendRecord {
-    private Order order;
+    private Map order;
 
-    public Order getOrder() {
+    public Map getOrder() {
         return order;
     }
 
-    public void setOrder(Order order) {
+    public void setOrder(Map order) {
         this.order = order;
     }
 }
