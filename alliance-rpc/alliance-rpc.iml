@@ -122,5 +122,6 @@
     <orderEntry type="module" module-name="alliance-friend" />
     <orderEntry type="module" module-name="alliance-core" />
     <orderEntry type="library" name="Maven: com.jfeat:field-config:1.0.0" level="project" />
+    <orderEntry type="module" module-name="bonus" />
   </component>
 </module>

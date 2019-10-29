@@ -1,62 +1,104 @@
- package com.jfeat.am.module.bonus.api;
- 
- import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
- import com.jfeat.am.module.bonus.services.domain.service.BonusService;
- import com.jfeat.am.module.log.annotation.BusinessLog;
- import com.jfeat.crud.base.tips.SuccessTip;
- import com.jfeat.crud.base.tips.Tip;
- import io.swagger.annotations.Api;
- import io.swagger.annotations.ApiOperation;
- import java.math.BigDecimal;
- import java.rmi.ServerException;
- import javax.annotation.Resource;
- import org.springframework.web.bind.annotation.GetMapping;
- import org.springframework.web.bind.annotation.RequestHeader;
- import org.springframework.web.bind.annotation.RequestMapping;
- import org.springframework.web.bind.annotation.RestController;
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- @RestController
- @Api("Bonus")
- @RequestMapping({"/rpc/bonus"})
- public class BonusEndpoint
- {
-   @Resource
-   QueryBonusDao queryBonusDao;
-   @Resource
-   BonusService bonusService;
-   
-   @BusinessLog(name = "Bonus", value = "get Bonus")
-   @GetMapping({"/totalSelfBonus"})
-   @ApiOperation(value = "获取Bonus,根据X-USER-ID,获取的是盟友自己的所有分红加上团队的分红总数")
-   public Tip totalSelfBonus(@RequestHeader("X-USER-ID") Long id) throws ServerException {
-     BigDecimal selfBouns = this.bonusService.getTotalSelfBonus(id);
-     return SuccessTip.create(selfBouns);
-   }
-   
-   @BusinessLog(name = "Bonus", value = "get Bonus")
-   @GetMapping({"/SelfBonus"})
-   @ApiOperation(value = "获取Bonus,根据X-USER-ID,获取的是盟友自己的分红")
-   public Tip SelfBonus(@RequestHeader("X-USER-ID") Long id) throws ServerException {
-     BigDecimal selfBouns = this.bonusService.getSelfBonus(id);
-     return SuccessTip.create(selfBouns);
-   }
-   
-   @BusinessLog(name = "Bonus", value = "get Bonus")
-   @GetMapping({"/teamBonus"})
-   @ApiOperation(value = "获取Bonus,根据X-USER-ID,获取的是盟友自己的团队的分红")
-   public Tip teamBonus(@RequestHeader("X-USER-ID") Long id) throws ServerException {
-     BigDecimal selfBouns = this.bonusService.getTeamBonus(id);
-     return SuccessTip.create(selfBouns);
-   }
- }
+package com.jfeat.am.module.bonus.api;
+
+import com.alibaba.fastjson.JSONObject;
+import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
+import com.jfeat.am.module.bonus.services.domain.service.BonusService;
+import com.jfeat.am.module.bonus.util.Cip;
+import com.jfeat.am.module.bonus.util.SuccessCip;
+import io.swagger.annotations.Api;
+
+import java.math.BigDecimal;
+import javax.annotation.Resource;
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@Api("Bonus")
+@RequestMapping({"/rpc/bonus"})
+public class BonusEndpoint {
+    @Resource
+    BonusService bonusService;
+    @Resource
+    QueryBonusDao queryBonusDao;
+
+    @GetMapping("/selfBonus")
+    public Cip getSelfBonus(@RequestHeader(required = false,name = "X-USER-ID") Long userId, @RequestParam(required = false,name = "id") Long id) {
+        if(userId!=null){
+            BigDecimal selfBonus = bonusService.getSelfBonus(userId).add(bonusService.getTeamProportionBonus(userId));
+            JSONObject object=new JSONObject();
+            object.put("selfBonus",selfBonus);
+            return SuccessCip.create(object);
+        }else if(id!=null){
+            Long allianceUserId = queryBonusDao.getAllianceUserId(id);
+            if(allianceUserId!=null){
+                BigDecimal selfBonus = bonusService.getSelfBonus(allianceUserId).add(bonusService.getTeamProportionBonus(allianceUserId));
+                JSONObject object=new JSONObject();
+                object.put("selfBonus",selfBonus);
+                return SuccessCip.create(object);
+            }
+
+        }else {
+            JSONObject object=new JSONObject();
+            object.put("selfBonus",0);
+            return   SuccessCip.create(object);
+        }
+
+        JSONObject object=new JSONObject();
+        object.put("selfBonus",0);
+        return   SuccessCip.create(object);
+
+    }
+    @GetMapping("/teamBonus")
+    public Cip getTeamBonus(@RequestHeader(required = false,name = "X-USER-ID") Long userId, @RequestParam(required = false,name = "id") Long id) {
+        if(userId!=null){
+            BigDecimal selfBonus = bonusService.getTeamBonus(userId);
+            JSONObject object=new JSONObject();
+            object.put("teamBonus",selfBonus);
+            return SuccessCip.create(object);
+        }else if(id!=null){
+            Long allianceUserId = queryBonusDao.getAllianceUserId(id);
+            if(allianceUserId!=null){
+                BigDecimal selfBonus = bonusService.getTeamBonus(allianceUserId);
+                JSONObject object=new JSONObject();
+                object.put("teamBonus",selfBonus);
+                return SuccessCip.create(object);
+            }
+
+        }else {
+            JSONObject object=new JSONObject();
+            object.put("teamBonus",0);
+            return   SuccessCip.create(object);
+        }
+
+        JSONObject object=new JSONObject();
+        object.put("teamBonus",0);
+        return SuccessCip.create(object);
+    }
+    @GetMapping("/totalSelfBonus")
+    public Cip getTotalSelfBonus(@RequestHeader(required = false,name = "X-USER-ID") Long userId, @RequestParam(required = false,name = "id") Long id) {
+        if(userId!=null){
+            BigDecimal selfBonus = bonusService.getSelfBonus(userId).add(bonusService.getTeamProportionBonus(userId)).add(bonusService.getTeamBonus(userId));
+            JSONObject object=new JSONObject();
+            object.put("totalSelfBonus",selfBonus);
+            return SuccessCip.create(object);
+        }else if(id!=null){
+            Long allianceUserId = queryBonusDao.getAllianceUserId(id);
+            if(allianceUserId!=null){
+                BigDecimal selfBonus = bonusService.getSelfBonus(allianceUserId).add(bonusService.getTeamProportionBonus(allianceUserId)).add(bonusService.getTeamBonus(allianceUserId));
+                JSONObject object=new JSONObject();
+                object.put("totalSelfBonus",selfBonus);
+                return SuccessCip.create(object);
+            }
+
+        }else {
+            JSONObject object=new JSONObject();
+            object.put("totalSelfBonus",object);
+            return   SuccessCip.create(object);
+        }
+        JSONObject object=new JSONObject();
+        object.put("totalSelfBonus",object);
+        return   SuccessCip.create(object);
+
+    }
+}
 

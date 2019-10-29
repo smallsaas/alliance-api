@@ -142,6 +142,11 @@ public class Alliance extends Model<Alliance> {
      */
 	@TableField("alliance_address")
 	private String allianceAddress;
+	/**
+	 * 头像
+	 */
+	@TableField("avator")
+	private String avator;
     /**
      * 业务方向
      */
@@ -196,6 +201,14 @@ public class Alliance extends Model<Alliance> {
 	public Alliance setUserId(Long userId) {
 		this.userId = userId;
 		return this;
+	}
+
+	public String getAvator() {
+		return avator;
+	}
+
+	public void setAvator(String avator) {
+		this.avator = avator;
 	}
 
 	public Date getStartingCycle() {

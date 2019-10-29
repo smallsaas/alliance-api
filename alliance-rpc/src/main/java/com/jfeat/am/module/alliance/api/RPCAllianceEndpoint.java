@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Royalty;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
+import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import com.jfeat.util.Cip;
 import com.jfeat.util.SuccessCip;
 import io.swagger.annotations.Api;
@@ -56,29 +57,32 @@ public class RPCAllianceEndpoint {
     @Resource
     QueryAllianceDao queryAllianceDao;
 
+    @Resource
+    BonusService bonusService;
+
     //@BusinessLog(name = "Alliance", value = "create Alliance")
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
     public Cip createAlliance(@RequestBody AllianceRequest entity) throws ServerException, ParseException {
-        if(entity.getAllianceDob()!=null){
-            entity.setAge( AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
+        if (entity.getAllianceDob() != null) {
+            entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
         List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()));
-        if(alliance_phone.size()>0){
+        if (alliance_phone.size() > 0) {
             throw new ServerException("该手机号以被注册盟友，不能重复");
         }
         String invitorPhoneNumber = entity.getInvitorPhoneNumber();
-        if(invitorPhoneNumber!=null&&invitorPhoneNumber.length()>0){
+        if (invitorPhoneNumber != null && invitorPhoneNumber.length() > 0) {
             Alliance invitor = queryAllianceDao.selectOne(new Alliance().setAlliancePhone(entity.getInvitorPhoneNumber()));
-            if(invitor!=null){
+            if (invitor != null) {
                 entity.setInvitorAllianceId(invitor.getId());
-            }else {
+            } else {
                 throw new ServerException("该手机号码的盟友不存在");
             }
         }
-        if(entity.getAllianceType().equals(2)){
+        if (entity.getAllianceType().equals(2)) {
             entity.setAllianceInventoryAmount(new BigDecimal(2000));
-        }else if(entity.getAllianceType().equals(1)){
+        } else if (entity.getAllianceType().equals(1)) {
             entity.setAllianceInventoryAmount(new BigDecimal(10000));
         }
         Integer affected = 0;
@@ -105,15 +109,15 @@ public class RPCAllianceEndpoint {
     public Cip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException, ParseException {
         entity.setCreationTime(new Date());
         entity.setId(id);
-        List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()).ne("id",id));
-        if(alliance_phone.size()>0){
+        List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()).ne("id", id));
+        if (alliance_phone.size() > 0) {
             throw new ServerException("该手机号以被注册盟友，不能重复");
         }
         //根据邀请人电话查找邀请人信息
 
         Alliance alliance = null;
         if (entity.getInvitorPhoneNumber() != null) {
-            alliance= allianceService.findAllianceByPhoneNumber(entity.getInvitorPhoneNumber());
+            alliance = allianceService.findAllianceByPhoneNumber(entity.getInvitorPhoneNumber());
         }
         if (alliance != null) {
             entity.setInvitorAllianceId(alliance.getId());
@@ -249,23 +253,23 @@ public class RPCAllianceEndpoint {
         if (alliance != null) {
             if (currentMonthOrderByUserId != null && currentMonthOrderByUserId.size() > 0) {
                 alliance.setCurrentMonthOrder(JSON.parseArray(JSON.toJSONString(queryAllianceDao.getCurrentMonthOrderByUserId(id))));
-            }else {
+            } else {
                 alliance.setCurrentMonthOrder(new JSONArray());
             }
         } else {
             return SuccessCip.create(null);
         }
         List<Alliance> alliancesByUserId = allianceService.getAlliancesByUserId(id);
-        if(alliancesByUserId!=null&&alliancesByUserId.size()>0){
+        if (alliancesByUserId != null && alliancesByUserId.size() > 0) {
             alliance.setAllianceTeam(JSON.parseArray(JSON.toJSONString(alliancesByUserId)));
-        }else {
+        } else {
             alliance.setAllianceTeam(new JSONArray());
         }
         //----------------------
-        alliance.setSelfBonus(new BigDecimal(1000.00));
-        alliance.setTeamSelfBonus(new BigDecimal(1000.00));
-        alliance.setTotalSelfBonus(new BigDecimal(2000.00));
-        JSONArray royalties=new JSONArray();
+        alliance.setSelfBonus(bonusService.getSelfBonus(id).add(bonusService.getTeamProportionBonus(id)));
+        alliance.setTeamSelfBonus(bonusService.getTeamBonus(id));
+        alliance.setTotalSelfBonus(bonusService.getSelfBonus(id).add(bonusService.getTeamProportionBonus(id)).add(bonusService.getTeamBonus(id)));
+        JSONArray royalties = new JSONArray();
         Royalty ls = new Royalty();
         ls.setOrderMoney(new BigDecimal(2000.0));
         ls.setInvitorName("李四");
@@ -289,5 +293,19 @@ public class RPCAllianceEndpoint {
     public Cip getSelfProductById(@PathVariable Long id) {
 
         return SuccessCip.create(allianceService.getSelfProductById(id));
+    }
+
+    @GetMapping("/setMeal")
+    @ApiOperation(value = "充值套餐")
+    public Cip getSetMeal() {
+        List<JSONObject> setMeals = queryAllianceDao.getSetMeal();
+        for (JSONObject setMeal : setMeals) {
+            if (setMeal.getString("value").equals("10000")) {
+                setMeal.put("type", "分红盟友");
+            } else {
+                setMeal.put("type", "普通盟友");
+            }
+        }
+        return SuccessCip.create(setMeals);
     }
 }
