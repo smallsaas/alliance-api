@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.rmi.ServerException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,6 +51,10 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         order.setPhone(requestOrder.getPhone());
         order.setDetail(requestOrder.getDetail());
         order.setContactUser(requestOrder.getName());
+        order.setType("STORE_ORDER");
+        order.setCreatedDate(new Date());
+        order.setOrderNumber(OrderNumber.getOrderNo());
+//        order.setPaymentType();
 //        Long orderId = queryMomentsFriendDao.insertOrder(userIds.get(0), requestOrder.getTotalPrice(), requestOrder.getPhone(), requestOrder.getName(), requestOrder.getDetail());
         queryMomentsFriendOverOrderDao.insert(order);
 //        Long orderId = queryMomentsFriendDao.insertOrder(userIds.get(0), requestOrder.getTotalPrice(),
@@ -58,5 +64,28 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
 
 
         return integer;
+    }
+
+}
+
+class OrderNumber extends Thread{
+
+    private static long orderNum = 0l;
+    private static String date ;
+
+    /**
+     * 生成订单编号
+     * @return
+     */
+    public static synchronized String getOrderNo() {
+        String str = new SimpleDateFormat("yyMMddHHmm").format(new Date());
+        if(date==null||!date.equals(str)){
+            date = str;
+            orderNum  = 0l;
+        }
+        orderNum ++;
+        long orderNo = Long.parseLong((date)) * 10000;
+        orderNo += orderNum;;
+        return orderNo+"";
     }
 }

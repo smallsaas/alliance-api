@@ -13,9 +13,9 @@ public interface QueryBonusDao {
 
 
 
-    //算出自己的推荐分红
+    //算出自己的推荐分红(给别人的)
     @Select("select sum((p.price-p.cost_price)*oi.quantity*b.bonus_proportion/(100.0)) from t_order o,t_order_item oi,t_product p ,t_bonus_proportion b,t_alliance a where\n" +
-            "o.user_id=#{userId} and oi.order_id= o.id and p.id=oi.product_id and a.user_id=o.user_id and a.alliance_type=1 and b.product_id=p.id and b.type = 'RECOMMEND';\n")
+            "o.user_id=#{userId} and oi.order_id= o.id and p.id=oi.product_id and a.user_id=o.user_id  and b.product_id=p.id and b.type = 'RECOMMEND';\n")
     BigDecimal getTeamBonus(@Param("userId") Long paramLong);
 
 

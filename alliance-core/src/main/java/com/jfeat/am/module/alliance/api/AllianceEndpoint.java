@@ -64,7 +64,9 @@ public class AllianceEndpoint {
     public Tip createAlliance(@RequestBody AllianceRequest entity) throws ServerException, ParseException {
         entity.setCreationTime(new Date());
         entity.setStartingCycle(new Date());
-        if(entity.getAllianceDob()!=null){
+        entity.setAllianceShip(1);
+        entity.setAllianceShipTime(new Date());
+        if(entity.getAllianceDob()!= null){
             entity.setAge( AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
         List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()));
@@ -82,7 +84,11 @@ public class AllianceEndpoint {
         }
         if (entity.getAllianceType().equals(2)) {
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("common_alliance")));
+            entity.setAllianceShip(2);
         } else if (entity.getAllianceType().equals(1)) {
+            entity.setStockholderShipTime(new Date());
+            entity.setStockholderShip(1);
+            entity.setAllianceShip(2);
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
         }
         Integer affected = 0;

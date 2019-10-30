@@ -143,4 +143,9 @@
     <select id="getSelfProductByUserId" resultType="java.util.Map">
         select p.* from t_product p,t_user_settled_merchant m where m.merchant_id=p.mid
     </select>
+
+    <select id="selectUserIdByInvitationCode" resultType="java.lang.Long" parameterType="java.lang.String">
+        select id from t_user where invitation_code =#{invitationCode}
+    </select>
+
 </mapper>

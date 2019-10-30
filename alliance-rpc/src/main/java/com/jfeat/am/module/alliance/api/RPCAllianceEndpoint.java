@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.mapper.Condition;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Royalty;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
+import com.jfeat.crud.base.tips.SuccessTip;
 import com.jfeat.util.Cip;
 import com.jfeat.util.SuccessCip;
 import io.swagger.annotations.Api;
@@ -113,6 +114,8 @@ public class RPCAllianceEndpoint {
         if (alliance_phone.size() > 0) {
             throw new ServerException("该手机号以被注册盟友，不能重复");
         }
+
+
         //根据邀请人电话查找邀请人信息
 
         Alliance alliance = null;
@@ -242,7 +245,7 @@ public class RPCAllianceEndpoint {
     }
 
     @GetMapping("/getAllianceInformationByUserId")
-    @ApiOperation(value = "根据X-USER-ID获取我的盟友信息,可以获取当月订单currentMonthOrder和我的盟友列表", response = AllianceRecord.class)
+    @ApiOperation(value = "根据X-USER-ID获取我的盟友信息,可以获取当月订单currentMonthOrder和我的盟友列表,还有分红信息（只有是股东能有分红）", response = AllianceRecord.class)
     public Cip getAllianceInformationByUserId(@RequestHeader("X-USER-ID") Long id) throws ParseException {
         Alliance entity = new Alliance();
         entity.setUserId(id);
@@ -308,4 +311,12 @@ public class RPCAllianceEndpoint {
         }
         return SuccessCip.create(setMeals);
     }
+
+    @PostMapping("/createAlliance")
+    @ApiOperation(value = "根据手机号，姓名，邀请码，添加盟友",response = Cip.class)
+    public Cip createAlliance(@RequestBody RequestAlliance requestAlliance) {
+
+        return SuccessCip.create(allianceService.createAlliance(requestAlliance));
+    }
+
 }

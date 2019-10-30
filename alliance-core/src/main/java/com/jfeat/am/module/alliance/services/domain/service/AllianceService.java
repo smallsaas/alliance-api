@@ -1,5 +1,6 @@
 package com.jfeat.am.module.alliance.services.domain.service;
 
+import com.jfeat.am.module.alliance.api.RequestAlliance;
 import com.jfeat.am.module.alliance.services.domain.model.AllianceRecord;
 import com.jfeat.am.module.alliance.services.gen.crud.service.CRUDAllianceService;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
@@ -15,4 +16,6 @@ public interface AllianceService extends CRUDAllianceService{
     public Alliance findAllianceByPhoneNumber(String PhoneNumber);
     public List<Alliance> getAlliancesByUserId(Long id);
     public AllianceRecord getSelfProductById(Long id);
+    public Integer createAlliance(RequestAlliance requestAlliance);
+
     }

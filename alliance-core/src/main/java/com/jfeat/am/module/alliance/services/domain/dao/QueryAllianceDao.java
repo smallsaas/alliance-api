@@ -25,5 +25,7 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     public List<Map> getSelfProductByUserId(@Param("id")Long id);
     @Select("select CONCAT('充值',value) as title,value from t_config_field where group_id=1")
     List<JSONObject> getSetMeal();
+    Long selectUserIdByInvitationCode(@Param("invitationCode") String invitationCode);
+
 
 }

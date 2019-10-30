@@ -38,8 +38,8 @@ public class Order2 extends Model<Order2> {
 	private Long id;
 	@TableField("user_id")
 	private Long userId;
-	@TableField("Order2_number")
-	private String Order2Number;
+	@TableField("order_number")
+	private String orderNumber;
 	@TableField("trade_number")
 	private String tradeNumber;
 	@TableField("payment_type")
@@ -56,7 +56,7 @@ public class Order2 extends Model<Order2> {
 	private Date deliveredDate;
 	@TableField("deal_date")
 	private Date dealDate;
-	@TableField("deliver_Order2_number")
+	@TableField("deliver_Order_number")
 	private String deliverOrder2Number;
 	private String status;
 	@TableField("total_price")
@@ -201,13 +201,12 @@ public class Order2 extends Model<Order2> {
 		return this;
 	}
 
-	public String getOrder2Number() {
-		return Order2Number;
+	public String getOrderNumber() {
+		return orderNumber;
 	}
 
-	public Order2 setOrder2Number(String Order2Number) {
-		this.Order2Number = Order2Number;
-		return this;
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
 	}
 
 	public String getTradeNumber() {
@@ -1007,7 +1006,7 @@ public class Order2 extends Model<Order2> {
 		return "Order2{" +
 			"id=" + id +
 			", userId=" + userId +
-			", Order2Number=" + Order2Number +
+			", Order2Number=" + orderNumber +
 			", tradeNumber=" + tradeNumber +
 			", paymentType=" + paymentType +
 			", createdDate=" + createdDate +

@@ -130,7 +130,7 @@
         insert into t_order (user_id,total_price,phone,mname,detail) value
         (#{userId},#{totalPrice},#{phone},#{mname},#{detail})
     </insert>
-    <select id="selectProductId" parameterType="java.lang.String" resultType="java.lang.String">
+    <select id="selectProductId" parameterType="java.lang.String" resultType="java.lang.Long">
     select id from t_product where barcode=#{barcode}
     </select>
     <insert id="insertOrderItem" parameterType="java.util.Map">

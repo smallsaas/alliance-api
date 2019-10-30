@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 
+
 @Service("bonusService")
 public class BonusServiceImpl implements BonusService {
     @Resource
@@ -19,7 +20,14 @@ public class BonusServiceImpl implements BonusService {
     @Override
     public BigDecimal getSelfBonus(Long id) {
         BigDecimal allianceBonus = queryBonusDao.getAllianceBonus(id);
-        BigDecimal alliance = allianceBonus.multiply(queryBonusDao.getAllianceOrTeamProportion("ALLIANCE"));
+        if(allianceBonus==null){
+            allianceBonus=new BigDecimal(0);
+        }
+        BigDecimal proportion = queryBonusDao.getAllianceOrTeamProportion("ALLIANCE");
+        if(proportion==null){
+            proportion=new BigDecimal(0);
+        }
+        BigDecimal alliance = allianceBonus.multiply(proportion);
         return alliance;
     }
 
@@ -27,8 +35,26 @@ public class BonusServiceImpl implements BonusService {
     @Override
     public BigDecimal getTeamProportionBonus(Long id) {
         BigDecimal allianceBonus = queryBonusDao.getAllianceBonus(id);
-        BigDecimal team = allianceBonus.multiply(queryBonusDao.getAllianceOrTeamProportion("TEAM"));
-        BigDecimal teamProportion = (queryBonusDao.getTeamInventoryAmount(id).add(queryBonusDao.getInventoryAmount(id))).divide(queryBonusDao.getTotalInventoryAmount());
+        if(allianceBonus==null){
+            allianceBonus=new BigDecimal(0);
+        }
+        BigDecimal team1 = queryBonusDao.getAllianceOrTeamProportion("TEAM");
+        if(team1==null){
+            team1=new BigDecimal(0);
+        }
+        BigDecimal team = allianceBonus.multiply(team1);
+        BigDecimal inventoryAmount = queryBonusDao.getInventoryAmount(id);
+        if(inventoryAmount==null){
+            inventoryAmount=new BigDecimal(0);
+        }
+        BigDecimal teamInventoryAmount = queryBonusDao.getTeamInventoryAmount(id);
+        if(teamInventoryAmount==null){
+            teamInventoryAmount=new BigDecimal(0);
+        }
+        BigDecimal totalInventoryAmount = queryBonusDao.getTotalInventoryAmount();
+
+        BigDecimal teamProportion = (teamInventoryAmount.add(inventoryAmount)).divide(totalInventoryAmount);
+
         BigDecimal bonus = team.multiply(teamProportion) ;
         return bonus;
     }
@@ -36,7 +62,11 @@ public class BonusServiceImpl implements BonusService {
     //获得团队的奖励
     @Override
     public BigDecimal getTeamBonus(Long id) {
-        return queryBonusDao.getTeamBonus(id);
+        BigDecimal teamBonus = queryBonusDao.getTeamBonus(id);
+        if (teamBonus == null) {
+            teamBonus=new BigDecimal(0);
+        }
+        return teamBonus;
     }
 }
 
