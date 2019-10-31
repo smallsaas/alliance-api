@@ -1,5 +1,6 @@
 package com.jfeat.am.module.friend.services.domain.service.impl;
 
+import com.baomidou.mybatisplus.toolkit.IdWorker;
 import com.jfeat.am.module.friend.api.RequestOrder;
 import com.jfeat.am.module.friend.services.domain.dao.QueryMomentsFriendDao;
 import com.jfeat.am.module.friend.services.domain.dao.mapping.QueryMomentsFriendOverOrderDao;
@@ -53,7 +54,9 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         order.setContactUser(requestOrder.getName());
         order.setType("STORE_ORDER");
         order.setCreatedDate(new Date());
-        order.setOrderNumber(OrderNumber.getOrderNo());
+
+        String oderNumber = IdWorker.getIdStr();
+        order.setOrderNumber(oderNumber);
 //        order.setPaymentType();
 //        Long orderId = queryMomentsFriendDao.insertOrder(userIds.get(0), requestOrder.getTotalPrice(), requestOrder.getPhone(), requestOrder.getName(), requestOrder.getDetail());
         queryMomentsFriendOverOrderDao.insert(order);
@@ -67,16 +70,16 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     }
 
 }
-
+    /**
+     * 生成订单编号
+     * @return
+     */
+/*
 class OrderNumber extends Thread{
 
     private static long orderNum = 0l;
     private static String date ;
 
-    /**
-     * 生成订单编号
-     * @return
-     */
     public static synchronized String getOrderNo() {
         String str = new SimpleDateFormat("yyMMddHHmm").format(new Date());
         if(date==null||!date.equals(str)){
@@ -89,3 +92,4 @@ class OrderNumber extends Thread{
         return orderNo+"";
     }
 }
+*/

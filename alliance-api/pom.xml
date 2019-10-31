@@ -39,26 +39,26 @@
             <version>0.0.1</version>
         </dependency>
 
-<!--        Produce provided  开发环境注释掉以下两项依赖（可免密调试，以及可访问swagger-ui.html）-->
+        <!--Produce provided  开发环境注释掉以下两项依赖（可免密调试，以及可访问swagger-ui.html）
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>crud-log</artifactId>
             <version>${crud-log.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.jfeat</groupId>-->
-<!--            <artifactId>uaas</artifactId>-->
-<!--            <version>${uaas.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>uaas</artifactId>
+            <version>${uaas.version}</version>
+        </dependency>-->
         <!--  END 生产环境下，依赖以上两项（日志 及 授权中心)-->
 
 
         <!--sub-system modules-->
-<!--        <dependency>-->
-<!--            <groupId>com.jfeat</groupId>-->
-<!--            <artifactId>saas-app-api</artifactId>-->
-<!--            <version>${saas-app-api.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>saas-app-api</artifactId>
+            <version>${saas-app-api.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-mall-api</artifactId>
