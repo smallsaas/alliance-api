@@ -54,7 +54,6 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         order.setContactUser(requestOrder.getName());
         order.setType("STORE_ORDER");
         order.setCreatedDate(new Date());
-
         String oderNumber = IdWorker.getIdStr();
         order.setOrderNumber(oderNumber);
 //        order.setPaymentType();
@@ -70,7 +69,8 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     }
 
 }
-    /**
+
+/**
      * 生成订单编号
      * @return
      */

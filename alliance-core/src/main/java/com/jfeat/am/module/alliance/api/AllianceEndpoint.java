@@ -313,10 +313,10 @@ public class AllianceEndpoint {
 
         return SuccessTip.create(allianceService.getSelfProductById(id));
     }
-    @PutMapping("/updateAllianceShip")
+    @PutMapping("/updateAllianceShip/{id}")
     @ApiOperation("修改盟友确认支付状态")
     @Transactional
-    public Tip modifyAllianceShip(@RequestParam("id")Long id){
+    public Tip modifyAllianceShip(@PathVariable Long id){
         Alliance alliance = allianceService.retrieveMaster(id);
         alliance.setAllianceShip(2);
         allianceService.updateMaster(alliance);
@@ -324,12 +324,22 @@ public class AllianceEndpoint {
             throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
         }
         Long userId = alliance.getUserId();
+        if(userId==null){
+            userId=1L;
+        }
         Wallet walletCondition = new Wallet();
 
-        if(userId!=null){
-            walletCondition.setUserId(userId);
+            List<Wallet> wallets = queryWalletDao.selectList(new Condition().eq("user_id",userId));
+        Wallet wallet=null;
+        if(wallets!=null&&wallets.size()>0){
+             wallet = wallets.get(0);
+        }else {
+            wallet=new Wallet();
+            if(userId!=null){
+                wallet.setUserId(userId);
+            }
         }
-        Wallet wallet = queryWalletDao.selectOne(walletCondition);
+
         String tmp=null;
         if(alliance.getAllianceType().equals(1)){
             tmp="bonus_alliance";
@@ -339,11 +349,11 @@ public class AllianceEndpoint {
             throw new BusinessException(BusinessCode.CodeBase,"该盟友状态可能有误");
         }
 
-        if(wallet==null){
-            wallet=new Wallet();
+        if(wallet.getId()==null){
             walletCondition.setAccumulativeAmount(new BigDecimal(0));
             walletCondition.setGiftBalance(new BigDecimal(0));
             walletCondition.setBalance(new BigDecimal(configFieldService.getFieldFloat(tmp)));
+            walletCondition.setUserId(userId);
             queryWalletDao.insert(walletCondition);
             WalletHistory walletHistory = new WalletHistory();
             walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
