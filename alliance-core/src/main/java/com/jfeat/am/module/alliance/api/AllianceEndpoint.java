@@ -4,12 +4,17 @@ package com.jfeat.am.module.alliance.api;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
+import com.jfeat.am.module.alliance.services.domain.dao.mapping.QueryWalletHistoryDao;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.dao.DuplicateKeyException;
@@ -32,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 
 
 /**
@@ -58,16 +64,21 @@ public class AllianceEndpoint {
     @Resource
     ConfigFieldService configFieldService;
 
+    @Resource
+    QueryWalletDao queryWalletDao;
+    @Resource
+    QueryWalletHistoryDao queryWalletHistoryDao;
+
     //@BusinessLog(name = "Alliance", value = "create Alliance")
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
-    public Tip createAlliance(@RequestBody AllianceRequest entity) throws ServerException, ParseException {
+    public Tip createAlliance(@RequestHeader(required = false,name = "X-USER-ID") Long userId,@RequestBody AllianceRequest entity) throws ServerException, ParseException {
         entity.setCreationTime(new Date());
         entity.setStartingCycle(new Date());
         entity.setAllianceShip(1);
         entity.setAllianceShipTime(new Date());
-        if(entity.getAllianceDob()!= null){
-            entity.setAge( AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
+        if (entity.getAllianceDob() != null) {
+            entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
         List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", entity.getAlliancePhone()));
         if (alliance_phone.size() > 0) {
@@ -84,12 +95,19 @@ public class AllianceEndpoint {
         }
         if (entity.getAllianceType().equals(2)) {
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("common_alliance")));
-            entity.setAllianceShip(2);
+            entity.setTempAllianceExpiryTime(new Date((new Date().getTime()+configFieldService.getFieldInteger("temp_alliance_expiry_time")* 24 * 60 * 60 * 1000)));
+            entity.setAllianceShip(1);
+
         } else if (entity.getAllianceType().equals(1)) {
-            entity.setStockholderShipTime(new Date());
+            entity.setAllianceShip(1);
+            entity.setAllianceShipTime(new Date());
+            entity.setTempAllianceExpiryTime(new Date((new Date().getTime()+configFieldService.getFieldInteger("temp_alliance_expiry_time")* 24 * 60 * 60 * 1000)));
             entity.setStockholderShip(1);
-            entity.setAllianceShip(2);
+//            entity.setAllianceShip(2);
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
+
+
+
         }
         Integer affected = 0;
         try {
@@ -109,12 +127,6 @@ public class AllianceEndpoint {
         Alliance alliance = allianceService.retrieveMaster(id);
         if(alliance!=null){
             JSONObject object = (JSONObject) JSON.parse(JSON.toJSONString(alliance));
-            if(alliance.getAllianceSex().equals(1)){
-                object.put("allianceSex","男");
-
-            }else {
-                object.put("allianceSex","女");
-            }
             return SuccessTip.create(object);
         }
         return SuccessTip.create(null);
@@ -136,9 +148,17 @@ public class AllianceEndpoint {
         //根据邀请人电话查找邀请人信息
         Alliance alliance = null;
         if (entity.getInvitorPhoneNumber() != null && entity.getInvitorPhoneNumber().length() > 0) {
+
             alliance = allianceService.findAllianceByPhoneNumber(entity.getInvitorPhoneNumber());
+
         }
         if (alliance != null) {
+            Alliance allianceShip = allianceService.retrieveMaster(id);
+            if(allianceShip.getAllianceShip()!=null&&allianceShip.getAllianceShip()==1){
+                if(allianceShip.getTempAllianceExpiryTime()!=null&&new Date().getTime()<allianceShip.getTempAllianceExpiryTime().getTime()){
+                    throw new ServerException("临时盟友不能修改邀请人，请将邀请人手机号去掉");
+                }
+            }
             entity.setInvitorAllianceId(alliance.getId());
         }
         Alliance user = queryAllianceDao.selectById(id);
@@ -293,7 +313,67 @@ public class AllianceEndpoint {
 
         return SuccessTip.create(allianceService.getSelfProductById(id));
     }
+    @PutMapping("/updateAllianceShip")
+    @ApiOperation("修改盟友确认支付状态")
+    @Transactional
+    public Tip modifyAllianceShip(@RequestParam("id")Long id){
+        Alliance alliance = allianceService.retrieveMaster(id);
+        alliance.setAllianceShip(2);
+        allianceService.updateMaster(alliance);
+        if(alliance==null){
+            throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
+        }
+        Long userId = alliance.getUserId();
+        Wallet walletCondition = new Wallet();
 
+        if(userId!=null){
+            walletCondition.setUserId(userId);
+        }
+        Wallet wallet = queryWalletDao.selectOne(walletCondition);
+        String tmp=null;
+        if(alliance.getAllianceType().equals(1)){
+            tmp="bonus_alliance";
+        }else if(alliance.getAllianceType().equals(2)){
+            tmp="common_alliance";
+        }else {
+            throw new BusinessException(BusinessCode.CodeBase,"该盟友状态可能有误");
+        }
+
+        if(wallet==null){
+            wallet=new Wallet();
+            walletCondition.setAccumulativeAmount(new BigDecimal(0));
+            walletCondition.setGiftBalance(new BigDecimal(0));
+            walletCondition.setBalance(new BigDecimal(configFieldService.getFieldFloat(tmp)));
+            queryWalletDao.insert(walletCondition);
+            WalletHistory walletHistory = new WalletHistory();
+            walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
+            walletHistory.setAmount(new BigDecimal(0));
+            walletHistory.setGift_amount(new BigDecimal(0));
+            walletHistory.setWalletId(new Long(walletCondition.getId()));
+            walletHistory.setType("充值");
+            queryWalletHistoryDao.insert(walletHistory);
+
+        }else{
+
+            if(wallet.getAccumulativeAmount()!=null){
+                BigDecimal common_alliance = wallet.getBalance().add(new BigDecimal(configFieldService.getFieldFloat("common_alliance")));
+                wallet.setBalance(common_alliance);
+                queryWalletDao.updateById(wallet);
+            }else{
+                wallet.setAccumulativeAmount(new BigDecimal(configFieldService.getFieldFloat("common_alliance")));
+                queryWalletDao.updateById(wallet);
+            }
+            WalletHistory walletHistory = new WalletHistory();
+            walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
+            walletHistory.setAmount(new BigDecimal(0));
+            walletHistory.setGift_amount(new BigDecimal(0));
+            walletHistory.setWalletId(new Long(wallet.getId()));
+            walletHistory.setType("充值");
+            queryWalletHistoryDao.insert(walletHistory);
+
+        }
+        return SuccessTip.create(1);
+    }
 
 
 }

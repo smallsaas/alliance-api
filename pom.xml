@@ -22,5 +22,6 @@
         <module>alliance-api</module>
         <module>alliance-rpc</module>
         <module>bonus</module>
+        <module>saas-mall-api</module>
     </modules>
 </project>

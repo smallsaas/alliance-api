@@ -28,4 +28,6 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     Long selectUserIdByInvitationCode(@Param("invitationCode") String invitationCode);
 
 
+
+
 }
