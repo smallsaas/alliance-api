@@ -25,7 +25,7 @@ public class BonusEndpoint {
     QueryBonusDao queryBonusDao;
 
     @GetMapping("/selfBonus")
-    @ApiOperation("获取自己的分红，可以传盟友id，也可以Header的X-USER-ID")
+    @ApiOperation("获取自己的分红，可以传盟友id，也可以Header的X-USER-ID，dateType--->1当天，2当月，3当季，不传时算总的")
     public Cip getSelfBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id,@RequestParam(name = "dateType",required = false) Integer dateType) {
         if (userId != null) {
             BigDecimal selfBonus = bonusService.getSelfBonus(userId,dateType).add(bonusService.getTeamProportionBonus(userId,dateType));
@@ -49,7 +49,7 @@ public class BonusEndpoint {
     }
 
     @GetMapping("/teamBonus")
-    @ApiOperation("获取自己团队分红，可以传盟友id，也可以Header的X-USER-ID")
+    @ApiOperation("获取自己团队分红，可以传盟友id，也可以Header的X-USER-ID,dateType--->1当天，2当月，3当季，不传时算总的")
     public Cip getTeamBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id,@RequestParam(name = "dateType",required = false) Integer dateType) {
         if (userId != null) {
             BigDecimal selfBonus = bonusService.getTeamBonus(userId,dateType);
@@ -74,7 +74,7 @@ public class BonusEndpoint {
         return SuccessCip.create(object);
     }
 
-    @ApiOperation("获取自己总的分红，可以传盟友id，也可以Header的X-USER-ID")
+    @ApiOperation("获取自己总的分红，可以传盟友id，也可以Header的X-USER-ID,dateType--->1当天，2当月，3当季，不传时算总的")
     @GetMapping("/totalSelfBonus")
     public Cip getTotalSelfBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id,@RequestParam(required = false,name = "dateType") Integer dateType) {
         if (userId != null) {
