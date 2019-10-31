@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.jfeat.am.core.jwt.JWTKit;
+import com.jfeat.am.module.alliance.api.AllianceFields;
+import com.jfeat.am.module.alliance.api.AllianceShips;
 import com.jfeat.am.module.alliance.api.RequestAlliance;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao;
 import com.jfeat.am.module.alliance.services.domain.model.AllianceRecord;
@@ -35,6 +37,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
     QueryAllianceDao queryAllianceDao;
     @Resource
     ConfigFieldService configFieldService;
+    Long millisecond=86400000L;
     @Override
     public Alliance findAllianceByPhoneNumber(String phoneNumber) {
 
@@ -108,21 +111,17 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
             throw new BusinessException(BusinessCode.CodeBase,"邀请码找到的用户不是盟友");
         }
         alliance.setInvitorAllianceId(invitor.getId());
-
-        alliance.setCreationTime(new Date());
+        Date createTime =new Date();
+        alliance.setCreationTime(createTime);
 
         //临时盟友
-        alliance.setAllianceShip(1);
-        Long selfUserId = JWTKit.getUserId();
-        if(selfUserId!=null&&selfUserId!=0){
-            alliance.setUserId(selfUserId);
-        }
+        alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
         //成为盟友时间
         //alliance.setAllianceShipTime(new Date());
         //获取过期天数配置
-        Integer expiryTime =configFieldService.getFieldInteger("temp_alliance_expiry_time");
+        Integer expiryTime =configFieldService.getFieldInteger(AllianceFields.ALLIANCE_FIELD_TEMP_ALLIANCE_EXPIRY_TIME);
         //设置支付过期时间3天。
-        alliance.setTempAllianceExpiryTime(new Date(new Date().getTime()+ expiryTime* 24 * 60 * 60 * 1000));
+        alliance.setTempAllianceExpiryTime(new Date(createTime.getTime()+ expiryTime* 24 * 60 * 60 * 1000));
         return queryAllianceDao.insert(alliance);
     }
 }

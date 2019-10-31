@@ -6,6 +6,8 @@ import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import java.math.BigDecimal;
 import javax.annotation.Resource;
 
+import com.jfeat.crud.base.exception.BusinessCode;
+import com.jfeat.crud.base.exception.BusinessException;
 import org.springframework.stereotype.Service;
 
 
@@ -18,8 +20,8 @@ public class BonusServiceImpl implements BonusService {
 
     //获得自己的分红比例
     @Override
-    public BigDecimal getSelfBonus(Long id) {
-        BigDecimal allianceBonus = queryBonusDao.getAllianceBonus(id);
+    public BigDecimal getSelfBonus(Long id, Integer dateType) {
+        BigDecimal allianceBonus = queryBonusDao.getAllianceBonus(id,dateType);
         if(allianceBonus==null){
             allianceBonus=new BigDecimal(0);
         }
@@ -33,8 +35,8 @@ public class BonusServiceImpl implements BonusService {
 
     //获得团队的占比分红
     @Override
-    public BigDecimal getTeamProportionBonus(Long id) {
-        BigDecimal allianceBonus = queryBonusDao.getAllianceBonus(id);
+    public BigDecimal getTeamProportionBonus(Long id, Integer dateType) {
+        BigDecimal allianceBonus = queryBonusDao.getAllianceBonus(id,dateType);
         if(allianceBonus==null){
             allianceBonus=new BigDecimal(0);
         }
@@ -52,17 +54,20 @@ public class BonusServiceImpl implements BonusService {
             teamInventoryAmount=new BigDecimal(0);
         }
         BigDecimal totalInventoryAmount = queryBonusDao.getTotalInventoryAmount();
-
-        BigDecimal teamProportion = (teamInventoryAmount.add(inventoryAmount)).divide(totalInventoryAmount);
-
-        BigDecimal bonus = team.multiply(teamProportion) ;
-        return bonus;
+        BigDecimal add = teamInventoryAmount.add(inventoryAmount);
+        if(totalInventoryAmount!=null&&totalInventoryAmount.compareTo(new BigDecimal(0.00))!=0){
+            BigDecimal teamProportion = add.divide(totalInventoryAmount,2,BigDecimal.ROUND_HALF_UP);
+            BigDecimal bonus = team.multiply(teamProportion) ;
+            return bonus;
+        }else {
+            throw new BusinessException(BusinessCode.BadRequest,"数据库数据异常");
+        }
     }
 
     //获得团队的奖励
     @Override
-    public BigDecimal getTeamBonus(Long id) {
-        BigDecimal teamBonus = queryBonusDao.getTeamBonus(id);
+    public BigDecimal getTeamBonus(Long id, Integer dateType) {
+        BigDecimal teamBonus = queryBonusDao.getTeamBonus(id,dateType);
         if (teamBonus == null) {
             teamBonus=new BigDecimal(0);
         }
