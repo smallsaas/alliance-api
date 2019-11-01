@@ -76,7 +76,7 @@ public class AllianceEndpoint {
         entity.setCreationTime(new Date());
         entity.setStartingCycle(new Date());
         entity.setAllianceShip(1);
-        entity.setAllianceShipTime(new Date());
+//        entity.setAllianceShipTime(new Date());
         if (entity.getAllianceDob() != null) {
             entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
@@ -124,12 +124,7 @@ public class AllianceEndpoint {
     @GetMapping("/{id}")
     @ApiOperation(value = "查看 Alliance", response = Alliance.class)
     public Tip getAlliance(@PathVariable Long id) {
-        Alliance alliance = allianceService.retrieveMaster(id);
-        if(alliance!=null){
-            JSONObject object = (JSONObject) JSON.parse(JSON.toJSONString(alliance));
-            return SuccessTip.create(object);
-        }
-        return SuccessTip.create(null);
+        return SuccessTip.create(allianceService.retrieveMaster(id));
     }
 
 
@@ -154,12 +149,28 @@ public class AllianceEndpoint {
         }
         if (alliance != null) {
             Alliance allianceShip = allianceService.retrieveMaster(id);
-            if(allianceShip.getAllianceShip()!=null&&allianceShip.getAllianceShip()==1){
-                if(allianceShip.getTempAllianceExpiryTime()!=null&&new Date().getTime()<allianceShip.getTempAllianceExpiryTime().getTime()){
-                    throw new ServerException("临时盟友不能修改邀请人，请将邀请人手机号去掉");
-                }
-            }
+//            if(allianceShip.getAllianceShip()!=null&&allianceShip.getAllianceShip()==1){
+//                if(allianceShip.getTempAllianceExpiryTime()!=null&&new Date().getTime()<allianceShip.getTempAllianceExpiryTime().getTime()){
+//                    throw new ServerException("临时盟友不能修改邀请人，请将邀请人手机号去掉");
+//                }
+//            }
             entity.setInvitorAllianceId(alliance.getId());
+        }
+        if (entity.getAllianceType().equals(2)) {
+            entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("common_alliance")));
+            entity.setTempAllianceExpiryTime(new Date((new Date().getTime()+configFieldService.getFieldInteger("temp_alliance_expiry_time")* 24 * 60 * 60 * 1000)));
+//            entity.setAllianceShip(1);
+
+        } else if (entity.getAllianceType().equals(1)) {
+            entity.setAllianceShip(1);
+            entity.setAllianceShipTime(new Date());
+            entity.setTempAllianceExpiryTime(new Date((new Date().getTime()+configFieldService.getFieldInteger("temp_alliance_expiry_time")* 24 * 60 * 60 * 1000)));
+//            entity.setStockholderShip(1);
+//            entity.setAllianceShip(2);
+            entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
+
+
+
         }
         Alliance user = queryAllianceDao.selectById(id);
         entity.setUserId(user.getUserId());
@@ -318,18 +329,20 @@ public class AllianceEndpoint {
     @Transactional
     public Tip modifyAllianceShip(@PathVariable Long id){
         Alliance alliance = allianceService.retrieveMaster(id);
-        alliance.setAllianceShip(2);
-        allianceService.updateMaster(alliance);
         if(alliance==null){
             throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
         }
+        alliance.setAllianceShip(2);
+        alliance.setAllianceShipTime(new Date());
+        allianceService.updateMaster(alliance);
+
         Long userId = alliance.getUserId();
         if(userId==null){
             userId=1L;
         }
         Wallet walletCondition = new Wallet();
 
-            List<Wallet> wallets = queryWalletDao.selectList(new Condition().eq("user_id",userId));
+        List<Wallet> wallets = queryWalletDao.selectList(new Condition().eq("user_id",userId));
         Wallet wallet=null;
         if(wallets!=null&&wallets.size()>0){
              wallet = wallets.get(0);
