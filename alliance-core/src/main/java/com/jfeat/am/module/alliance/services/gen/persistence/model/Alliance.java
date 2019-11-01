@@ -167,6 +167,7 @@ public class Alliance extends Model<Alliance> {
      */
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@TableField("alliance_dob")
+	@DateTimeFormat(pattern ="yyyy-MM-dd" )
 	private Date allianceDob;
 
 	public Integer getAge() {

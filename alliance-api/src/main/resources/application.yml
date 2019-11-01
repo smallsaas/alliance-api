@@ -67,15 +67,15 @@ logging:
 spring:
   profiles: dev
   datasource:
-      url: jdbc:mysql://120.79.49.72/test?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
-#      url: jdbc:mysql://localhost/mall?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
+      url: jdbc:mysql://120.79.49.72/mall_a?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
+#      url: jdbc:mysql://localhost/mall2?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
       username: root
       password: root
       filters: log4j,wall,mergeStat
       sql-script-encoding: UTF-8
       schema: classpath*:sql/**/*-schema.sql
       data: classpath*:sql/**/*-data.sql
-      initialize: false
+      initialize: true
   jackson:
     date-format: yyyy-MM-dd
     time-zone: GMT+8

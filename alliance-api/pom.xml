@@ -54,11 +54,11 @@
 
 
         <!--sub-system modules-->
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>saas-app-api</artifactId>
-            <version>${saas-app-api.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.jfeat</groupId>-->
+<!--            <artifactId>saas-app-api</artifactId>-->
+<!--            <version>${saas-app-api.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-mall-api</artifactId>
