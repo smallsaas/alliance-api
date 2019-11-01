@@ -20,6 +20,8 @@
 
     <properties>
         <skipStandalone>false</skipStandalone>
+        <crud-plus.version>0.0.6</crud-plus.version>
+        <crud-core.version>0.0.2</crud-core.version>
         <!--基础系统-->
         <saas-app-api.version>1.0.0</saas-app-api.version>
         <!--商城子系统 -->
@@ -29,16 +31,12 @@
         <crud-log.version>0.0.1</crud-log.version>
         <uaas.version>2.1.0</uaas.version>
 
+        <!--dev environment-->
+        <crud-dev.version>0.0.1</crud-dev.version>
+
     </properties>
 
     <dependencies>
-        <!--dev provided -->
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>swagger-ui</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-
         <!--Produce provided  开发环境注释掉以下两项依赖（可免密调试，以及可访问swagger-ui.html）
         <dependency>
             <groupId>com.jfeat</groupId>
@@ -50,15 +48,31 @@
             <artifactId>uaas</artifactId>
             <version>${uaas.version}</version>
         </dependency>-->
-        <!--  END 生产环境下，依赖以上两项（日志 及 授权中心)-->
+        <!---dev 环境依赖crud-dev-->
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>crud-dev</artifactId>
+            <version>${crud-dev.version}</version>
+        </dependency>
 
+        <!--crud core-->
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>crud-plus</artifactId>
+            <version>${crud-plus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>crud-core</artifactId>
+            <version>${crud-core.version}</version>
+        </dependency>
 
         <!--sub-system modules-->
-        <dependency>
+       <!-- <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-app-api</artifactId>
             <version>${saas-app-api.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-mall-api</artifactId>
@@ -87,15 +101,67 @@
             <version>1.0.0</version>
         </dependency>
 
+        <!--allow swagger support java 11 (above java9)-->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.9.4</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>${skipStandalone}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>standalone</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
             <plugin>
                 <groupId>com.github.kongchen</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
@@ -125,50 +191,9 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.0</version>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <skip>${skipStandalone}</skip>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                        <configuration>
-                            <classifier>standalone</classifier>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.2</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-            </plugin>
         </plugins>
 
         <resources>
-            <resource>
-                <directory>src/main/webapp</directory>
-            </resource>
             <resource>
                 <directory>src/main/resources</directory>
             </resource>
