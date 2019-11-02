@@ -1,6 +1,6 @@
 package com.jfeat.am.module.alliance.api;
 
-public class BindPhoneRequest {
+public class AllianceRegisterRequest {
 
     private String phoneNumber;
     private String userName;

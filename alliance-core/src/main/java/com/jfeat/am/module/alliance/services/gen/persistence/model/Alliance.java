@@ -110,7 +110,6 @@ public class Alliance extends Model<Alliance> {
 	@TableField("alliance_status")
 	private Integer allianceStatus;
 
-	@TableField("age")
 	private Integer age;
     /**
      * 库存金额
