@@ -363,14 +363,15 @@ public class AllianceEndpoint {
         }
 
         if(wallet.getId()==null){
-            walletCondition.setAccumulativeAmount(new BigDecimal(0));
+            ///设置初始累计额度
+            walletCondition.setAccumulativeAmount(new BigDecimal(configFieldService.getFieldFloat(tmp)));
             walletCondition.setGiftBalance(new BigDecimal(0));
             walletCondition.setBalance(new BigDecimal(configFieldService.getFieldFloat(tmp)));
             walletCondition.setUserId(userId);
             queryWalletDao.insert(walletCondition);
             WalletHistory walletHistory = new WalletHistory();
             walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
-            walletHistory.setAmount(new BigDecimal(0));
+            walletHistory.setAmount(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
             walletHistory.setGift_amount(new BigDecimal(0));
             walletHistory.setWalletId(new Long(walletCondition.getId()));
             walletHistory.setType("充值");
@@ -388,7 +389,7 @@ public class AllianceEndpoint {
             }
             WalletHistory walletHistory = new WalletHistory();
             walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
-            walletHistory.setAmount(new BigDecimal(0));
+            walletHistory.setAmount(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
             walletHistory.setGift_amount(new BigDecimal(0));
             walletHistory.setWalletId(new Long(wallet.getId()));
             walletHistory.setType("充值");

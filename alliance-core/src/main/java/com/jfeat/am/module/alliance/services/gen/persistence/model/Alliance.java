@@ -25,6 +25,15 @@ import java.io.Serializable;
 @TableName("t_alliance")
 public class Alliance extends Model<Alliance> {
 
+	public  static int ALLIANCE_TYPE_COMMON = 2;  // 普通盟友
+	public  static int ALLIANCE_TYPE_BONUS = 1;  // 分红盟友
+
+	public static int ALLIANCE_SHIP_EXPIRED = 0;  //支付过期   （支付过期）可改为已支付
+	public static int ALLIANCE_SHIP_CREATED = 1;  //盟友申请中 （待支付）
+	public static int ALLIANCE_SHIP_OK = 2;       //确定是盟友 （已确认）
+	public static int ALLIANCE_SHIP_PAID = 3;     //盟友已支付 (等待绑定）
+
+
     @TableField(exist = false)
     private com.alibaba.fastjson.JSONObject extra;
 
