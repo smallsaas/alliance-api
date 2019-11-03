@@ -52,6 +52,18 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
             return null;
     }
 
+    /**
+     * 据据绑定的用户id 查盟友，一一对应关系
+     * @param id
+     * @return
+     */
+    public Alliance getAlliancesByBindingUserId(Long id){
+        Alliance entity = new Alliance();
+        entity.setUserId(id);
+        Alliance alliance = queryAllianceDao.selectOne(entity);
+        return alliance;
+    }
+
     @Override
     public AllianceRecord getSelfProductById(Long id) {
         AllianceRecord alliance = queryAllianceDao.selectAllianceOneByUserId(id);

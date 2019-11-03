@@ -18,4 +18,6 @@ public interface AllianceService extends CRUDAllianceService{
     public AllianceRecord getSelfProductById(Long id);
     public Integer createAlliance(RequestAlliance requestAlliance);
 
-    }
+    ///
+    public Alliance getAlliancesByBindingUserId(Long id);
+}
