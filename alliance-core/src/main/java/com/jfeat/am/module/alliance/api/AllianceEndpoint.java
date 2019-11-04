@@ -76,7 +76,6 @@ public class AllianceEndpoint {
         entity.setCreationTime(new Date());
         entity.setStartingCycle(new Date());
         entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
-//        entity.setAllianceShipTime(new Date());
         if (entity.getAllianceDob() != null) {
             entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
@@ -93,18 +92,15 @@ public class AllianceEndpoint {
                 throw new ServerException("该手机号码的盟友不存在");
             }
         }
-        if (entity.getAllianceType().equals(2)) {
+        if (entity.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("common_alliance")));
             entity.setTempAllianceExpiryTime(new Date((new Date().getTime()+configFieldService.getFieldInteger("temp_alliance_expiry_time")* 24 * 60 * 60 * 1000)));
-//            entity.setAllianceShip(1);
 
             entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
-        } else if (entity.getAllianceType().equals(1)) {
-//            entity.setAllianceShip(1);
-            entity.setAllianceShipTime(new Date());
+        } else if (entity.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
+//            entity.setAllianceShipTime(new Date());
             entity.setTempAllianceExpiryTime(new Date((new Date().getTime()+configFieldService.getFieldInteger("temp_alliance_expiry_time")* 24 * 60 * 60 * 1000)));
             entity.setStockholderShip(1);
-//            entity.setAllianceShip(2);
             entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
 
@@ -156,12 +152,12 @@ public class AllianceEndpoint {
 //            }
             entity.setInvitorAllianceId(alliance.getId());
         }
-        if (entity.getAllianceType().equals(2)) {
+        if (entity.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("common_alliance")));
             entity.setTempAllianceExpiryTime(new Date((new Date().getTime()+configFieldService.getFieldInteger("temp_alliance_expiry_time")* 24 * 60 * 60 * 1000)));
 //            entity.setAllianceShip(1);
 
-        } else if (entity.getAllianceType().equals(1)) {
+        } else if (entity.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
             entity.setAllianceShip(1);
             entity.setAllianceShipTime(new Date());
             entity.setTempAllianceExpiryTime(new Date((new Date().getTime()+configFieldService.getFieldInteger("temp_alliance_expiry_time")* 24 * 60 * 60 * 1000)));
