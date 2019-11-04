@@ -447,11 +447,19 @@ public class AllianceEndpoint {
         if(alliance==null){
             throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
         }
-        if(alliance.getAllianceType().equals(1)){
+        if(!alliance.getAllianceShip().equals(0)){
+            throw new BusinessException(BusinessCode.CodeBase,"非正式盟友，无法执行升级操作！");//alliacneShip=0 才能 升级盟友
+        }
+
+        if(!alliance.getAllianceType().equals(1)){
             alliance.setAllianceType(2);
         }else {
-            throw new BusinessException(BusinessCode.CodeBase,"非正式盟友，无法执行升级操作！");
+            throw new BusinessException(BusinessCode.CodeBase,"非普通盟友身份人，无法执行升级操作！");
         }
+        alliance.setAllianceType(2);
+        alliance.setAllianceShip(2);
+
+
         int res = allianceService.updateMaster(alliance);
 
         return SuccessTip.create(res);
