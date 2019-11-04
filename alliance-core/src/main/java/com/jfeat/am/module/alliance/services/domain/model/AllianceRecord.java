@@ -9,6 +9,8 @@ import java.math.BigDecimal;
  * Created by Code Generator on 2019-10-14
  */
 public class AllianceRecord extends Alliance{
+
+    Integer invitedCount;
     private JSONArray currentMonthOrder;
     private JSONArray selfProducts;
     private JSONArray allianceTeam;
@@ -83,4 +85,12 @@ public class AllianceRecord extends Alliance{
         this.currentMonthOrder = currentMonthOrder;
     }
 
+
+    public Integer getInvitedCount() {
+        return invitedCount;
+    }
+
+    public void setInvitedCount(Integer invitedCount) {
+        this.invitedCount = invitedCount;
+    }
 }

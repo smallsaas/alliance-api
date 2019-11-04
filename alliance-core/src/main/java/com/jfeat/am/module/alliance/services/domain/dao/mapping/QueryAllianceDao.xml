@@ -10,6 +10,14 @@
             t_sys_org.right_num >= children.left_num and t_sys_org.id=#{ownerOrgId} order by t_sys_org.node_level ASC
         </sql>
 
+
+    <select id="allianceDetails" resultType="AllianceRecord" parameterType="AllianceRecord">
+    SELECT t_alliance.*
+    FROM t_alliance
+    WHERE 1=1
+        and t_alliance.id = #{id}
+    </select>
+
     <select id="findAlliancePage" resultType="AllianceRecord" parameterType="AllianceRecord">
         SELECT t_alliance.*
         FROM t_alliance

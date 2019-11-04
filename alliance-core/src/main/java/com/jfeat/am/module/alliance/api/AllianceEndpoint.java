@@ -120,7 +120,7 @@ public class AllianceEndpoint {
     @GetMapping("/{id}")
     @ApiOperation(value = "查看 Alliance", response = Alliance.class)
     public Tip getAlliance(@PathVariable Long id) {
-        return SuccessTip.create(allianceService.retrieveMaster(id));
+        return SuccessTip.create(queryAllianceDao.allianceDetails(id));
     }
 
 
@@ -158,7 +158,7 @@ public class AllianceEndpoint {
 //            entity.setAllianceShip(1);
 
         } else if (entity.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
-            entity.setAllianceShip(1);
+            entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
             entity.setAllianceShipTime(new Date());
             entity.setTempAllianceExpiryTime(new Date((new Date().getTime()+configFieldService.getFieldInteger("temp_alliance_expiry_time")* 24 * 60 * 60 * 1000)));
 //            entity.setStockholderShip(1);

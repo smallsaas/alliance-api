@@ -29,5 +29,8 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
 
 
 
+    AllianceRecord allianceDetails(@Param("id") Long id);
+
+
 
 }
