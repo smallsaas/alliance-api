@@ -75,7 +75,7 @@ public class AllianceEndpoint {
     public Tip createAlliance(@RequestHeader(required = false,name = "X-USER-ID") Long userId,@RequestBody AllianceRequest entity) throws ServerException, ParseException {
         entity.setCreationTime(new Date());
         entity.setStartingCycle(new Date());
-        entity.setAllianceShip(1);
+        entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
 //        entity.setAllianceShipTime(new Date());
         if (entity.getAllianceDob() != null) {
             entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
@@ -105,8 +105,6 @@ public class AllianceEndpoint {
             entity.setStockholderShip(1);
 //            entity.setAllianceShip(2);
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
-
-
 
         }
         Integer affected = 0;

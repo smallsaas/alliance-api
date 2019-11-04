@@ -47,7 +47,7 @@ public class RPCAllianceRegisterEndpoint {
     @PostMapping("/changeship/{phone}")
     public Cip bindingAndCheckIsAlliance(@PathVariable("phone") String phone,
                                          @RequestBody ChangeShipRequest request) {
-        if(request.getAllianceShip()==AllianceRegisterResponse.ALLIANCE_SHIP_OK){
+        if(request.getAllianceShip()==AllianceShips.ALLIANCE_SHIP_OK){
             throw new BusinessException(BusinessCode.BadRequest, "不支持测试直接设为正式盟友");
         }
 
@@ -108,49 +108,49 @@ public class RPCAllianceRegisterEndpoint {
 
             /// 记录盟友线索
             // TODO
-            return ErrorCip.create(AllianceRegisterResponse.ALLIANCE_SHIP_NO, "找不到盟友信息");
+            return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_NO, "找不到盟友信息");
         }
 
 
         /// 状态检查
 
         /// 配置预存额度
-        float common_alliance_inventory = configFieldService.getFieldFloat(AllianceRegisterResponse.COMMON_ALLIANCE_FIELD);
-        float bonus_alliance_inventory = configFieldService.getFieldFloat(AllianceRegisterResponse.BONUS_ALLIANCE_FIELD);
+        float common_alliance_inventory = configFieldService.getFieldFloat(AllianceShips.COMMON_ALLIANCE_FIELD);
+        float bonus_alliance_inventory = configFieldService.getFieldFloat(AllianceShips.BONUS_ALLIANCE_FIELD);
 
         /// 查查盟友库存额
         if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_COMMON){
             if(registeredAlliance.getAllianceInventoryAmount().intValue() != (int)common_alliance_inventory){
-                return ErrorCip.create(AllianceRegisterResponse.ALLIANCE_SHIP_ERROR, "盟友类型与库存额度不匹配");
+                return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友类型与库存额度不匹配");
             }
 
         }else if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_BONUS){
             if(registeredAlliance.getAllianceInventoryAmount().intValue() != (int)bonus_alliance_inventory){
-                return ErrorCip.create(AllianceRegisterResponse.ALLIANCE_SHIP_ERROR, "盟友类型与库存额度不匹配");
+                return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友类型与库存额度不匹配");
             }
 
         }else{
-            return ErrorCip.create(AllianceRegisterResponse.ALLIANCE_SHIP_ERROR, "盟友类型Unknown: " + registeredAlliance.getAllianceType());
+            return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友类型Unknown: " + registeredAlliance.getAllianceType());
         }
 
         /// 盟友已确定， 直接返回盟友类型
-        AllianceRegisterResponse response = new AllianceRegisterResponse();
+        AllianceShips response = new AllianceShips();
         response.setAllianceType(registeredAlliance.getAllianceType());
 
-        if(registeredAlliance.getAllianceShip()==AllianceRegisterResponse.ALLIANCE_SHIP_OK){
+        if(registeredAlliance.getAllianceShip()==AllianceShips.ALLIANCE_SHIP_OK){
             // 最后确认是否已绑定用户，程序错误
             if(registeredAlliance.getUserId()==null || registeredAlliance.getUserId()==0){
                 throw  new BusinessException(BusinessCode.CRUD_GENERAL_ERROR, "系统逻辑错误");
             }
             return SuccessCip.create(response);
 
-        }else if(registeredAlliance.getAllianceShip() == AllianceRegisterResponse.ALLIANCE_SHIP_INVITED ){
+        }else if(registeredAlliance.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_INVITED ){
             return ErrorCip.create(registeredAlliance.getAllianceShip(), "盟友申请状态中");
         }
-        else if(registeredAlliance.getAllianceShip() == AllianceRegisterResponse.ALLIANCE_SHIP_EXPIRED ){
+        else if(registeredAlliance.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_EXPIRED ){
             return ErrorCip.create(registeredAlliance.getAllianceShip(), "支付超时，请重新申请");
 
-        }else if(registeredAlliance.getAllianceShip() == AllianceRegisterResponse.ALLIANCE_SHIP_PAID){
+        }else if(registeredAlliance.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_PAID){
 
             /// 已支付， 处理绑定
             /// 状态正确(ALLIANCE_SHIP_PAID)，进行用户绑定
@@ -161,25 +161,25 @@ public class RPCAllianceRegisterEndpoint {
             wallet.setUserId(userId);
             wallet = queryWalletDao.selectOne(wallet);
             if(wallet==null){
-                return ErrorCip.create(AllianceRegisterResponse.ALLIANCE_SHIP_ERROR, "没有找到钱包信息，用户：" + userId);
+                return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "没有找到钱包信息，用户：" + userId);
             }
             if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_COMMON){
                 if(wallet.getBalance().intValue() != common_alliance_inventory){
-                    return ErrorCip.create(AllianceRegisterResponse.ALLIANCE_SHIP_ERROR, "盟友初始库存额有误： " + wallet.getBalance());
+                    return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友初始库存额有误： " + wallet.getBalance());
                 }
             }else if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_BONUS) {
                 if (wallet.getBalance().intValue() != bonus_alliance_inventory) {
-                    return ErrorCip.create(AllianceRegisterResponse.ALLIANCE_SHIP_ERROR, "盟友初始库存额有误： " + wallet.getBalance());
+                    return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友初始库存额有误： " + wallet.getBalance());
                 }
             }
 
             // 确认为 正式盟友
-            registeredAlliance.setAllianceShip(AllianceRegisterResponse.ALLIANCE_SHIP_OK);
+            registeredAlliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_OK);
             int affected = allianceService.updateMaster(registeredAlliance);
             if(affected>0) {
                 return SuccessCip.create(response);
             }else{
-                return ErrorCip.create(AllianceRegisterResponse.ALLIANCE_SHIP_ERROR, "数据库错误：确认盟友状态有误: " + registeredAlliance.getAlliancePhone());
+                return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "数据库错误：确认盟友状态有误: " + registeredAlliance.getAlliancePhone());
             }
 
         }else{
