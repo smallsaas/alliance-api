@@ -6,13 +6,12 @@ import com.jfeat.am.module.friend.services.domain.dao.QueryMomentsFriendDao;
 import com.jfeat.am.module.friend.services.domain.dao.mapping.QueryMomentsFriendOverOrderDao;
 import com.jfeat.am.module.friend.services.domain.service.MomentsFriendService;
 import com.jfeat.am.module.friend.services.gen.crud.service.impl.CRUDMomentsFriendServiceImpl;
-import com.jfeat.am.module.friend.services.gen.persistence.model.Order2;
+import com.jfeat.am.module.friend.services.gen.persistence.model.FriendOrder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.rmi.ServerException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         if(productId==null){
             throw new ServerException("该表形码"+requestOrder.getBarcode()+"的商品不存在");
         }
-        Order2 order=new Order2();
+        FriendOrder order=new FriendOrder();
         order.setUserId(userIds.get(0));
         order.setTotalPrice(requestOrder.getTotalPrice());
         order.setPhone(requestOrder.getPhone());
