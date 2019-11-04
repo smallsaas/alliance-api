@@ -399,5 +399,64 @@ public class AllianceEndpoint {
         return SuccessTip.create(1);
     }
 
+    @PutMapping("/{id}/action/setpaid")
+    @ApiOperation("修改盟友支付状态-设置为已支付   ")
+    @Transactional
+    public Tip paid(@PathVariable Long id){
+        Alliance alliance = allianceService.retrieveMaster(id);
+        if(alliance==null){
+            throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
+        }
+
+        if(alliance.getAllianceShip().equals(2)){
+            alliance.setAllianceShip(3);
+            alliance.setAllianceShipTime(new Date());
+        }else {
+            throw new BusinessException(BusinessCode.CodeBase,"状态错误");
+        }
+
+        int res = allianceService.updateMaster(alliance);
+        return SuccessTip.create(res);
+    }
+
+    @PutMapping("/{id}/action/reset")
+    @ApiOperation("修改盟友支付状态-支付过期-->待支付  ship 4--->2")
+    @Transactional
+    public Tip reset(@PathVariable Long id){
+        Alliance alliance = allianceService.retrieveMaster(id);
+        if(alliance==null){
+            throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
+        }
+
+        if(alliance.getAllianceShip().equals(4)){
+            alliance.setAllianceShip(2);
+        }else {
+            throw new BusinessException(BusinessCode.CodeBase,"状态错误");
+        }
+        alliance.setAllianceShipTime(new Date());
+        int res = allianceService.updateMaster(alliance);
+
+        return SuccessTip.create(res);
+    }
+
+    @PutMapping("/{id}/action/upgraded")
+    @ApiOperation("修改盟友支付状态- 升级盟友 --->  普通盟友---> 分红盟友。type  1--->2")
+    @Transactional
+    public Tip upgrade(@PathVariable Long id){
+        Alliance alliance = allianceService.retrieveMaster(id);
+        if(alliance==null){
+            throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
+        }
+        if(alliance.getAllianceType().equals(1)){
+            alliance.setAllianceType(2);
+        }else {
+            throw new BusinessException(BusinessCode.CodeBase,"非正式盟友，无法执行升级操作！");
+        }
+        int res = allianceService.updateMaster(alliance);
+
+        return SuccessTip.create(res);
+    }
+
+
 
 }
