@@ -96,14 +96,16 @@ public class AllianceEndpoint {
         if (entity.getAllianceType().equals(2)) {
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("common_alliance")));
             entity.setTempAllianceExpiryTime(new Date((new Date().getTime()+configFieldService.getFieldInteger("temp_alliance_expiry_time")* 24 * 60 * 60 * 1000)));
-            entity.setAllianceShip(1);
+//            entity.setAllianceShip(1);
 
+            entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
         } else if (entity.getAllianceType().equals(1)) {
-            entity.setAllianceShip(1);
+//            entity.setAllianceShip(1);
             entity.setAllianceShipTime(new Date());
             entity.setTempAllianceExpiryTime(new Date((new Date().getTime()+configFieldService.getFieldInteger("temp_alliance_expiry_time")* 24 * 60 * 60 * 1000)));
             entity.setStockholderShip(1);
 //            entity.setAllianceShip(2);
+            entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat("bonus_alliance")));
 
         }
