@@ -11,16 +11,17 @@
         </sql>
 
 
-    <select id="allianceDetails" resultType="AllianceRecord" parameterType="AllianceRecord">
-    SELECT t_alliance.*
-    FROM t_alliance
-    WHERE 1=1
-        and t_alliance.id = #{id}
+    <select id="allianceDetails" resultType="AllianceRecord">
+     select t_alliance.*,COUNT(children.id) as team_count
+     from t_alliance left JOIN t_alliance as children on t_alliance.id=children.invitor_alliance_id
+     where t_alliance.id=#{id}
+     GROUP BY t_alliance.id
+
     </select>
 
     <select id="findAlliancePage" resultType="AllianceRecord" parameterType="AllianceRecord">
-        SELECT t_alliance.*
-        FROM t_alliance
+        select t_alliance.*,COUNT(children.id) as team_count
+        from t_alliance left JOIN t_alliance as children on t_alliance.id=children.invitor_alliance_id
 <!--        <if test="record.orgId > 0">
             ,(<include refid="QueryOwnedOrgIds"></include>) AS ownedOrgIds
         </if>-->
@@ -137,7 +138,8 @@
         OR t_alliance.name LIKE CONCAT('%',#{search},'%')
     </if>
     -->
-        order by alliance_rank desc
+        GROUP BY t_alliance.id
+        order by t_alliance.alliance_rank desc
     </select>
 <!--    根据user_id查询当月的订单-->
     <select id="getCurrentMonthOrderByUserId" resultType="java.util.Map">

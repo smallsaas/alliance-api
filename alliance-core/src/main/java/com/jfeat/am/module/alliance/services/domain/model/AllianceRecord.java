@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  */
 public class AllianceRecord extends Alliance{
 
-    Integer invitedCount;
+    Integer teamCount;
     private JSONArray currentMonthOrder;
     private JSONArray selfProducts;
     private JSONArray allianceTeam;
@@ -86,11 +86,11 @@ public class AllianceRecord extends Alliance{
     }
 
 
-    public Integer getInvitedCount() {
-        return invitedCount;
+    public Integer getTeamCount() {
+        return teamCount;
     }
 
-    public void setInvitedCount(Integer invitedCount) {
-        this.invitedCount = invitedCount;
+    public void setTeamCount(Integer teamCount) {
+        this.teamCount = teamCount;
     }
 }
