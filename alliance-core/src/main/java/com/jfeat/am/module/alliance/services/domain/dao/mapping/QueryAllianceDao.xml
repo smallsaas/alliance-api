@@ -33,9 +33,6 @@
         LEFT JOIN t_alliance kid ON t_alliance.invitor_alliance_id=kid.id
         LEFT JOIN t_user ON t_alliance.user_id = t_user.id
         LEFT JOIN t_wallet on t_wallet.user_id=t_alliance.user_id
-        <!--        <if test="record.orgId > 0">
-                    ,(<include refid="QueryOwnedOrgIds"></include>) AS ownedOrgIds
-                </if>-->
         WHERE 1=1
         <if test="record.allianceType != null and record.allianceType>0 ">
             AND t_alliance.alliance_type= #{record.allianceType}
@@ -115,6 +112,39 @@
 
         order by t_alliance.creation_time desc
     </select>
+
+
+    <!-- 我邀请的盟友的信息 -->
+
+    <select id="myTeam" resultType="AllianceRecord" parameterType="AllianceRecord">
+        select t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as
+        invitorPhone,
+        t_user.avatar as wechatAvatar,
+        t_user.name as wechatNick
+        from t_alliance
+        left JOIN t_alliance as children on t_alliance.id=children.invitor_alliance_id
+        LEFT JOIN t_alliance kid ON t_alliance.invitor_alliance_id=kid.id
+        LEFT JOIN t_user ON t_alliance.user_id = t_user.id
+        WHERE 1=1
+
+        AND t_alliance.invitor_alliance_id = #{id}
+        <if test="record.allianceType != null and record.allianceType>0 ">
+            AND t_alliance.alliance_type= #{record.allianceType}
+        </if>
+
+        <if test="record.allianceShip != null and record.allianceShip>0 ">
+            AND t_alliance.alliance_ship = #{record.allianceShip}
+        </if>
+
+        <if test="search != null and search != ''">
+            AND t_alliance.alliance_name LIKE CONCAT('%',#{search},'%')
+            OR t_alliance.alliance_phone LIKE CONCAT('%',#{search},'%')
+        </if>
+        GROUP BY t_alliance.id
+        order by t_alliance.alliance_ship_time desc
+    </select>
+
+
     <!--    根据user_id查询当月的订单-->
     <select id="getCurrentMonthOrderByUserId" resultType="java.util.Map">
         select * from t_order where user_id=#{id} and DATE_FORMAT(created_date,'%Y%m')=DATE_FORMAT(CURDATE() ,'%Y%m')

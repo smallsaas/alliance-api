@@ -4,7 +4,7 @@ package com.jfeat.am.module.alliance.api;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
-import com.jfeat.am.module.alliance.services.domain.dao.mapping.QueryWalletHistoryDao;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.alliance.util.AllianceUtil;

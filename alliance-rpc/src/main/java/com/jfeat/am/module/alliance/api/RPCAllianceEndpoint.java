@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
-import com.jfeat.am.module.alliance.services.domain.dao.mapping.QueryWalletHistoryDao;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Royalty;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;

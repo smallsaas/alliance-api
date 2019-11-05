@@ -18,21 +18,30 @@ import java.util.Map;
  */
 public interface QueryAllianceDao extends BaseMapper<Alliance> {
     List<AllianceRecord> findAlliancePage(Page<AllianceRecord> page, @Param("record") AllianceRecord record,
-                                            @Param("search") String search, @Param("orderBy") String orderBy,
-                                            @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+                                          @Param("search") String search, @Param("orderBy") String orderBy,
+                                          @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
     List<Map> getCurrentMonthOrderByUserId(@Param("id") Long id);
-    AllianceRecord selectAllianceOneByUserId(@Param("id")Long id);
-    public List<Map> getSelfProductByUserId(@Param("id")Long id);
+
+    AllianceRecord selectAllianceOneByUserId(@Param("id") Long id);
+
+    public List<Map> getSelfProductByUserId(@Param("id") Long id);
+
     @Select("select CONCAT('充值',value) as title,value from t_config_field where group_id=1")
     List<JSONObject> getSetMeal();
+
     Long selectUserIdByInvitationCode(@Param("invitationCode") String invitationCode);
 
 
-
     AllianceRecord allianceDetails(@Param("id") Long id);
+
     @Select("select alliance_phone from t_alliance where alliance_phone=#{phone} ")
     String queryPhone(@Param("phone") String phone);
 
 
+    List<AllianceRecord> myTeam(Page<AllianceRecord> page,
+                                @Param("id") Long id,
+                                @Param("record") AllianceRecord record,
+                                @Param("search") String search);
 
 }
