@@ -292,9 +292,13 @@ public class AllianceEndpoint {
         Date end = calculationEndTime();
         for(AllianceRecord allianceRecord: alliancePage){
             allianceRecord.setCutOffTime(end);
-//            if(allianceRecord.getBalance()==null||allianceRecord.getBalance().compareTo(new BigDecimal(0))==0){
-//
-//            }
+            if(allianceRecord.getBalance()==null||allianceRecord.getBalance().compareTo(new BigDecimal(0))==0){
+                if(allianceRecord.getAllianceType()==Alliance.ALLIANCE_TYPE_BONUS){
+                    allianceRecord.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
+                }else {
+                    allianceRecord.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
+                }
+            }
         }
         page.setRecords(alliancePage);
         return SuccessTip.create(page);
