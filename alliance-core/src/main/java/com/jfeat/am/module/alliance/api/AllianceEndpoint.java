@@ -395,7 +395,7 @@ public class AllianceEndpoint {
         return SuccessTip.create(1);
     }
 
-    @PutMapping("/{id}/action/setpaid")
+    @PostMapping("/{id}/action/setpaid")
     @ApiOperation("修改盟友支付状态-设置为已支付   ")
     @Transactional
     public Tip paid(@PathVariable Long id){
@@ -404,8 +404,8 @@ public class AllianceEndpoint {
             throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
         }
 
-        if(alliance.getAllianceShip().equals(2)){
-            alliance.setAllianceShip(3);
+        if(alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)){
+            alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
             alliance.setAllianceShipTime(new Date());
         }else {
             throw new BusinessException(BusinessCode.CodeBase,"状态错误");
@@ -415,7 +415,7 @@ public class AllianceEndpoint {
         return SuccessTip.create(res);
     }
 
-    @PutMapping("/{id}/action/reset")
+    @PostMapping("/{id}/action/reset")
     @ApiOperation("修改盟友支付状态-支付过期-->待支付  ship 4--->2")
     @Transactional
     public Tip reset(@PathVariable Long id){
@@ -424,8 +424,8 @@ public class AllianceEndpoint {
             throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
         }
 
-        if(alliance.getAllianceShip().equals(4)){
-            alliance.setAllianceShip(2);
+        if(alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_EXPIRED)){
+            alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
         }else {
             throw new BusinessException(BusinessCode.CodeBase,"状态错误");
         }
@@ -435,7 +435,7 @@ public class AllianceEndpoint {
         return SuccessTip.create(res);
     }
 
-    @PutMapping("/{id}/action/upgraded")
+    @PostMapping("/{id}/action/upgraded")
     @ApiOperation("修改盟友支付状态- 升级盟友 --->  普通盟友---> 分红盟友。type  1--->2")
     @Transactional
     public Tip upgrade(@PathVariable Long id){
@@ -443,17 +443,17 @@ public class AllianceEndpoint {
         if(alliance==null){
             throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
         }
-        if(!alliance.getAllianceShip().equals(0)){
+        if(!alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_OK)){
             throw new BusinessException(BusinessCode.CodeBase,"非正式盟友，无法执行升级操作！");//alliacneShip=0 才能 升级盟友
         }
 
-        if(!alliance.getAllianceType().equals(1)){
-            alliance.setAllianceType(2);
+        if(!alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)){
+            alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
         }else {
             throw new BusinessException(BusinessCode.CodeBase,"非普通盟友身份人，无法执行升级操作！");
         }
-        alliance.setAllianceType(2);
-        alliance.setAllianceShip(2);
+        alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
+        alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
 
 
         int res = allianceService.updateMaster(alliance);
