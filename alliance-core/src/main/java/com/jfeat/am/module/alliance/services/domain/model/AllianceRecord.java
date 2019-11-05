@@ -21,8 +21,7 @@ public class AllianceRecord extends Alliance{
     String wechatNick;
     private BigDecimal balance;
     //结算时间
-    @DateTimeFormat(pattern = "YYYY-MM-DD")
-    @JsonFormat(pattern = "YYYY-MM-DD")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     Date cutOffTime;
 
     public Date getCutOffTime() {
