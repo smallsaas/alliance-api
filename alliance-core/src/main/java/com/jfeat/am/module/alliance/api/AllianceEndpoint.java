@@ -292,6 +292,9 @@ public class AllianceEndpoint {
         Date end = calculationEndTime();
         for(AllianceRecord allianceRecord: alliancePage){
             allianceRecord.setCutOffTime(end);
+//            if(allianceRecord.getBalance()==null||allianceRecord.getBalance().compareTo(new BigDecimal(0))==0){
+//
+//            }
         }
         page.setRecords(alliancePage);
         return SuccessTip.create(page);
@@ -303,7 +306,7 @@ public class AllianceEndpoint {
         Integer endMonth = configFieldService.getFieldInteger(AllianceFields.ALLIANCE_FIELD_STARTING_CYCLE);
         Date starting=null;
         try {
-            starting = new SimpleDateFormat("YYYY-MM-DD").parse(str);
+            starting = new SimpleDateFormat("yyyy-MM-dd").parse(str);
         } catch (ParseException e) {
             throw new BusinessException(BusinessCode.BadRequest,"盟友起算时间配置有错");
         }
@@ -438,11 +441,13 @@ public class AllianceEndpoint {
         if(alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)){
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
             //alliance.setAllianceShipTime(new Date());
+
         }else {
             throw new BusinessException(BusinessCode.CodeBase,"状态错误");
         }
 
         int res = allianceService.updateMaster(alliance);
+
         return SuccessTip.create(res);
     }
 
