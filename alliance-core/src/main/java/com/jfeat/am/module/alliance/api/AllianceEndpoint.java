@@ -4,7 +4,7 @@ package com.jfeat.am.module.alliance.api;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
-import com.jfeat.am.module.alliance.services.domain.dao.mapping.QueryWalletHistoryDao;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
@@ -82,7 +82,7 @@ public class AllianceEndpoint {
             entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
         String alliance_phone = queryAllianceDao.queryPhone(entity.getAlliancePhone());
-        if (alliance_phone.length() > 0) {
+        if (alliance_phone!=null&&alliance_phone.length() > 0) {
             throw new BusinessException(BusinessCode.BadRequest,AllianceShips.PHONE_EXITS_ERROR);
         }
         String invitorPhoneNumber = entity.getInvitorPhoneNumber();
@@ -292,6 +292,13 @@ public class AllianceEndpoint {
         Date end = calculationEndTime();
         for(AllianceRecord allianceRecord: alliancePage){
             allianceRecord.setCutOffTime(end);
+            if(allianceRecord.getBalance()==null||allianceRecord.getBalance().compareTo(new BigDecimal(0))==0){
+                if(allianceRecord.getAllianceType()==Alliance.ALLIANCE_TYPE_BONUS){
+                    allianceRecord.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
+                }else {
+                    allianceRecord.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
+                }
+            }
         }
         page.setRecords(alliancePage);
         return SuccessTip.create(page);
@@ -303,7 +310,7 @@ public class AllianceEndpoint {
         Integer endMonth = configFieldService.getFieldInteger(AllianceFields.ALLIANCE_FIELD_STARTING_CYCLE);
         Date starting=null;
         try {
-            starting = new SimpleDateFormat("YYYY-MM-DD").parse(str);
+            starting = new SimpleDateFormat("yyyy-MM-dd").parse(str);
         } catch (ParseException e) {
             throw new BusinessException(BusinessCode.BadRequest,"盟友起算时间配置有错");
         }
@@ -438,11 +445,13 @@ public class AllianceEndpoint {
         if(alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)){
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
             //alliance.setAllianceShipTime(new Date());
+
         }else {
             throw new BusinessException(BusinessCode.CodeBase,"状态错误");
         }
 
         int res = allianceService.updateMaster(alliance);
+
         return SuccessTip.create(res);
     }
 

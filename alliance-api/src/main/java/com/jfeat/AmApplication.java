@@ -3,6 +3,7 @@ package com.jfeat;
 import com.jfeat.crud.core.properties.AmProperties;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
+import org.springframework.web.bind.annotation.PathVariable;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

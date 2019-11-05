@@ -43,12 +43,17 @@
             <groupId>com.jfeat</groupId>
             <artifactId>crud-log</artifactId>
             <version>${crud-log.version}</version>
-        </dependency>
-        <dependency>
+        </dependency>-->
+<!--        <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>uaas</artifactId>
             <version>${uaas.version}</version>
         </dependency>-->
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>org</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <!---dev 环境依赖crud-dev-->
         <dependency>
             <groupId>com.jfeat</groupId>
@@ -69,19 +74,16 @@
         </dependency>
 
         <!--sub-system modules-->
-<!--<<<<<<< HEAD-->
-<!--        <dependency>-->
-<!--            <groupId>com.jfeat</groupId>-->
-<!--            <artifactId>saas-app-api</artifactId>-->
-<!--            <version>${saas-app-api.version}</version>-->
-<!--        </dependency>-->
-<!--=======-->
+<!--        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>saas-app-api</artifactId>
+            <version>${saas-app-api.version}</version>
+        </dependency>-->
        <!-- <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-app-api</artifactId>
             <version>${saas-app-api.version}</version>
         </dependency>-->
-<!--&gt;>>>>>> 8342c38d1212943709cebf2c56a131d70a3e4eb7-->
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-mall-api</artifactId>
