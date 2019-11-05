@@ -133,6 +133,7 @@ public class RPCAllianceRegisterEndpoint {
             return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友类型Unknown: " + registeredAlliance.getAllianceType());
         }
 
+
         /// 盟友已确定， 直接返回盟友类型
         AllianceShips response = new AllianceShips();
         response.setAllianceType(registeredAlliance.getAllianceType());
@@ -145,7 +146,16 @@ public class RPCAllianceRegisterEndpoint {
             return SuccessCip.create(response);
 
         }else if(registeredAlliance.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_INVITED ){
-            return ErrorCip.create(registeredAlliance.getAllianceShip(), "盟友申请状态中");
+
+            /// 状态正确(ALLIANCE_SHIP_PAID)，进行用户绑定
+            registeredAlliance.setUserId(userId);
+            int affected = allianceService.updateMaster(registeredAlliance);
+
+            if(affected>0) {
+                return ErrorCip.create(registeredAlliance.getAllianceShip(), "盟友申请状态中");
+            }else{
+                return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "数据库错误：确认盟友状态有误: " + registeredAlliance.getAlliancePhone());
+            }
         }
         else if(registeredAlliance.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_EXPIRED ){
             return ErrorCip.create(registeredAlliance.getAllianceShip(), "支付超时，请重新申请");
