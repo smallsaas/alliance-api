@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 public class AllianceRecord extends Alliance{
 
     Integer teamCount;
+    String invitorName;
+    String invitorPhone;
     private JSONArray currentMonthOrder;
     private JSONArray selfProducts;
     private JSONArray allianceTeam;

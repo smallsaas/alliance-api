@@ -424,12 +424,7 @@ public class AllianceEndpoint {
             throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
         }
 
-        if(alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_EXPIRED)){
-            alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
-        }else {
-            throw new BusinessException(BusinessCode.CodeBase,"状态错误");
-        }
-        alliance.setAllianceShipTime(new Date());
+        alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
         int res = allianceService.updateMaster(alliance);
 
         return SuccessTip.create(res);
@@ -450,7 +445,7 @@ public class AllianceEndpoint {
         if(!alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)){
             alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
         }else {
-            throw new BusinessException(BusinessCode.CodeBase,"非普通盟友身份人，无法执行升级操作！");
+            throw new BusinessException(BusinessCode.CodeBase,"非普通盟友身份，无法执行升级操作！");
         }
         alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
