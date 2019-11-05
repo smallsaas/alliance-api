@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.79 Perl/5.026002 [msys]" ?>
+<cruds>
+    <crud>
+        <mask>master</mask>
+        <master>t_user</master>
+    </crud>
+</cruds>
+
