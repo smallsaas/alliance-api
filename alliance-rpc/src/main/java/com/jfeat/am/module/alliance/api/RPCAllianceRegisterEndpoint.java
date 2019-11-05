@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 
 /**
@@ -185,6 +186,7 @@ public class RPCAllianceRegisterEndpoint {
 
             // 确认为 正式盟友
             registeredAlliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_OK);
+            registeredAlliance.setAllianceShipTime(new Date());
             int affected = allianceService.updateMaster(registeredAlliance);
             if(affected>0) {
                 return SuccessCip.create(response);

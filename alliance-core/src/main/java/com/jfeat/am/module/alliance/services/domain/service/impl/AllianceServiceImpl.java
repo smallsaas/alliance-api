@@ -119,7 +119,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
             alliance.setUserId(selfUserId);
         }
         //成为盟友时间
-        alliance.setAllianceShipTime(new Date());
+        //alliance.setAllianceShipTime(new Date());
         //获取过期天数配置
         Integer expiryTime =configFieldService.getFieldInteger("temp_alliance_expiry_time");
         //设置支付过期时间3天。

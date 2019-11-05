@@ -330,7 +330,7 @@ public class AllianceEndpoint {
             throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
         }
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
-        alliance.setAllianceShipTime(new Date());
+        //alliance.setAllianceShipTime(new Date());
         allianceService.updateMaster(alliance);
 
         Long userId = alliance.getUserId();
@@ -407,7 +407,7 @@ public class AllianceEndpoint {
 
         if(alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)){
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
-            alliance.setAllianceShipTime(new Date());
+            //alliance.setAllianceShipTime(new Date());
         }else {
             throw new BusinessException(BusinessCode.CodeBase,"状态错误");
         }
