@@ -289,10 +289,10 @@ public class AllianceEndpoint {
         record.setAlliancePhone(alliancePhone);
         record.setAllianceDob(allianceDob);
         List<AllianceRecord> alliancePage = queryAllianceDao.findAlliancePage(page, record, search, orderBy, null, null);
-        Date end = calculationEndTime();
-        for(AllianceRecord allianceRecord: alliancePage){
-            allianceRecord.setCutOffTime(end);
-        }
+//        Date end = calculationEndTime();
+//        for(AllianceRecord allianceRecord: alliancePage){
+//            allianceRecord.setCutOffTime(end);
+//        }
         page.setRecords(alliancePage);
         return SuccessTip.create(page);
     }
