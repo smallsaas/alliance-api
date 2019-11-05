@@ -1,7 +1,6 @@
 package com.jfeat.am.module.alliance.services.domain.dao.mapping;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 
 /**

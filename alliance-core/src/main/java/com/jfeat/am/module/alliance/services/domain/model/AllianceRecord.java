@@ -9,10 +9,11 @@ import java.math.BigDecimal;
  * Created by Code Generator on 2019-10-14
  */
 public class AllianceRecord extends Alliance{
-
+    //团队人数
     Integer teamCount;
     String invitorName;
     String invitorPhone;
+
     private JSONArray currentMonthOrder;
     private JSONArray selfProducts;
     private JSONArray allianceTeam;
