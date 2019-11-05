@@ -82,7 +82,7 @@ public class AllianceEndpoint {
             entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
         String alliance_phone = queryAllianceDao.queryPhone(entity.getAlliancePhone());
-        if (alliance_phone.length() > 0) {
+        if (alliance_phone!=null&&alliance_phone.length() > 0) {
             throw new BusinessException(BusinessCode.BadRequest,AllianceShips.PHONE_EXITS_ERROR);
         }
         String invitorPhoneNumber = entity.getInvitorPhoneNumber();
