@@ -89,6 +89,22 @@ public class AllianceRecord extends Alliance{
     }
 
 
+    public String getInvitorName() {
+        return invitorName;
+    }
+
+    public void setInvitorName(String invitorName) {
+        this.invitorName = invitorName;
+    }
+
+    public String getInvitorPhone() {
+        return invitorPhone;
+    }
+
+    public void setInvitorPhone(String invitorPhone) {
+        this.invitorPhone = invitorPhone;
+    }
+
     public Integer getTeamCount() {
         return teamCount;
     }
