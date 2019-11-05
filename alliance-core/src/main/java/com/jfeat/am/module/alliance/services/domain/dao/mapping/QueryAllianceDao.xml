@@ -37,10 +37,10 @@
         WHERE 1=1
         <if test="record.allianceType != null and record.allianceType>0 ">
             AND t_alliance.alliance_type= #{record.allianceType}
-        </if>allianceShip
+        </if>
 
         <if test="record.allianceShip != null and record.allianceShip>0 ">
-            AND t_alliance.alliance_ship = #{record.allianceStatus}
+            AND t_alliance.alliance_ship = #{record.allianceShip}
         </if>
 
         <if test="record.allianceStatus != null and record.allianceStatus>0 ">
