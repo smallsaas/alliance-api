@@ -81,9 +81,9 @@ public class AllianceEndpoint {
         if (entity.getAllianceDob() != null) {
             entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
-        List alliance_phone = queryAllianceDao.selectList(new Condition().eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone()));
-        if (alliance_phone.size() > 0) {
-            throw new ServerException("该手机号以被注册盟友，不能重复");
+        String alliance_phone = queryAllianceDao.queryPhone(entity.getAlliancePhone());
+        if (alliance_phone.length() > 0) {
+            throw new BusinessException(BusinessCode.BadRequest,AllianceShips.PHONE_EXITS_ERROR);
         }
         String invitorPhoneNumber = entity.getInvitorPhoneNumber();
         if (invitorPhoneNumber != null && invitorPhoneNumber.length() > 0) {
@@ -91,7 +91,7 @@ public class AllianceEndpoint {
             if (invitor != null) {
                 entity.setInvitorAllianceId(invitor.getId());
             } else {
-                throw new ServerException("该手机号码的盟友不存在");
+                throw new BusinessException(BusinessCode.BadRequest,AllianceShips.ALLIANCE_NOT_EXIST);
             }
         }
         if (entity.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
@@ -136,7 +136,7 @@ public class AllianceEndpoint {
         }
         List alliance_phone = queryAllianceDao.selectList(new Condition().eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone()).ne(Alliance.ID, id));
         if (alliance_phone.size() > 0) {
-            throw new ServerException("该手机号以被注册盟友，不能重复");
+            throw new BusinessException(BusinessCode.BadRequest,AllianceShips.PHONE_EXITS_ERROR);
         }
         //根据邀请人电话查找邀请人信息
         Alliance alliance = null;
