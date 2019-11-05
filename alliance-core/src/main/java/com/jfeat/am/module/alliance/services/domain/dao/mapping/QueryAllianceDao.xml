@@ -22,8 +22,10 @@
     </select>
 
     <select id="findAlliancePage" resultType="AllianceRecord" parameterType="AllianceRecord">
-        select t_alliance.*,COUNT(children.id)+1 as team_count
-        from t_alliance left JOIN t_alliance as children on t_alliance.id=children.invitor_alliance_id
+        select t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as invitorPhone
+        from t_alliance
+        left JOIN t_alliance as children on t_alliance.id=children.invitor_alliance_id
+        LEFT JOIN t_alliance kid ON t_alliance.invitor_alliance_id=kid.id
 <!--        <if test="record.orgId > 0">
             ,(<include refid="QueryOwnedOrgIds"></include>) AS ownedOrgIds
         </if>-->
