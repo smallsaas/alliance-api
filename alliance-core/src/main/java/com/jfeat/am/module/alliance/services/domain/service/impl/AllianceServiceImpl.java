@@ -16,7 +16,6 @@ import com.jfeat.crud.base.exception.BusinessException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.rmi.ServerException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +78,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
     }
 
     @Override
-    public Integer createAlliance(RequestAlliance requestAlliance) {
+    public Integer createAlliance(RequestAlliance requestAlliance, Long userId) {
         if(requestAlliance.getInvitationCode()==null||requestAlliance.getInvitationCode().length()==0){
             throw new BusinessException(BusinessCode.BadRequest,"邀请码不能为空");
         }
@@ -89,7 +88,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         if(requestAlliance.getAllianceName()==null||requestAlliance.getAllianceName().length()==0){
             throw new BusinessException(BusinessCode.BadRequest,"名字不能为空");
         }
-        List alliance_phone = queryAllianceDao.selectList(new Condition().eq("alliance_phone", requestAlliance.getAlliancePhone()));
+        List alliance_phone = queryAllianceDao.selectList(new Condition().eq(Alliance.ALLIANCE_PHONE, requestAlliance.getAlliancePhone()).ne(Alliance.USER_ID,userId));
         if(alliance_phone.size()>0){
             throw new BusinessException(BusinessCode.BadRequest,"该手机号码已被注册为盟友");
         }
@@ -99,12 +98,12 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
 
         alliance.setAllianceName(requestAlliance.getAllianceName());
 
-        Long userId = queryAllianceDao.selectUserIdByInvitationCode(requestAlliance.getInvitationCode());
+        Long invitorUserId = queryAllianceDao.selectUserIdByInvitationCode(requestAlliance.getInvitationCode());
 
-        if(userId==null||userId==0){
+        if(invitorUserId==null||invitorUserId==0){
             throw new BusinessException(BusinessCode.BadRequest,"邀请码找不到对应的用户");
         }
-        Alliance invitor = queryAllianceDao.selectOne(new Alliance().setUserId(userId));
+        Alliance invitor = queryAllianceDao.selectOne(new Alliance().setUserId(invitorUserId));
         if(invitor==null){
             throw new BusinessException(BusinessCode.CodeBase,"邀请码找到的用户不是盟友");
         }

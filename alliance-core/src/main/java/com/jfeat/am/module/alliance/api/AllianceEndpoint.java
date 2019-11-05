@@ -32,6 +32,7 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 import javax.annotation.Resource;
 import java.rmi.ServerException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -287,16 +288,38 @@ public class AllianceEndpoint {
         record.setAllianceHobby(allianceHobby);
         record.setAlliancePhone(alliancePhone);
         record.setAllianceDob(allianceDob);
-        page.setRecords(queryAllianceDao.findAlliancePage(page, record, search, orderBy, null, null));
-
+        List<AllianceRecord> alliancePage = queryAllianceDao.findAlliancePage(page, record, search, orderBy, null, null);
+//        Date end = calculationEndTime();
+//        for(AllianceRecord allianceRecord: alliancePage){
+//            allianceRecord.setCutOffTime(end);
+//        }
+        page.setRecords(alliancePage);
         return SuccessTip.create(page);
     }
-
+    private Date calculationEndTime(){
+        //起算时间
+        String  str= configFieldService.getFieldString(AllianceFields.ALLIANCE_FIELD_STARTING_TIME);
+        //结束周期
+        Integer endMonth = configFieldService.getFieldInteger(AllianceFields.ALLIANCE_FIELD_STARTING_CYCLE);
+        Date starting=null;
+        try {
+            starting = new SimpleDateFormat("YYYY-MM-DD").parse(str);
+        } catch (ParseException e) {
+            throw new BusinessException(BusinessCode.BadRequest,"盟友起算时间配置有错");
+        }
+        //计算分红结束时间
+        return AllianceUtil.stepMonth(starting,endMonth);
+    }
     @GetMapping("/getAlliancesByUserId")
     @ApiOperation(value = "根据请求头X-USER-ID获取我的盟友列表", response = Alliance.class)
     public Tip getAlliancesByUserId(@RequestHeader("X-USER-ID") Long id) {
-
-        return SuccessTip.create(allianceService.getAlliancesByUserId(id));
+        List<Alliance> alliances = allianceService.getAlliancesByUserId(id);
+        if(alliances!=null&&alliances.size()>0){
+            for(Alliance alliance:alliances){
+                alliance.setCutOffTime(calculationEndTime());
+            }
+        }
+        return SuccessTip.create();
     }
 
     @GetMapping("/getAllianceInformationByUserId")
@@ -312,26 +335,34 @@ public class AllianceEndpoint {
         if (currentMonthOrderByUserId != null && currentMonthOrderByUserId.size() > 0) {
             alliance.setCurrentMonthOrder(JSON.parseArray(JSON.toJSONString(queryAllianceDao.getCurrentMonthOrderByUserId(id))));
         }
+        alliance.setCutOffTime(calculationEndTime());
         return SuccessTip.create(alliance);
     }
 
     @GetMapping("/getAllianceInformationByUserId/{id}")
     @ApiOperation(value = "根据盟友id获取我的盟友信息,携带自营商品", response = Alliance.class)
     public Tip getSelfProductById(@PathVariable Long id) {
-
+        AllianceRecord allianceRecord = allianceService.getSelfProductById(id);
+        allianceRecord.setCutOffTime(calculationEndTime());
         return SuccessTip.create(allianceService.getSelfProductById(id));
     }
     @PutMapping("/updateAllianceShip/{id}")
     @ApiOperation("修改盟友确认支付状态")
     @Transactional
     public Tip modifyAllianceShip(@PathVariable Long id){
+        Integer set=0;
         Alliance alliance = allianceService.retrieveMaster(id);
         if(alliance==null){
             throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
         }
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
+//<<<<<<< Updated upstream
         //alliance.setAllianceShipTime(new Date());
         allianceService.updateMaster(alliance);
+//=======
+        alliance.setAllianceShipTime(new Date());
+        set+=allianceService.updateMaster(alliance);
+//>>>>>>> Stashed changes
 
         Long userId = alliance.getUserId();
         if(userId==null){
@@ -365,7 +396,7 @@ public class AllianceEndpoint {
             walletCondition.setGiftBalance(new BigDecimal(0));
             walletCondition.setBalance(new BigDecimal(configFieldService.getFieldFloat(tmp)));
             walletCondition.setUserId(userId);
-            queryWalletDao.insert(walletCondition);
+            set+=queryWalletDao.insert(walletCondition);
             WalletHistory walletHistory = new WalletHistory();
             walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
             walletHistory.setAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
@@ -390,10 +421,9 @@ public class AllianceEndpoint {
             walletHistory.setGift_amount(new BigDecimal(0));
             walletHistory.setWalletId(new Long(wallet.getId()));
             walletHistory.setType(RechargeType.RECHARGE);
-            queryWalletHistoryDao.insert(walletHistory);
-
+            set+=queryWalletHistoryDao.insert(walletHistory);
         }
-        return SuccessTip.create(1);
+        return SuccessTip.create(set);
     }
 
     @PostMapping("/{id}/action/setpaid")
@@ -450,10 +480,7 @@ public class AllianceEndpoint {
         }
         alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
-
-
         int res = allianceService.updateMaster(alliance);
-
         return SuccessTip.create(res);
     }
 

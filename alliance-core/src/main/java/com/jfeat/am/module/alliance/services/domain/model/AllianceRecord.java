@@ -14,6 +14,20 @@ public class AllianceRecord extends Alliance{
     String invitorName;
     String invitorPhone;
 
+    String wechatAvatar;
+    String wechatNick;
+    private BigDecimal balance;
+
+    @Override
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    @Override
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
     private JSONArray currentMonthOrder;
     private JSONArray selfProducts;
     private JSONArray allianceTeam;
@@ -88,6 +102,22 @@ public class AllianceRecord extends Alliance{
         this.currentMonthOrder = currentMonthOrder;
     }
 
+
+    public String getWechatAvatar() {
+        return wechatAvatar;
+    }
+
+    public void setWechatAvatar(String wechatAvatar) {
+        this.wechatAvatar = wechatAvatar;
+    }
+
+    public String getWechatNick() {
+        return wechatNick;
+    }
+
+    public void setWechatNick(String wechatNick) {
+        this.wechatNick = wechatNick;
+    }
 
     public String getInvitorName() {
         return invitorName;

@@ -2,77 +2,47 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao">
     <sql id="Base_Column_List">
-            t_alliance.*
+        t_alliance.*
     </sql>
 
     <sql id="QueryOwnedOrgIds">
-            SELECT children.id FROM t_sys_org, t_sys_org as children WHERE t_sys_org.left_num &lt;= children.left_num AND
-            t_sys_org.right_num >= children.left_num and t_sys_org.id=#{ownerOrgId} order by t_sys_org.node_level ASC
-        </sql>
+        SELECT children.id FROM t_sys_org, t_sys_org as children WHERE t_sys_org.left_num &lt;= children.left_num AND
+        t_sys_org.right_num >= children.left_num and t_sys_org.id=#{ownerOrgId} order by t_sys_org.node_level ASC
+    </sql>
 
 
     <select id="allianceDetails" resultType="AllianceRecord">
-        select t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as invitorPhone
+        select t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as
+        invitorPhone
         from t_alliance
         left JOIN t_alliance as children on t_alliance.id=children.invitor_alliance_id
         LEFT JOIN t_alliance kid ON t_alliance.invitor_alliance_id=kid.id
-     where t_alliance.id=#{id}
-     GROUP BY t_alliance.id
+        where t_alliance.id=#{id}
+        GROUP BY t_alliance.id
 
     </select>
 
     <select id="findAlliancePage" resultType="AllianceRecord" parameterType="AllianceRecord">
-        select t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as invitorPhone
+        select t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as
+        invitorPhone,
+        t_user.avatar as wechatAvatar,
+        t_user.name as wechatNick,
+        t_wallet.balance as balance
         from t_alliance
         left JOIN t_alliance as children on t_alliance.id=children.invitor_alliance_id
         LEFT JOIN t_alliance kid ON t_alliance.invitor_alliance_id=kid.id
-<!--        <if test="record.orgId > 0">
-            ,(<include refid="QueryOwnedOrgIds"></include>) AS ownedOrgIds
-        </if>-->
+        LEFT JOIN t_user ON t_alliance.user_id = t_user.id
+        LEFT JOIN t_wallet on t_wallet.user_id=t_alliance.user_id
+        <!--        <if test="record.orgId > 0">
+                    ,(<include refid="QueryOwnedOrgIds"></include>) AS ownedOrgIds
+                </if>-->
         WHERE 1=1
-<!--        <if test="record.orgId > 0">
-            AND t_sys_user.org_id = ownedOrgIds.id
-        </if>-->
-        <if test="record.id != null and record.id>0 ">
-            AND t_alliance.id LIKE CONCAT('%',#{record.id},'%')
-        </if>
-
-        <if test="record.userId != null and record.userId>0 ">
-            AND t_alliance.user_id LIKE CONCAT('%',#{record.userId},'%')
-        </if>
-
-        <if test="record.invitorAllianceId != null and record.invitorAllianceId>0 ">
-            AND t_alliance.invitor_alliance_id LIKE CONCAT('%',#{record.invitorAllianceId},'%')
+        <if test="record.allianceType != null and record.allianceType>0 ">
+            AND t_alliance.alliance_type= #{record.allianceType}
         </if>
 
         <if test="record.allianceShip != null and record.allianceShip>0 ">
-            AND t_alliance.alliance_ship LIKE CONCAT('%',#{record.allianceShip},'%')
-        </if>
-        <if test="record.allianceType != null and record.allianceType>0 ">
-            AND t_alliance.alliance_ship LIKE CONCAT('%',#{record.allianceType},'%')
-        </if>
-
-        <if test="record.stockholderShip != null and record.stockholderShip>0 ">
-            AND t_alliance.stockholder_ship LIKE CONCAT('%',#{record.stockholderShip},'%')
-        </if>
-
-        <if test="record.creationTime != null and record.creationTime>0 ">
-            AND t_alliance.creation_time LIKE CONCAT('%',#{record.creationTime},'%')
-        </if>
-        <if test="record.allianceRank != null and record.allianceRank>0 ">
-            AND t_alliance.creation_time LIKE CONCAT('%',#{record.alliance_rank},'%')
-        </if>
-
-        <if test="record.allianceShipTime != null and record.allianceShipTime>0 ">
-            AND t_alliance.alliance_ship_time LIKE CONCAT('%',#{record.allianceShipTime},'%')
-        </if>
-
-        <if test="record.stockholderShipTime != null and record.stockholderShipTime>0 ">
-            AND t_alliance.stockholder_ship_time LIKE CONCAT('%',#{record.stockholderShipTime},'%')
-        </if>
-
-        <if test="record.tempAllianceExpiryTime != null and record.tempAllianceExpiryTime>0 ">
-            AND t_alliance.temp_alliance_expiry_time LIKE CONCAT('%',#{record.tempAllianceExpiryTime},'%')
+            AND t_alliance.alliance_ship = #{record.allianceShip}
         </if>
 
         <if test="record.allianceStatus != null and record.allianceStatus>0 ">
@@ -137,21 +107,21 @@
         <if test="record.age != null and record.age>0">
             <![CDATA[AND t_alliance.end_time <= DATE(#{record.age)]]>
         </if>
-        <!--
-    <if test="search != null and search != ''">
-        OR t_alliance.name LIKE CONCAT('%',#{search},'%')
-    </if>
-    -->
+        <if test="search != null and search != ''">
+            AND t_alliance.alliance_name LIKE CONCAT('%',#{search},'%')
+            OR t_alliance.alliance_phone LIKE CONCAT('%',#{search},'%')
+        </if>
         GROUP BY t_alliance.id
 
         order by t_alliance.creation_time desc
     </select>
-<!--    根据user_id查询当月的订单-->
+    <!--    根据user_id查询当月的订单-->
     <select id="getCurrentMonthOrderByUserId" resultType="java.util.Map">
         select * from t_order where user_id=#{id} and DATE_FORMAT(created_date,'%Y%m')=DATE_FORMAT(CURDATE() ,'%Y%m')
-         order by created_date desc
+        order by created_date desc
     </select>
-    <select id="selectAllianceOneByUserId" resultType="com.jfeat.am.module.alliance.services.domain.model.AllianceRecord">
+    <select id="selectAllianceOneByUserId"
+            resultType="com.jfeat.am.module.alliance.services.domain.model.AllianceRecord">
         select * from t_alliance where user_id=#{id}
     </select>
 

@@ -322,7 +322,6 @@ public class RPCAllianceEndpoint {
         }
         page.setCurrent(pageNum);
         page.setSize(pageSize);
-
         AllianceRecord record = new AllianceRecord();
         record.setId(id);
         record.setUserId(userId);
@@ -426,8 +425,8 @@ public class RPCAllianceEndpoint {
 
     @ApiOperation(value = "根据手机号，姓名，邀请码，添加盟友",response = Cip.class)
     @PostMapping("/createAlliance")
-    public Cip createAlliance(@RequestBody RequestAlliance requestAlliance) {
+    public Cip createAlliance(@RequestHeader("X-USER-ID") Long userId,@RequestBody RequestAlliance requestAlliance) {
 
-        return SuccessCip.create(allianceService.createAlliance(requestAlliance));
+        return SuccessCip.create(allianceService.createAlliance(requestAlliance,userId));
     }
 }

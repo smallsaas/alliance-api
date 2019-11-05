@@ -38,6 +38,18 @@ public class Alliance extends Model<Alliance> {
         this.extra = extra;
     }
 
+	//结算时间
+	@DateTimeFormat(pattern = "YYYY-MM-DD")
+	@JsonFormat(pattern = "YYYY-MM-DD")
+	Date cutOffTime;
+
+	public Date getCutOffTime() {
+		return cutOffTime;
+	}
+
+	public void setCutOffTime(Date cutOffTime) {
+		this.cutOffTime = cutOffTime;
+	}
 
     private static final long serialVersionUID = 1L;
 

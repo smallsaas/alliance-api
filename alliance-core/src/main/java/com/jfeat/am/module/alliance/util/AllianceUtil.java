@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class AllianceUtil {
+
     public static int getAgeByBirth(Date birthDay) throws ParseException {
         int age = 0;
         Calendar cal = Calendar.getInstance();
@@ -31,10 +32,19 @@ public class AllianceUtil {
         }
         return age;
     }
-    public static Date getDate( Date currentTime) throws ParseException {
+
+    public static Date getDate(Date currentTime) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = formatter.format(currentTime);
         Date currentTime_2 = formatter.parse(dateString);
         return currentTime_2;
     }
+    //加几个月
+    public static Date stepMonth(Date sourceDate, int month) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(sourceDate);
+        c.add(Calendar.MONTH, month);
+        return c.getTime();
+    }
+
 }
