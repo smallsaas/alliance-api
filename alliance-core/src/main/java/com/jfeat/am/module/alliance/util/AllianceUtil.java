@@ -34,7 +34,7 @@ public class AllianceUtil {
     }
 
     public static Date getDate(Date currentTime) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         String dateString = formatter.format(currentTime);
         Date currentTime_2 = formatter.parse(dateString);
         return currentTime_2;
@@ -44,6 +44,7 @@ public class AllianceUtil {
         Calendar c = Calendar.getInstance();
         c.setTime(sourceDate);
         c.add(Calendar.MONTH, month);
+        System.out.println(c.getTime());
         return c.getTime();
     }
 
