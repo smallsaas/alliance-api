@@ -81,9 +81,9 @@ public class AllianceEndpoint {
         if (entity.getAllianceDob() != null) {
             entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
-        List alliance_phone = queryAllianceDao.selectList(new Condition().eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone()));
-        if (alliance_phone.size() > 0) {
-            throw new ServerException("该手机号以被注册盟友，不能重复");
+        String alliance_phone = queryAllianceDao.queryPhone(entity.getAlliancePhone());
+        if (alliance_phone.length() > 0) {
+            throw new BusinessException(BusinessCode.BadRequest,AllianceShips.PHONE_EXITS_ERROR);
         }
         String invitorPhoneNumber = entity.getInvitorPhoneNumber();
         if (invitorPhoneNumber != null && invitorPhoneNumber.length() > 0) {
@@ -91,7 +91,7 @@ public class AllianceEndpoint {
             if (invitor != null) {
                 entity.setInvitorAllianceId(invitor.getId());
             } else {
-                throw new ServerException("该手机号码的盟友不存在");
+                throw new BusinessException(BusinessCode.BadRequest,AllianceShips.ALLIANCE_NOT_EXIST);
             }
         }
         if (entity.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
@@ -136,7 +136,7 @@ public class AllianceEndpoint {
         }
         List alliance_phone = queryAllianceDao.selectList(new Condition().eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone()).ne(Alliance.ID, id));
         if (alliance_phone.size() > 0) {
-            throw new ServerException("该手机号以被注册盟友，不能重复");
+            throw new BusinessException(BusinessCode.BadRequest,AllianceShips.PHONE_EXITS_ERROR);
         }
         //根据邀请人电话查找邀请人信息
         Alliance alliance = null;
@@ -289,10 +289,10 @@ public class AllianceEndpoint {
         record.setAlliancePhone(alliancePhone);
         record.setAllianceDob(allianceDob);
         List<AllianceRecord> alliancePage = queryAllianceDao.findAlliancePage(page, record, search, orderBy, null, null);
-//        Date end = calculationEndTime();
-//        for(AllianceRecord allianceRecord: alliancePage){
-//            allianceRecord.setCutOffTime(end);
-//        }
+        Date end = calculationEndTime();
+        for(AllianceRecord allianceRecord: alliancePage){
+            allianceRecord.setCutOffTime(end);
+        }
         page.setRecords(alliancePage);
         return SuccessTip.create(page);
     }
@@ -314,11 +314,11 @@ public class AllianceEndpoint {
     @ApiOperation(value = "根据请求头X-USER-ID获取我的盟友列表", response = Alliance.class)
     public Tip getAlliancesByUserId(@RequestHeader("X-USER-ID") Long id) {
         List<Alliance> alliances = allianceService.getAlliancesByUserId(id);
-        if(alliances!=null&&alliances.size()>0){
-            for(Alliance alliance:alliances){
-                alliance.setCutOffTime(calculationEndTime());
-            }
-        }
+//        if(alliances!=null&&alliances.size()>0){
+//            for(Alliance alliance:alliances){
+//                alliance.setCutOffTime(calculationEndTime());
+//            }
+//        }
         return SuccessTip.create();
     }
 
