@@ -22,7 +22,7 @@
         <module>alliance-friend</module>
         <module>alliance-api</module>
         <module>alliance-rpc</module>
-        <module>saas-user</module>
+
         <module>bonus</module>
 <!--        <module>saas-mall-api</module>-->
     </modules>
