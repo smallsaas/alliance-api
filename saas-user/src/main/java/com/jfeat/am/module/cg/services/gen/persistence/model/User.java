@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 
 /**
@@ -45,14 +47,17 @@ public class User extends Model<User> {
 	private String email;
 	private String phone;
 	private String weixin;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	@TableField("register_date")
 	private Date registerDate;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	@TableField("last_login_date")
 	private Date lastLoginDate;
 	private String salt;
 	private String status;
 	@TableField("token_salt")
 	private String tokenSalt;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	@TableField("token_expired_date")
 	private Date tokenExpiredDate;
 	@TableField("invitation_code")
@@ -62,10 +67,12 @@ public class User extends Model<User> {
 
 	private String avatar;
 	private Integer sex;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date birthday;
 	private String details;
 	private String uid;
 	private Integer followed;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	@TableField("follow_time")
 	private Date followTime;
 	@TableField("invitation_qrcode_url")
