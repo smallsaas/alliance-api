@@ -16,7 +16,17 @@ public class AllianceRecord extends Alliance{
 
     String wechatAvatar;
     String wechatNick;
+    private BigDecimal balance;
 
+    @Override
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    @Override
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
 
     private JSONArray currentMonthOrder;
     private JSONArray selfProducts;

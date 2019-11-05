@@ -16,7 +16,7 @@ public interface AllianceService extends CRUDAllianceService{
     public Alliance findAllianceByPhoneNumber(String PhoneNumber);
     public List<Alliance> getAlliancesByUserId(Long id);
     public AllianceRecord getSelfProductById(Long id);
-    public Integer createAlliance(RequestAlliance requestAlliance);
+    public Integer createAlliance(RequestAlliance requestAlliance, Long userId);
 
     ///
     public Alliance getAlliancesByBindingUserId(Long id);

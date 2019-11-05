@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -172,17 +173,40 @@ public class RPCAllianceRegisterEndpoint {
             wallet.setUserId(userId);
             wallet = queryWalletDao.selectOne(wallet);
             if(wallet==null){
-                return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "没有找到钱包信息，用户：" + userId);
-            }
-            if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_COMMON){
-                if(wallet.getBalance().intValue() != common_alliance_inventory){
-                    return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友初始库存额有误： " + wallet.getBalance());
+               if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_COMMON){
+                   BigDecimal bigDecimal = new BigDecimal(common_alliance_inventory);
+                   wallet.setBalance(bigDecimal);
+                   wallet.setAccumulativeAmount(bigDecimal);
+               }else if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_BONUS){
+                   BigDecimal bigDecimal = new BigDecimal(bonus_alliance_inventory);
+                   wallet.setBalance(bigDecimal);
+                   wallet.setAccumulativeAmount(bigDecimal);
+               }
+                wallet.insert();
+                //return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "没有找到钱包信息，用户：" + userId);
+            }else{
+                if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_COMMON){
+                    BigDecimal bigDecimal = new BigDecimal(common_alliance_inventory);
+                    wallet.setBalance(bigDecimal.add(wallet.getBalance()));
+                    wallet.setAccumulativeAmount(bigDecimal.add(wallet.getAccumulativeAmount()));
+                }else if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_BONUS){
+                    BigDecimal bigDecimal = new BigDecimal(bonus_alliance_inventory);
+                    wallet.setBalance(bigDecimal);
+                    wallet.setAccumulativeAmount(bigDecimal);
                 }
-            }else if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_BONUS) {
-                if (wallet.getBalance().intValue() != bonus_alliance_inventory) {
-                    return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友初始库存额有误： " + wallet.getBalance());
-                }
+                queryWalletDao.updateById(wallet);
             }
+
+            //再次检查初始状态下的balance
+//            if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_COMMON){
+//                if(wallet.getBalance().intValue() != common_alliance_inventory){
+//                    return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友初始库存额有误： " + wallet.getBalance());
+//                }
+//            }else if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_BONUS) {
+//                if (wallet.getBalance().intValue() != bonus_alliance_inventory) {
+//                    return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友初始库存额有误： " + wallet.getBalance());
+//                }
+//            }
 
             // 确认为 正式盟友
             registeredAlliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_OK);
