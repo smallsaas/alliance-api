@@ -34,6 +34,7 @@
         <!--dev environment-->
         <crud-dev.version>0.0.1</crud-dev.version>
 
+
     </properties>
 
     <dependencies>
@@ -108,6 +109,13 @@
             <artifactId>alliance-rpc</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.jfeat</groupId>-->
+<!--            <artifactId>saas-user</artifactId>-->
+<!--            <version>1.0.0</version>-->
+<!--        </dependency>-->
+
 
         <!--allow swagger support java 11 (above java9)-->
         <dependency>

@@ -1,9 +1,12 @@
 package com.jfeat.am.module.alliance.services.domain.model;
 
 import com.alibaba.fastjson.JSONArray;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Created by Code Generator on 2019-10-14
@@ -17,6 +20,18 @@ public class AllianceRecord extends Alliance{
     String wechatAvatar;
     String wechatNick;
     private BigDecimal balance;
+    //结算时间
+    @DateTimeFormat(pattern = "YYYY-MM-DD")
+    @JsonFormat(pattern = "YYYY-MM-DD")
+    Date cutOffTime;
+
+    public Date getCutOffTime() {
+        return cutOffTime;
+    }
+
+    public void setCutOffTime(Date cutOffTime) {
+        this.cutOffTime = cutOffTime;
+    }
 
     @Override
     public BigDecimal getBalance() {

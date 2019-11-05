@@ -30,6 +30,8 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
 
 
     AllianceRecord allianceDetails(@Param("id") Long id);
+    @Select("select alliance_phone from t_alliance where alliance_phone=#{phone} ")
+    String queryPhone(@Param("phone") String phone);
 
 
 
