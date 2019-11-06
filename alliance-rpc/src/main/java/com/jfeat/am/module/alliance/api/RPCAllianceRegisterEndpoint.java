@@ -171,8 +171,8 @@ public class RPCAllianceRegisterEndpoint {
             //设置钱包库存额
             Wallet wallet = new Wallet();
             wallet.setUserId(userId);
-            wallet = queryWalletDao.selectOne(wallet);
-            if(wallet==null){
+            Wallet originWallet = queryWalletDao.selectOne(wallet);
+            if(originWallet==null){
                if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_COMMON){
                    BigDecimal bigDecimal = new BigDecimal(common_alliance_inventory);
                    wallet.setBalance(bigDecimal);
@@ -187,23 +187,23 @@ public class RPCAllianceRegisterEndpoint {
             }else{
                 if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_COMMON){
                     BigDecimal bigDecimal = new BigDecimal(common_alliance_inventory);
-                    if(wallet.getBalance()!=null){
-                        wallet.setBalance(bigDecimal.add(wallet.getBalance()));
+                    if(originWallet.getBalance()!=null){
+                        originWallet.setBalance(bigDecimal.add(originWallet.getBalance()));
                     }else {
-                        wallet.setBalance(bigDecimal);
+                        originWallet.setBalance(bigDecimal);
                     }
-                    if(wallet.getAccumulativeAmount()!=null){
-                        wallet.setAccumulativeAmount(bigDecimal.add(wallet.getAccumulativeAmount()));
+                    if(originWallet.getAccumulativeAmount()!=null){
+                        originWallet.setAccumulativeAmount(bigDecimal.add(originWallet.getAccumulativeAmount()));
                     }else {
-                        wallet.setAccumulativeAmount(bigDecimal);
+                        originWallet.setAccumulativeAmount(bigDecimal);
                     }
 
                 }else if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_BONUS){
                     BigDecimal bigDecimal = new BigDecimal(bonus_alliance_inventory);
-                    wallet.setBalance(bigDecimal);
-                    wallet.setAccumulativeAmount(bigDecimal);
+                    originWallet.setBalance(bigDecimal);
+                    originWallet.setAccumulativeAmount(bigDecimal);
                 }
-                queryWalletDao.updateById(wallet);
+                queryWalletDao.updateById(originWallet);
             }
 
             //再次检查初始状态下的balance
