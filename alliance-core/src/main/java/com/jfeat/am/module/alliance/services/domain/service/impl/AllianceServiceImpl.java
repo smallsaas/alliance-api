@@ -3,7 +3,6 @@ package com.jfeat.am.module.alliance.services.domain.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.jfeat.am.core.jwt.JWTKit;
 import com.jfeat.am.module.alliance.api.AllianceFields;
 import com.jfeat.am.module.alliance.api.AllianceShips;
 import com.jfeat.am.module.alliance.api.RequestAlliance;

@@ -44,22 +44,22 @@
             <artifactId>crud-log</artifactId>
             <version>${crud-log.version}</version>
         </dependency>-->
-<!--        <dependency>
+        <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>uaas</artifactId>
             <version>${uaas.version}</version>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>org</artifactId>
             <version>1.0.0</version>
         </dependency>
         <!---dev 环境依赖crud-dev-->
-        <dependency>
+<!--        <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>crud-dev</artifactId>
             <version>${crud-dev.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--crud core-->
         <dependency>
@@ -90,6 +90,11 @@
             <version>${saas-mall-api.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>uaas</artifactId>
+            <version>${uaas.version}</version>
+        </dependency>
         <!--business modules-->
 	    <dependency>
             <groupId>com.jfeat</groupId>
@@ -111,12 +116,6 @@
             <artifactId>alliance-rpc</artifactId>
             <version>1.0.0</version>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>com.jfeat</groupId>-->
-<!--            <artifactId>saas-user</artifactId>-->
-<!--            <version>1.0.0</version>-->
-<!--        </dependency>-->
 
 
         <!--allow swagger support java 11 (above java9)-->

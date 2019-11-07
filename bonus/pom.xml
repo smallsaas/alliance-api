@@ -23,9 +23,16 @@
         <crud-plus.version>0.0.6</crud-plus.version>
         <crud-core.version>0.0.2</crud-core.version>
         <crud-dev.version>0.0.1</crud-dev.version>
+        <crud-log.version>0.0.1</crud-log.version>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>crud-log</artifactId>
+            <version>${crud-log.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>crud-plus</artifactId>
@@ -36,11 +43,11 @@
             <artifactId>crud-core</artifactId>
             <version>${crud-core.version}</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>crud-dev</artifactId>
             <version>${crud-dev.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--springboot test-->
         <dependency>
