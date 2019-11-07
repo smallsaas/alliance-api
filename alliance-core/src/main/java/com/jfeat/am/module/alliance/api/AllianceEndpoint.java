@@ -13,7 +13,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.dao.DuplicateKeyException;
@@ -357,7 +356,6 @@ public class AllianceEndpoint {
     }
     @PutMapping("/updateAllianceShip/{id}")
     @ApiOperation("修改盟友确认支付状态")
-    @Transactional
     public Tip modifyAllianceShip(@PathVariable Long id){
         Integer set=0;
         Alliance alliance = allianceService.retrieveMaster(id);
@@ -437,7 +435,6 @@ public class AllianceEndpoint {
 
     @PostMapping("/{id}/action/setpaid")
     @ApiOperation("修改盟友支付状态-设置为已支付   ")
-    @Transactional
     public Tip paid(@PathVariable Long id){
         Alliance alliance = allianceService.retrieveMaster(id);
         if(alliance==null){
@@ -459,7 +456,6 @@ public class AllianceEndpoint {
 
     @PostMapping("/{id}/action/reset")
     @ApiOperation("修改盟友支付状态-支付过期-->待支付  ship 4--->2")
-    @Transactional
     public Tip reset(@PathVariable Long id){
         Alliance alliance = allianceService.retrieveMaster(id);
         if(alliance==null){
@@ -474,7 +470,6 @@ public class AllianceEndpoint {
 
     @PostMapping("/{id}/action/upgraded")
     @ApiOperation("修改盟友支付状态- 升级盟友 --->  普通盟友---> 分红盟友。type  1--->2")
-    @Transactional
     public Tip upgrade(@PathVariable Long id){
         Alliance alliance = allianceService.retrieveMaster(id);
         if(alliance==null){
