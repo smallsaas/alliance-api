@@ -67,6 +67,8 @@ public class AllianceEndpoint {
     QueryWalletDao queryWalletDao;
     @Resource
     QueryWalletHistoryDao queryWalletHistoryDao;
+
+
     private final Integer ALLIANCE_TYPE_BONUS=1;
     private final Integer ALLIANCE_TYPE_COMMON=2;
 
