@@ -6,8 +6,8 @@
         oi,t_product p ,t_bonus_proportion b,t_alliance a where
         o.user_id=#{userId} and oi.order_id= o.id and p.id=oi.product_id and a.user_id=o.user_id and a.alliance_type=1
         and b.product_id=p.id and b.type = 'STOCKHOLDER' and a.alliance_ship=0
+        and o.created_date > STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d')
         <choose>
-
             <when test="dateType=='1'">
                 and to_days(o.created_date)=to_days(now())
             </when>
@@ -26,8 +26,8 @@
         oi,t_product p ,t_bonus_proportion b,t_alliance a where
         o.user_id=#{userId} and oi.order_id= o.id and p.id=oi.product_id and a.user_id=o.user_id and b.product_id=p.id
         and b.type = 'RECOMMEND' and a.alliance_ship=0
+        and o.created_date > STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d')
         <choose>
-
             <when test="dateType=='1'">
                 and to_days(o.created_date)=to_days(now())
             </when>
@@ -38,8 +38,9 @@
                 and to_days(o.created_date)=to_days(now())
             </when>
         </choose>
-
-
     </select>
-
+    
+    <select id="queryAllianceExist" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(id) from t_alliance where user_id=#{userId}
+    </select>
 </mapper>
