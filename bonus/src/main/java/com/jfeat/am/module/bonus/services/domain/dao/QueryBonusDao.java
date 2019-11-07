@@ -16,7 +16,7 @@ public interface QueryBonusDao {
 
     //算出自己的团队
     @Select("select a1.user_id from t_alliance a1,t_alliance a2 where a1.invitor_alliance_id=a2.id and a2.user_id=#{userId} and a.alliance_ship=0")
-    List<Long> getTeam(@Param("userId") Long paramLong,@Param("dateType") Integer dateType);
+    List<Long> getTeam(@Param("userId") Long paramLong);
 
 
     //获取所有的入货总额
@@ -35,9 +35,10 @@ public interface QueryBonusDao {
     @Select("select proportion/100.0 from t_alliance_bonus where type=#{type}")
     BigDecimal getAllianceOrTeamProportion(@Param("type")String type);
 
-    @Select("select user_id from t_alliance where id=#{id}")
+    @Select("select user_id from t_alliance where id=#{id} and alliance_ship=0")
     Long getAllianceUserId(@Param("id") Long id);
 
+    Integer queryAllianceExist(@Param("userId") Long userId);
 
 }
 

@@ -41,11 +41,11 @@
             <artifactId>crud-core</artifactId>
             <version>${crud-core.version}</version>
         </dependency>
-<!--	    <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>crud-dev</artifactId>
-            <version>${crud-dev.version}</version>
-        </dependency>-->
+<!--	    <dependency>-->
+<!--            <groupId>com.jfeat</groupId>-->
+<!--            <artifactId>crud-dev</artifactId>-->
+<!--            <version>${crud-dev.version}</version>-->
+<!--        </dependency>-->
 
         <!--springboot test-->
         <dependency>

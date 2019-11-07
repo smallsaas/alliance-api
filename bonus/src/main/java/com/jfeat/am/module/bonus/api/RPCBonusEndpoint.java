@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Api("|Bonus|分红")
 @RequestMapping({"/rpc/bonus"})
-public class BonusEndpoint {
+public class RPCBonusEndpoint {
     @Resource
     BonusService bonusService;
     @Resource
@@ -28,6 +28,10 @@ public class BonusEndpoint {
     @ApiOperation("获取自己的分红，可以传盟友id，也可以Header的X-USER-ID，dateType--->1当天，2当月，3当季，不传时算总的")
     public Cip getSelfBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id,@RequestParam(name = "dateType",required = false) Integer dateType) {
         if (userId != null) {
+            Integer allianceExist = queryBonusDao.queryAllianceExist(userId);
+            if(allianceExist==0){
+                throw new BusinessException(BusinessCode.BadRequest,BonusError.ALLIANCE_NOT_EXIST);
+            }
             BigDecimal selfBonus = bonusService.getSelfBonus(userId,dateType).add(bonusService.getTeamProportionBonus(userId,dateType));
             JSONObject object = new JSONObject();
             object.put("selfBonus", selfBonus);
@@ -52,6 +56,10 @@ public class BonusEndpoint {
     @ApiOperation("获取自己团队分红，可以传盟友id，也可以Header的X-USER-ID,dateType--->1当天，2当月，3当季，不传时算总的")
     public Cip getTeamBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id,@RequestParam(name = "dateType",required = false) Integer dateType) {
         if (userId != null) {
+            Integer allianceExist = queryBonusDao.queryAllianceExist(userId);
+            if(allianceExist==0){
+                throw new BusinessException(BusinessCode.BadRequest,BonusError.ALLIANCE_NOT_EXIST);
+            }
             BigDecimal selfBonus = bonusService.getTeamBonus(userId,dateType);
             JSONObject object = new JSONObject();
             object.put("teamBonus", selfBonus);
@@ -78,6 +86,10 @@ public class BonusEndpoint {
     @GetMapping("/totalSelfBonus")
     public Cip getTotalSelfBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id,@RequestParam(required = false,name = "dateType") Integer dateType) {
         if (userId != null) {
+            Integer allianceExist = queryBonusDao.queryAllianceExist(userId);
+            if(allianceExist==0){
+                throw new BusinessException(BusinessCode.BadRequest,BonusError.ALLIANCE_NOT_EXIST);
+            }
             BigDecimal selfBonus = bonusService.getSelfBonus(userId,dateType).add(bonusService.getTeamProportionBonus(userId,dateType)).add(bonusService.getTeamBonus(userId,dateType));
             JSONObject object = new JSONObject();
             object.put("totalSelfBonus", selfBonus);
