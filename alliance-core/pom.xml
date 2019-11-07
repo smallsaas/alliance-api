@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>alliance-core</name>
-    <description>Code Generator Generated Artifact for Reference</description>
+    <description>alliance-core</description>
 
     <parent>
         <groupId>com.jfeat</groupId>
