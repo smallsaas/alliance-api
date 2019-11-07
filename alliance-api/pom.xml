@@ -90,11 +90,6 @@
             <version>${saas-mall-api.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>uaas</artifactId>
-            <version>${uaas.version}</version>
-        </dependency>
         <!--business modules-->
 	    <dependency>
             <groupId>com.jfeat</groupId>
