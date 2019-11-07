@@ -41,7 +41,7 @@
             AND t_alliance.alliance_type= #{record.allianceType}
         </if>
 
-        <if test="record.allianceShip != null and record.allianceShip>0 ">
+        <if test="record.allianceShip != null and record.allianceShip>=0 ">
             AND t_alliance.alliance_ship = #{record.allianceShip}
         </if>
 
@@ -135,7 +135,7 @@
             AND t_alliance.alliance_type= #{record.allianceType}
         </if>
 
-        <if test="record.allianceShip != null and record.allianceShip>0 ">
+        <if test="record.allianceShip != null and record.allianceShip>=0 ">
             AND t_alliance.alliance_ship = #{record.allianceShip}
         </if>
 

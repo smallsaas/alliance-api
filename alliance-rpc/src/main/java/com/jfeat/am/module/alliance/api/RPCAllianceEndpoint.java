@@ -356,8 +356,8 @@ public class RPCAllianceEndpoint {
     }
 
     @GetMapping("/getAllianceInformationByUserId")
-    @ApiOperation(value = "根据X-USER-ID获取我的盟友信息,可以获取当月订单currentMonthOrder和我的盟友列表,还有分红信息（只有是股东能有分红）", response = AllianceRecord.class)
-    public Cip getAllianceInformationByUserId(@RequestHeader("X-USER-ID") Long id) throws ParseException {
+    @ApiOperation(value = "根据X-USER-ID获取我的盟友信息,可以获取当月订单currentMonthOrder和我的盟友列表,还有分红信息（只有是股东能有分红）dateType参数--->1当天，2当月，3当季", response = AllianceRecord.class)
+    public Cip getAllianceInformationByUserId(@RequestHeader("X-USER-ID") Long id,@RequestParam(name = "dateType",required = false) Integer dateType) throws ParseException {
         Alliance entity = new Alliance();
         entity.setUserId(id);
         AllianceRecord alliance = queryAllianceDao.selectAllianceOneByUserId(id);
@@ -380,9 +380,9 @@ public class RPCAllianceEndpoint {
             alliance.setAllianceTeam(new JSONArray());
         }
         //----------------------
-        alliance.setSelfBonus(bonusService.getSelfBonus(id).add(bonusService.getTeamProportionBonus(id)));
-        alliance.setTeamSelfBonus(bonusService.getTeamBonus(id));
-        alliance.setTotalSelfBonus(bonusService.getSelfBonus(id).add(bonusService.getTeamProportionBonus(id)).add(bonusService.getTeamBonus(id)));
+        alliance.setSelfBonus(bonusService.getSelfBonus(id, dateType).add(bonusService.getTeamProportionBonus(id, dateType)));
+        alliance.setTeamSelfBonus(bonusService.getTeamBonus(id, dateType));
+        alliance.setTotalSelfBonus(bonusService.getSelfBonus(id, dateType).add(bonusService.getTeamProportionBonus(id, dateType)).add(bonusService.getTeamBonus(id, dateType)));
         JSONArray royalties = new JSONArray();
         Royalty ls = new Royalty();
         ls.setOrderMoney(new BigDecimal(2000.0));

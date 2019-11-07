@@ -5,6 +5,8 @@ import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import com.jfeat.am.module.bonus.util.Cip;
 import com.jfeat.am.module.bonus.util.SuccessCip;
+import com.jfeat.crud.base.exception.BusinessCode;
+import com.jfeat.crud.base.exception.BusinessException;
 import io.swagger.annotations.Api;
 
 import java.math.BigDecimal;
@@ -23,25 +25,23 @@ public class BonusEndpoint {
     QueryBonusDao queryBonusDao;
 
     @GetMapping("/selfBonus")
-    @ApiOperation("获取自己的分红，可以传盟友id，也可以Header的X-USER-ID")
-    public Cip getSelfBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id) {
+    @ApiOperation("获取自己的分红，可以传盟友id，也可以Header的X-USER-ID，dateType--->1当天，2当月，3当季，不传时算总的")
+    public Cip getSelfBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id,@RequestParam(name = "dateType",required = false) Integer dateType) {
         if (userId != null) {
-            BigDecimal selfBonus = bonusService.getSelfBonus(userId).add(bonusService.getTeamProportionBonus(userId));
+            BigDecimal selfBonus = bonusService.getSelfBonus(userId,dateType).add(bonusService.getTeamProportionBonus(userId,dateType));
             JSONObject object = new JSONObject();
             object.put("selfBonus", selfBonus);
             return SuccessCip.create(object);
         } else if (id != null) {
             Long allianceUserId = queryBonusDao.getAllianceUserId(id);
             if (allianceUserId != null) {
-                BigDecimal selfBonus = bonusService.getSelfBonus(allianceUserId).add(bonusService.getTeamProportionBonus(allianceUserId));
+                BigDecimal selfBonus = bonusService.getSelfBonus(allianceUserId,dateType).add(bonusService.getTeamProportionBonus(allianceUserId,dateType));
                 JSONObject object = new JSONObject();
                 object.put("selfBonus", selfBonus);
                 return SuccessCip.create(object);
             }
         } else {
-            JSONObject object = new JSONObject();
-            object.put("selfBonus", 0);
-            return SuccessCip.create(object);
+            throw new BusinessException(BusinessCode.BadRequest,"参数有误，请重试");
         }
         JSONObject object = new JSONObject();
         object.put("selfBonus", 0);
@@ -49,17 +49,17 @@ public class BonusEndpoint {
     }
 
     @GetMapping("/teamBonus")
-    @ApiOperation("获取自己团队分红，可以传盟友id，也可以Header的X-USER-ID")
-    public Cip getTeamBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id) {
+    @ApiOperation("获取自己团队分红，可以传盟友id，也可以Header的X-USER-ID,dateType--->1当天，2当月，3当季，不传时算总的")
+    public Cip getTeamBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id,@RequestParam(name = "dateType",required = false) Integer dateType) {
         if (userId != null) {
-            BigDecimal selfBonus = bonusService.getTeamBonus(userId);
+            BigDecimal selfBonus = bonusService.getTeamBonus(userId,dateType);
             JSONObject object = new JSONObject();
             object.put("teamBonus", selfBonus);
             return SuccessCip.create(object);
         } else if (id != null) {
             Long allianceUserId = queryBonusDao.getAllianceUserId(id);
             if (allianceUserId != null) {
-                BigDecimal selfBonus = bonusService.getTeamBonus(allianceUserId);
+                BigDecimal selfBonus = bonusService.getTeamBonus(allianceUserId,dateType);
                 JSONObject object = new JSONObject();
                 object.put("teamBonus", selfBonus);
                 return SuccessCip.create(object);
@@ -74,18 +74,18 @@ public class BonusEndpoint {
         return SuccessCip.create(object);
     }
 
-    @ApiOperation("获取自己总的分红，可以传盟友id，也可以Header的X-USER-ID")
+    @ApiOperation("获取自己总的分红，可以传盟友id，也可以Header的X-USER-ID,dateType--->1当天，2当月，3当季，不传时算总的")
     @GetMapping("/totalSelfBonus")
-    public Cip getTotalSelfBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id) {
+    public Cip getTotalSelfBonus(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestParam(required = false, name = "id") Long id,@RequestParam(required = false,name = "dateType") Integer dateType) {
         if (userId != null) {
-            BigDecimal selfBonus = bonusService.getSelfBonus(userId).add(bonusService.getTeamProportionBonus(userId)).add(bonusService.getTeamBonus(userId));
+            BigDecimal selfBonus = bonusService.getSelfBonus(userId,dateType).add(bonusService.getTeamProportionBonus(userId,dateType)).add(bonusService.getTeamBonus(userId,dateType));
             JSONObject object = new JSONObject();
             object.put("totalSelfBonus", selfBonus);
             return SuccessCip.create(object);
         } else if (id != null) {
             Long allianceUserId = queryBonusDao.getAllianceUserId(id);
             if (allianceUserId != null) {
-                BigDecimal selfBonus = bonusService.getSelfBonus(allianceUserId).add(bonusService.getTeamProportionBonus(allianceUserId)).add(bonusService.getTeamBonus(allianceUserId));
+                BigDecimal selfBonus = bonusService.getSelfBonus(allianceUserId,dateType).add(bonusService.getTeamProportionBonus(allianceUserId,dateType)).add(bonusService.getTeamBonus(allianceUserId,dateType));
                 JSONObject object = new JSONObject();
                 object.put("totalSelfBonus", selfBonus);
                 return SuccessCip.create(object);

@@ -69,8 +69,8 @@ logging:
 spring:
   profiles: dev
   datasource:
-    #      url: jdbc:mysql://120.79.49.72/test?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
-    url: jdbc:mysql://120.79.49.72/mall_test2?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
+#          url: jdbc:mysql://120.79.49.72/test?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
+    url: jdbc:mysql://localhost/test4?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
     username: root
     password: root
     filters: log4j,wall,mergeStat
