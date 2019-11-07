@@ -1,10 +1,12 @@
 package com.jfeat.am.module.alliance.services.domain.service;
 
+import com.jfeat.am.module.alliance.api.AllianceRequest;
 import com.jfeat.am.module.alliance.api.RequestAlliance;
 import com.jfeat.am.module.alliance.services.domain.model.AllianceRecord;
 import com.jfeat.am.module.alliance.services.gen.crud.service.CRUDAllianceService;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -20,4 +22,10 @@ public interface AllianceService extends CRUDAllianceService{
 
     ///
     public Alliance getAlliancesByBindingUserId(Long id);
+
+    public Integer create(Long userId, AllianceRequest entity)throws ParseException;
+
+    public Integer modify(Long id,AllianceRequest entity) throws ParseException;
+
+    public Integer modifyAllianceShip(Long id);
 }
