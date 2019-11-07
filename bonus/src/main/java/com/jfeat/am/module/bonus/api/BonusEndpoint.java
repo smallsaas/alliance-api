@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Api("|Bonus|分红")
 @RequestMapping({"/rpc/bonus"})
-public class RPCBonusEndpoint {
+public class BonusEndpoint {
     @Resource
     BonusService bonusService;
     @Resource
