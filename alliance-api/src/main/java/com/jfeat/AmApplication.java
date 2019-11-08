@@ -12,7 +12,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import javax.annotation.Resource;
 /**
  * SpringBoot CG Test Application
- *
  * @author Admin
  * @Date 2017/5/21 12:06
  */

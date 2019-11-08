@@ -2,6 +2,9 @@ package com.jfeat.am.module.bonus.services.domain.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
+import com.jfeat.am.module.bonus.services.domain.model.ProductSalesRecord;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 public interface QueryBonusDao {
@@ -15,7 +18,7 @@ public interface QueryBonusDao {
 
 
     //算出自己的团队
-    @Select("select a1.user_id from t_alliance a1,t_alliance a2 where a1.invitor_alliance_id=a2.id and a2.user_id=#{userId} and a.alliance_ship=0")
+    @Select("select a1.user_id from t_alliance a1,t_alliance a2 where a1.invitor_alliance_id=a2.id and a2.user_id=#{userId} and a1.alliance_ship=0")
     List<Long> getTeam(@Param("userId") Long paramLong);
 
 
@@ -39,6 +42,10 @@ public interface QueryBonusDao {
     Long getAllianceUserId(@Param("id") Long id);
 
     Integer queryAllianceExist(@Param("userId") Long userId);
+
+    List<ProductSalesRecord> querySales(@Param("pageNum") Integer pageNum,@Param("pageSize")Integer pageSize);
+
+    List<AllianceReconciliation> queryReInformation(@Param("pageNum") Integer pageNum,@Param("pageSize")Integer pageSize);
 
 }
 

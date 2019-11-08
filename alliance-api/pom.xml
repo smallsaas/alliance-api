@@ -38,7 +38,7 @@
     </properties>
 
     <dependencies>
-        <!--Produce provided  开发环境注释掉以下两项依赖（可免密调试，以及可访问swagger-ui.html）
+        <!--Produce provided  开发环境注释掉以下两项依赖（可免密调试，以及可访问swagger-ui.html）>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>crud-log</artifactId>
@@ -54,12 +54,18 @@
             <artifactId>org</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>jwt-core</artifactId>
+            <version>0.0.2</version>
+        </dependency>
         <!---dev 环境依赖crud-dev-->
-<!--        <dependency>
+        <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>crud-dev</artifactId>
             <version>${crud-dev.version}</version>
-        </dependency>-->
+        </dependency>
 
         <!--crud core-->
         <dependency>
@@ -79,11 +85,11 @@
             <artifactId>saas-app-api</artifactId>
             <version>${saas-app-api.version}</version>
         </dependency>-->
-       <!-- <dependency>
+        <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-app-api</artifactId>
             <version>${saas-app-api.version}</version>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-mall-api</artifactId>
