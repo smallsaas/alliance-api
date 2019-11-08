@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/rpc/bonus/reconciliation")
+@RequestMapping("/api/bonus/reconciliation")
 public class AllianceReconciliationEndpoint {
     @Resource
     QueryBonusDao queryBonusDao;
