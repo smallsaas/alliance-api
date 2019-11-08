@@ -1,7 +1,9 @@
 package com.jfeat.am.module.alliance.api;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.jfeat.am.common.annotation.Permission;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao;
+import com.jfeat.am.module.alliance.services.domain.definition.AlliancePermission;
 import com.jfeat.am.module.alliance.services.domain.model.AllianceRecord;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
@@ -37,6 +39,7 @@ public class MineAllianceEndpoint {
             @ApiImplicitParam(name = "orderBy", dataType = "String"),
             @ApiImplicitParam(name = "sort", dataType = "String")
     })
+    @Permission(AlliancePermission.ALLIANCE_VIEW)
     public Tip queryAlliances(Page<AllianceRecord> page,
                               @PathVariable Long id,
                               @RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
