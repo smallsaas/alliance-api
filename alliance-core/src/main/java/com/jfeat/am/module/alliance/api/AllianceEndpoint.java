@@ -3,8 +3,10 @@ package com.jfeat.am.module.alliance.api;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.Condition;
+import com.jfeat.am.common.annotation.Permission;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
+import com.jfeat.am.module.alliance.services.domain.definition.AlliancePermission;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
@@ -75,6 +77,7 @@ public class AllianceEndpoint {
     //@BusinessLog(name = "Alliance", value = "create Alliance")
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
+    @Permission(AlliancePermission.ALLIANCE_ADD)
     public Tip createAlliance(@RequestHeader(required = false,name = "X-USER-ID") Long userId,@RequestBody AllianceRequest entity) throws ServerException, ParseException {
         Integer affected=allianceService.create(userId,entity);
         return SuccessTip.create(affected);
@@ -83,6 +86,7 @@ public class AllianceEndpoint {
     //@BusinessLog(name = "Alliance", value = "查看 Alliance")
     @GetMapping("/{id}")
     @ApiOperation(value = "查看 Alliance", response = Alliance.class)
+    @Permission(AlliancePermission.ALLIANCE_VIEW)
     public Tip getAlliance(@PathVariable Long id) {
         return SuccessTip.create(queryAllianceDao.allianceDetails(id));
     }
@@ -91,6 +95,7 @@ public class AllianceEndpoint {
     //@BusinessLog(name = "Alliance", value = "update Alliance")
     @PutMapping("/{id}")
     @ApiOperation(value = "修改 Alliance", response = Alliance.class)
+    @Permission(AlliancePermission.ALLIANCE_EDIT)
     public Tip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException, ParseException {
         return SuccessTip.create(allianceService.modify(id,entity));
     }
@@ -98,6 +103,7 @@ public class AllianceEndpoint {
     //@BusinessLog(name = "Alliance", value = "delete Alliance")
     @DeleteMapping("/{id}")
     @ApiOperation("删除 Alliance")
+    @Permission(AlliancePermission.ALLIANCE_DEL)
     public Tip deleteAlliance(@PathVariable Long id) {
         return SuccessTip.create(allianceService.deleteMaster(id));
     }
@@ -137,6 +143,7 @@ public class AllianceEndpoint {
             @ApiImplicitParam(name = "orderBy", dataType = "String"),
             @ApiImplicitParam(name = "sort", dataType = "String")
     })
+    @Permission(AlliancePermission.ALLIANCE_VIEW)
     public Tip queryAlliances(Page<AllianceRecord> page,
                               @RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                               @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize,
@@ -251,6 +258,7 @@ public class AllianceEndpoint {
 
     @GetMapping("/getAllianceInformationByUserId")
     @ApiOperation(value = "根据请求头X-USER-ID获得个人的盟友信息，currentMonthOrder是当月订单", response = Alliance.class)
+    @Permission(AlliancePermission.ALLIANCE_VIEW)
     public Tip getAllianceInformationByUserId(@RequestHeader("X-USER-ID") Long id) {
         Alliance entity = new Alliance();
         entity.setUserId(id);
@@ -268,6 +276,7 @@ public class AllianceEndpoint {
 
     @GetMapping("/getAllianceInformationByUserId/{id}")
     @ApiOperation(value = "根据盟友id获取我的盟友信息,携带自营商品", response = Alliance.class)
+    @Permission(AlliancePermission.ALLIANCE_VIEW)
     public Tip getSelfProductById(@PathVariable Long id) {
         AllianceRecord allianceRecord = allianceService.getSelfProductById(id);
         allianceRecord.setCutOffTime(calculationEndTime());
@@ -275,12 +284,14 @@ public class AllianceEndpoint {
     }
     @PutMapping("/updateAllianceShip/{id}")
     @ApiOperation("修改盟友确认支付状态")
+    @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
     public Tip modifyAllianceShip(@PathVariable Long id){
         return SuccessTip.create(allianceService.modifyAllianceShip(id));
     }
 
     @PostMapping("/{id}/action/setpaid")
     @ApiOperation("修改盟友支付状态-设置为已支付   ")
+    @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
     public Tip paid(@PathVariable Long id){
         Alliance alliance = allianceService.retrieveMaster(id);
         if(alliance==null){
@@ -302,6 +313,7 @@ public class AllianceEndpoint {
 
     @PostMapping("/{id}/action/reset")
     @ApiOperation("修改盟友支付状态-支付过期-->待支付  ship 4--->2")
+    @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
     public Tip reset(@PathVariable Long id){
         Alliance alliance = allianceService.retrieveMaster(id);
         if(alliance==null){
@@ -316,6 +328,7 @@ public class AllianceEndpoint {
 
     @PostMapping("/{id}/action/upgraded")
     @ApiOperation("修改盟友支付状态- 升级盟友 --->  普通盟友---> 分红盟友。type  1--->2")
+    @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
     public Tip upgrade(@PathVariable Long id){
         Alliance alliance = allianceService.retrieveMaster(id);
         if(alliance==null){
