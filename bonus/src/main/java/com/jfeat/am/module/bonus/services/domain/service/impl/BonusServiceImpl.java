@@ -2,12 +2,12 @@ package com.jfeat.am.module.bonus.services.domain.service.impl;
 
 import com.jfeat.am.module.bonus.api.BonusDateType;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
+import com.jfeat.am.module.bonus.services.domain.filter.AllianceField;
 import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Resource;
 
@@ -33,7 +33,7 @@ public class BonusServiceImpl implements BonusService {
         if (allianceBonus == null) {
             allianceBonus = new BigDecimal(0);
         }
-        BigDecimal proportion = queryBonusDao.getAllianceOrTeamProportion("ALLIANCE");
+        BigDecimal proportion = queryBonusDao.getAllianceOrTeamProportion(AllianceField.FIXED_PROPORTION);
         if (proportion == null) {
             proportion = new BigDecimal(0);
         }
@@ -55,7 +55,7 @@ public class BonusServiceImpl implements BonusService {
         if (allianceBonus == null) {
             allianceBonus = new BigDecimal(0);
         }
-        BigDecimal team1 = queryBonusDao.getAllianceOrTeamProportion("TEAM");
+        BigDecimal team1 = queryBonusDao.getAllianceOrTeamProportion(AllianceField.RATIO_PROPORTION);
         if (team1 == null) {
             team1 = new BigDecimal(0);
         }

@@ -35,7 +35,7 @@ public interface QueryBonusDao {
     BigDecimal getInventoryAmount(@Param("userId") Long paramLong);
 
     //获取团队分红占比的分红比例，和股东比例
-    @Select("select proportion/100.0 from t_alliance_bonus where type=#{type}")
+    @Select("select value/100.0 from t_config_field where field=#{type}")
     BigDecimal getAllianceOrTeamProportion(@Param("type")String type);
 
     @Select("select user_id from t_alliance where id=#{id} and alliance_ship=0")
