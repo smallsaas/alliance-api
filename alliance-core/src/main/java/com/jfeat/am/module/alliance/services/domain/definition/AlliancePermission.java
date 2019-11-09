@@ -12,11 +12,11 @@ public class AlliancePermission {
     //升级盟友
     public static final String ALLIANCE_EDIT_STATE_UP =  "Alliance.edit.state.up";
 
-
+/*
     public static final String ALLIANCEBONUS_VIEW = "AllianceBonus.view";
     public static final String ALLIANCEBONUS_EDIT = "AllianceBonus.edit";
     public static final String ALLIANCEBONUS_DEL =  "AllianceBonus.delete";
-    public static final String ALLIANCEBONUS_ADD =  "AllianceBonus.new";
+    public static final String ALLIANCEBONUS_ADD =  "AllianceBonus.new";*/
 
 
 
