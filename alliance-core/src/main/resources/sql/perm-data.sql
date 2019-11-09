@@ -10,6 +10,8 @@ INSERT INTO sys_perm(`id`, `group_id`, `identifier`, `name`,`tag`) VALUES('10000
 INSERT INTO sys_perm(`id`, `group_id`, `identifier`, `name`,`tag`) VALUES('100000000000005005' , '100000000000000005', 'Alliance.edit.state',  '修改盟友支付状态', '0');
 INSERT INTO sys_perm(`id`, `group_id`, `identifier`, `name`,`tag`) VALUES('100000000000005006' , '100000000000000005', 'Alliance.edit.state.up',  '升级盟友', '0');
 
+INSERT INTO sys_perm(`id`, `group_id`, `identifier`, `name`,`tag`) VALUES('100000000000005007' , '100000000000000005', 'Bonus.view',  '产品销量', '0');
+INSERT INTO sys_perm(`id`, `group_id`, `identifier`, `name`,`tag`) VALUES('100000000000005008' , '100000000000000005', 'Bonus.Dividend',  '盟友分红信息', '0');
 /**/
 /*INSERT INTO sys_perm(`id`, `group_id`, `identifier`, `name`,`tag`) VALUES('100000000000005007' , '100000000000000005', 'AllianceBonus.edit',    '编辑盟友奖金', '0');*/
 /*INSERT INTO sys_perm(`id`, `group_id`, `identifier`, `name`,`tag`) VALUES('100000000000005008' , '100000000000000005', 'AllianceBonus.delete',  '删除盟友奖金', '0');*/
