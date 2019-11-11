@@ -367,14 +367,15 @@ public class RPCAllianceEndpoint {
         entity.setUserId(id);
         AllianceRecord alliance = queryAllianceDao.selectAllianceOneByUserId(id);
         Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(id));
-        if(wallet!=null){
+        if (wallet != null) {
             alliance.setBalance(wallet.getBalance());
         }
+
         List<Map> currentMonthOrderByUserId = queryAllianceDao.getCurrentMonthOrderByUserId(id);
 
         if (alliance != null) {
             if (currentMonthOrderByUserId != null && currentMonthOrderByUserId.size() > 0) {
-                alliance.setCurrentMonthOrder(JSON.parseArray(JSON.toJSONString(queryAllianceDao.getCurrentMonthOrderByUserId(id))));
+                alliance.setCurrentMonthOrder(JSON.parseArray(JSON.toJSONString(queryAllianceDao.getCurrentMonthOrderByUserId(id),SerializerFeature.WriteDateUseDateFormat)));
             } else {
                 alliance.setCurrentMonthOrder(new JSONArray());
             }
@@ -396,7 +397,7 @@ public class RPCAllianceEndpoint {
         if (team != null && team.size() > 0) {
             for (Long t : team) {
                 if (t != null && t > 0) {
-                    if (queryBonusDao.queryShip(t) == 0&&queryBonusDao.queryType(id)==Alliance.ALLIANCE_TYPE_BONUS) {
+                    if (queryBonusDao.queryShip(t) == 0 && queryBonusDao.queryType(id) == Alliance.ALLIANCE_TYPE_BONUS) {
                         String name = queryBonusDao.queryAllianceName(t);
                         BigDecimal teamProportionBonus = queryBonusDao.getTeamBonus(t, dateType);
                         BigDecimal orderBonus = queryBonusDao.queryBonusOrder(t);

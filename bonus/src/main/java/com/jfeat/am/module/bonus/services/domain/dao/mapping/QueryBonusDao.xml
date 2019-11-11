@@ -46,7 +46,7 @@
 
     <select id="querySales" resultType="com.jfeat.am.module.bonus.services.domain.model.ProductSalesRecord">
         <bind name="off_set" value="(pageNum-1)*pageSize"/>
-        select p.id,p.name,p.cover,oitem.quantity as quantity ,pc.name as category, CONCAT('瓶') as
+        select p.id,p.name,p.cover,oitem.quantity as quantity ,pc.name as category, p.unit as
         unit,p.price*oitem.quantity as sales from t_product p LEFT JOIN (select o.id as
         order_id,oi.product_id,oi.quantity from t_order o,t_order_item oi where oi.order_id=o.id and o.created_date
         between (select STR_TO_DATE(VALUE,'%Y-%m-%d') from t_config_field where field='starting_time') and
