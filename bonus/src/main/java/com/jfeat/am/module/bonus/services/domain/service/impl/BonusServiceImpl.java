@@ -94,20 +94,24 @@ public class BonusServiceImpl implements BonusService {
         if (allianceExist == 0) {
             return new BigDecimal(0);
         }
+        if(queryBonusDao.queryType(id)!=AllianceField.ALLIANCE_TYPE_BONUS){
+            return new BigDecimal(0);
+        }
         List<Long> teamUserIds = queryBonusDao.getTeam(id);
         BigDecimal teamBonus = new BigDecimal(0);
         for (Long teamUserId : teamUserIds) {
-            BigDecimal tmp = queryBonusDao.getTeamBonus(id, dateType);
+            BigDecimal tmp = queryBonusDao.getTeamBonus(teamUserId, dateType);
+            if (teamBonus == null) {
+                teamBonus = new BigDecimal(0);
+            }
+            if (teamBonus.compareTo(new BigDecimal(0)) == 0) {
+                teamBonus = new BigDecimal(0);
+            }
             if (tmp != null) {
                 teamBonus = teamBonus.add(tmp);
             }
         }
-        if (teamBonus == null) {
-            teamBonus = new BigDecimal(0);
-        }
-        if (teamBonus.compareTo(new BigDecimal(0)) == 0) {
-            teamBonus = new BigDecimal(0);
-        }
+
         return teamBonus;
     }
 

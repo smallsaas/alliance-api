@@ -12,10 +12,10 @@ public class STest {
     @Resource
     QueryBonusDao queryBonusDao;
 
-//    @Test
-//    public void test() throws Exception {
-//        System.out.println(queryBonusDao.getTeamBonusMonth(4L));
-//    }
+    @Test
+    public void test() throws Exception {
+        System.out.println(queryBonusDao.getTeamBonus(4l,2));
+    }
 
 
 }

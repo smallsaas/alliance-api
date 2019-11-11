@@ -7,14 +7,15 @@ import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
 import com.jfeat.am.module.bonus.services.domain.model.ProductSalesRecord;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+
 public interface QueryBonusDao {
 
     //（算出总的订单商品总的盟友分红）
-    BigDecimal getAllianceBonus(@Param("userId") Long paramLong,@Param("dateType") Integer dateType);
+    BigDecimal getAllianceBonus(@Param("userId") Long paramLong, @Param("dateType") Integer dateType);
 
 
     //算出自己的推荐分红(给别人的)
-    BigDecimal getTeamBonus(@Param("userId") Long paramLong,@Param("dateType") Integer dateType);
+    BigDecimal getTeamBonus(@Param("userId") Long paramLong, @Param("dateType") Integer dateType);
 
 
     //算出自己的团队
@@ -36,16 +37,25 @@ public interface QueryBonusDao {
 
     //获取团队分红占比的分红比例，和股东比例
     @Select("select value/100.0 from t_config_field where field=#{type}")
-    BigDecimal getAllianceOrTeamProportion(@Param("type")String type);
+    BigDecimal getAllianceOrTeamProportion(@Param("type") String type);
 
     @Select("select user_id from t_alliance where id=#{id} and alliance_ship=0")
     Long getAllianceUserId(@Param("id") Long id);
 
     Integer queryAllianceExist(@Param("userId") Long userId);
 
-    List<ProductSalesRecord> querySales(@Param("pageNum") Integer pageNum,@Param("pageSize")Integer pageSize);
+    List<ProductSalesRecord> querySales(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize);
 
-    List<AllianceReconciliation> queryReInformation(@Param("pageNum") Integer pageNum,@Param("pageSize")Integer pageSize);
+    List<AllianceReconciliation> queryReInformation(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize);
+
+
+    BigDecimal queryBonusOrder(@Param("userId") Long userId);
+
+    String queryAllianceName(@Param("userId") Long userId);
+
+    Integer queryShip(@Param("userId") Long userId);
+    Integer queryType(@Param("userId") Long userId);
+
 
 }
 

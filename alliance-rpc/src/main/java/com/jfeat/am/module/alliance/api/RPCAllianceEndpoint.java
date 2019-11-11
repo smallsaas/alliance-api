@@ -4,6 +4,7 @@ package com.jfeat.am.module.alliance.api;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
@@ -11,6 +12,7 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.Royalty;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
+import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import com.jfeat.util.Cip;
@@ -71,18 +73,21 @@ public class RPCAllianceEndpoint {
     ConfigFieldService configFieldService;
 
     @Resource
+    QueryBonusDao queryBonusDao;
+
+    @Resource
     QueryWalletHistoryDao queryWalletHistoryDao;
 
-    private final Integer ALLIANCE_TYPE_BONUS=1;
-    private final Integer ALLIANCE_TYPE_COMMON=2;
+    private final Integer ALLIANCE_TYPE_BONUS = 1;
+    private final Integer ALLIANCE_TYPE_COMMON = 2;
 
-    private Long millisecond=86400000L;//24 * 60 * 60 * 1000 毫秒
+    private Long millisecond = 86400000L;//24 * 60 * 60 * 1000 毫秒
 
     //@BusinessLog(name = "Alliance", value = "create Alliance")
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
-    public Cip createAlliance(@RequestHeader("X-USER-ID") Long userId,@RequestBody AllianceRequest entity) throws ServerException, ParseException {
-        Date create=new Date();
+    public Cip createAlliance(@RequestHeader("X-USER-ID") Long userId, @RequestBody AllianceRequest entity) throws ServerException, ParseException {
+        Date create = new Date();
         entity.setCreationTime(create);
         entity.setStartingCycle(create);
         entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
@@ -107,14 +112,14 @@ public class RPCAllianceEndpoint {
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
             entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
             Wallet walletCondition = new Wallet();
-            if(userId!=null){
+            if (userId != null) {
                 walletCondition.setUserId(userId);
-            }else if(entity.getUserId()!=null&&entity.getUserId()>0){
+            } else if (entity.getUserId() != null && entity.getUserId() > 0) {
                 walletCondition.setUserId(entity.getUserId());
             }
             Wallet wallet = queryWalletDao.selectOne(walletCondition);
 
-            if(wallet==null){
+            if (wallet == null) {
                 walletCondition.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                 queryWalletDao.insert(walletCondition);
                 WalletHistory walletHistory = new WalletHistory();
@@ -125,13 +130,13 @@ public class RPCAllianceEndpoint {
                 walletHistory.setWalletId(new Long(walletCondition.getId()));
                 queryWalletHistoryDao.insert(walletHistory);
 
-            }else{
+            } else {
 
-                if(wallet.getAccumulativeAmount()!=null){
+                if (wallet.getAccumulativeAmount() != null) {
                     BigDecimal common_alliance = wallet.getBalance().add(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                     wallet.setBalance(common_alliance);
                     queryWalletDao.updateById(wallet);
-                }else{
+                } else {
                     wallet.setAccumulativeAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                     queryWalletDao.updateById(wallet);
 
@@ -150,15 +155,15 @@ public class RPCAllianceEndpoint {
             entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
             Wallet walletCondition = new Wallet();
-            if(userId!=null){
+            if (userId != null) {
                 walletCondition.setUserId(userId);
-            }else if(entity.getUserId()!=null&&entity.getUserId()>0){
+            } else if (entity.getUserId() != null && entity.getUserId() > 0) {
                 walletCondition.setUserId(entity.getUserId());
             }
             Wallet wallet = queryWalletDao.selectOne(walletCondition);
 
-            if(wallet==null){
-                wallet=new Wallet();
+            if (wallet == null) {
+                wallet = new Wallet();
                 walletCondition.setAccumulativeAmount(new BigDecimal(0));
                 walletCondition.setGiftBalance(new BigDecimal(0));
                 walletCondition.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
@@ -171,13 +176,13 @@ public class RPCAllianceEndpoint {
                 walletHistory.setType(RechargeType.RECHARGE);
                 queryWalletHistoryDao.insert(walletHistory);
 
-            }else{
+            } else {
 
-                if(wallet.getAccumulativeAmount()!=null){
+                if (wallet.getAccumulativeAmount() != null) {
                     BigDecimal common_alliance = wallet.getBalance().add(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                     wallet.setBalance(common_alliance);
                     queryWalletDao.updateById(wallet);
-                }else{
+                } else {
                     wallet.setAccumulativeAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                     queryWalletDao.updateById(wallet);
                 }
@@ -230,8 +235,8 @@ public class RPCAllianceEndpoint {
         }
         if (alliance != null) {
             Alliance allianceShip = allianceService.retrieveMaster(id);
-            if(allianceShip.getAllianceShip()!=null&&allianceShip.getAllianceShip()==1){
-                if(allianceShip.getTempAllianceExpiryTime()!=null&&new Date().getTime()<allianceShip.getTempAllianceExpiryTime().getTime()){
+            if (allianceShip.getAllianceShip() != null && allianceShip.getAllianceShip() == 1) {
+                if (allianceShip.getTempAllianceExpiryTime() != null && new Date().getTime() < allianceShip.getTempAllianceExpiryTime().getTime()) {
                     throw new ServerException("临时盟友不能修改邀请人，请将邀请人手机号去掉");
                 }
             }
@@ -344,7 +349,7 @@ public class RPCAllianceEndpoint {
         record.setAllianceHobby(allianceHobby);
         record.setAlliancePhone(alliancePhone);
         record.setAllianceDob(allianceDob);
-        page.setRecords(queryAllianceDao.findAlliancePage(page, record, search, orderBy, null, null));
+        page.setRecords(queryAllianceDao.findAlliancePageShip(page, record, search, orderBy, null, null));
         return SuccessCip.create(page);
     }
 
@@ -357,12 +362,15 @@ public class RPCAllianceEndpoint {
 
     @GetMapping("/getAllianceInformationByUserId")
     @ApiOperation(value = "根据X-USER-ID获取我的盟友信息,可以获取当月订单currentMonthOrder和我的盟友列表,还有分红信息（只有是股东能有分红）dateType参数--->1当天，2当月，3当季", response = AllianceRecord.class)
-    public Cip getAllianceInformationByUserId(@RequestHeader("X-USER-ID") Long id,@RequestParam(name = "dateType",required = false) Integer dateType) throws ParseException {
+    public Cip getAllianceInformationByUserId(@RequestHeader("X-USER-ID") Long id, @RequestParam(name = "dateType", required = false) Integer dateType) throws ParseException {
         Alliance entity = new Alliance();
         entity.setUserId(id);
         AllianceRecord alliance = queryAllianceDao.selectAllianceOneByUserId(id);
+        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(id));
+        if(wallet!=null){
+            alliance.setBalance(wallet.getBalance());
+        }
         List<Map> currentMonthOrderByUserId = queryAllianceDao.getCurrentMonthOrderByUserId(id);
-
 
         if (alliance != null) {
             if (currentMonthOrderByUserId != null && currentMonthOrderByUserId.size() > 0) {
@@ -375,7 +383,7 @@ public class RPCAllianceEndpoint {
         }
         List<Alliance> alliancesByUserId = allianceService.getAlliancesByUserId(id);
         if (alliancesByUserId != null && alliancesByUserId.size() > 0) {
-            alliance.setAllianceTeam(JSON.parseArray(JSON.toJSONString(alliancesByUserId)));
+            alliance.setAllianceTeam(JSON.parseArray(JSON.toJSONString(alliancesByUserId, SerializerFeature.WriteDateUseDateFormat)));
         } else {
             alliance.setAllianceTeam(new JSONArray());
         }
@@ -384,18 +392,24 @@ public class RPCAllianceEndpoint {
         alliance.setTeamSelfBonus(bonusService.getTeamBonus(id, dateType));
         alliance.setTotalSelfBonus(bonusService.getSelfBonus(id, dateType).add(bonusService.getTeamProportionBonus(id, dateType)).add(bonusService.getTeamBonus(id, dateType)));
         JSONArray royalties = new JSONArray();
-        Royalty ls = new Royalty();
-        ls.setOrderMoney(new BigDecimal(2000.0));
-        ls.setInvitorName("李四");
-        ls.setCommission(new BigDecimal(400.0));
-        ls.setCreateTime(new Date());
-        royalties.add(ls);
-        Royalty zs = new Royalty();
-        zs.setOrderMoney(new BigDecimal(4000.0));
-        zs.setInvitorName("张三");
-        zs.setCommission(new BigDecimal(800.0));
-        zs.setCreateTime(new Date());
-        royalties.add(zs);
+        List<Long> team = queryBonusDao.getTeam(id);
+        if (team != null && team.size() > 0) {
+            for (Long t : team) {
+                if (t != null && t > 0) {
+                    if (queryBonusDao.queryShip(t) == 0&&queryBonusDao.queryType(id)==Alliance.ALLIANCE_TYPE_BONUS) {
+                        String name = queryBonusDao.queryAllianceName(t);
+                        BigDecimal teamProportionBonus = queryBonusDao.getTeamBonus(t, dateType);
+                        BigDecimal orderBonus = queryBonusDao.queryBonusOrder(t);
+                        Royalty ls = new Royalty();
+                        ls.setInvitorName(name);
+                        ls.setOrderMoney(orderBonus);
+                        ls.setCommission(teamProportionBonus);
+                        ls.setCreateTime(new Date());
+                        royalties.add(ls);
+                    }
+                }
+            }
+        }
         alliance.setCommissionOrder(royalties);
 
         return SuccessCip.create(alliance);
@@ -423,10 +437,10 @@ public class RPCAllianceEndpoint {
         return SuccessCip.create(setMeals);
     }
 
-    @ApiOperation(value = "根据手机号，姓名，邀请码，添加盟友",response = Cip.class)
+    @ApiOperation(value = "根据手机号，姓名，邀请码，添加盟友", response = Cip.class)
     @PostMapping("/createAlliance")
-    public Cip createAlliance(@RequestHeader("X-USER-ID") Long userId,@RequestBody RequestAlliance requestAlliance) {
+    public Cip createAlliance(@RequestHeader("X-USER-ID") Long userId, @RequestBody RequestAlliance requestAlliance) {
 
-        return SuccessCip.create(allianceService.createAlliance(requestAlliance,userId));
+        return SuccessCip.create(allianceService.createAlliance(requestAlliance, userId));
     }
 }

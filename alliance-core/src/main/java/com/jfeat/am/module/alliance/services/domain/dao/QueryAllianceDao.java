@@ -20,6 +20,9 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     List<AllianceRecord> findAlliancePage(Page<AllianceRecord> page, @Param("record") AllianceRecord record,
                                           @Param("search") String search, @Param("orderBy") String orderBy,
                                           @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    List<AllianceRecord> findAlliancePageShip(Page<AllianceRecord> page, @Param("record") AllianceRecord record,
+                                          @Param("search") String search, @Param("orderBy") String orderBy,
+                                          @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     List<Map> getCurrentMonthOrderByUserId(@Param("id") Long id);
 
