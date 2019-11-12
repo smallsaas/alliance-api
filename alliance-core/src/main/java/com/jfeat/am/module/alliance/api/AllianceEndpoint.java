@@ -11,6 +11,7 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
+import com.jfeat.am.module.log.annotation.BusinessLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -74,7 +75,13 @@ public class AllianceEndpoint {
 
     private Long millisecond = 86400000L;//24 * 60 * 60 * 1000 毫秒
 
+<<<<<<< HEAD
     //@BusinessLog(name = "Alliance", value = "create Alliance")
+=======
+    private Long millisecond=86400000L;//24 * 60 * 60 * 1000 毫秒
+
+    @BusinessLog(name = "盟友", value = "新增盟友")
+>>>>>>> 79b7a770027a9db1f1d1bdb4b6f688409375f4a8
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
     @Permission(AlliancePermission.ALLIANCE_ADD)
@@ -83,7 +90,7 @@ public class AllianceEndpoint {
         return SuccessTip.create(affected);
     }
 
-    //@BusinessLog(name = "Alliance", value = "查看 Alliance")
+
     @GetMapping("/{id}")
     @ApiOperation(value = "查看 Alliance", response = Alliance.class)
     @Permission(AlliancePermission.ALLIANCE_VIEW)
@@ -92,7 +99,7 @@ public class AllianceEndpoint {
     }
 
 
-    //@BusinessLog(name = "Alliance", value = "update Alliance")
+    @BusinessLog(name = "盟友", value = "更新盟友")
     @PutMapping("/{id}")
     @ApiOperation(value = "修改 Alliance", response = Alliance.class)
     @Permission(AlliancePermission.ALLIANCE_EDIT)
@@ -100,7 +107,7 @@ public class AllianceEndpoint {
         return SuccessTip.create(allianceService.modify(id, entity));
     }
 
-    //@BusinessLog(name = "Alliance", value = "delete Alliance")
+    @BusinessLog(name = "盟友", value = "删除盟友")
     @DeleteMapping("/{id}")
     @ApiOperation("删除 Alliance")
     @Permission(AlliancePermission.ALLIANCE_DEL)
@@ -246,6 +253,10 @@ public class AllianceEndpoint {
         return AllianceUtil.stepMonth(starting, endMonth);
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 79b7a770027a9db1f1d1bdb4b6f688409375f4a8
     @GetMapping("/getAlliancesByUserId")
     @ApiOperation(value = "根据请求头X-USER-ID获取我的盟友列表", response = Alliance.class)
     public Tip getAlliancesByUserId(@RequestHeader("X-USER-ID") Long id) {
@@ -285,6 +296,10 @@ public class AllianceEndpoint {
         return SuccessTip.create(allianceService.getSelfProductById(id));
     }
 
+<<<<<<< HEAD
+=======
+    @BusinessLog(name = "盟友", value = "修改盟友确认支付状态")
+>>>>>>> 79b7a770027a9db1f1d1bdb4b6f688409375f4a8
     @PutMapping("/updateAllianceShip/{id}")
     @ApiOperation("修改盟友确认支付状态")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
@@ -292,6 +307,7 @@ public class AllianceEndpoint {
         return SuccessTip.create(allianceService.modifyAllianceShip(id));
     }
 
+    @BusinessLog(name = "盟友", value = "修改盟友支付状态-设置为已支付")
     @PostMapping("/{id}/action/setpaid")
     @ApiOperation("修改盟友支付状态-设置为已支付   ")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
