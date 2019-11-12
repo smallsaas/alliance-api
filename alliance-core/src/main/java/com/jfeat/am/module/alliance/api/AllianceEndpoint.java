@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 
 
-
 /**
  * <p>
  * api
@@ -70,16 +69,17 @@ public class AllianceEndpoint {
     QueryWalletHistoryDao queryWalletHistoryDao;
 
 
-    private final Integer ALLIANCE_TYPE_BONUS=1;
-    private final Integer ALLIANCE_TYPE_COMMON=2;
+    private final Integer ALLIANCE_TYPE_BONUS = 1;
+    private final Integer ALLIANCE_TYPE_COMMON = 2;
 
-    private Long millisecond=86400000L;//24 * 60 * 60 * 1000 毫秒
+    private Long millisecond = 86400000L;//24 * 60 * 60 * 1000 毫秒
+
     //@BusinessLog(name = "Alliance", value = "create Alliance")
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
     @Permission(AlliancePermission.ALLIANCE_ADD)
-    public Tip createAlliance(@RequestHeader(required = false,name = "X-USER-ID") Long userId,@RequestBody AllianceRequest entity) throws ServerException, ParseException {
-        Integer affected=allianceService.create(userId,entity);
+    public Tip createAlliance(@RequestHeader(required = false, name = "X-USER-ID") Long userId, @RequestBody AllianceRequest entity) throws ServerException, ParseException {
+        Integer affected = allianceService.create(userId, entity);
         return SuccessTip.create(affected);
     }
 
@@ -97,7 +97,7 @@ public class AllianceEndpoint {
     @ApiOperation(value = "修改 Alliance", response = Alliance.class)
     @Permission(AlliancePermission.ALLIANCE_EDIT)
     public Tip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException, ParseException {
-        return SuccessTip.create(allianceService.modify(id,entity));
+        return SuccessTip.create(allianceService.modify(id, entity));
     }
 
     //@BusinessLog(name = "Alliance", value = "delete Alliance")
@@ -230,20 +230,22 @@ public class AllianceEndpoint {
         page.setRecords(alliancePage);
         return SuccessTip.create(page);
     }
-    private Date calculationEndTime(){
+
+    private Date calculationEndTime() {
         //起算时间
-        String  str= configFieldService.getFieldString(AllianceFields.ALLIANCE_FIELD_STARTING_TIME);
+        String str = configFieldService.getFieldString(AllianceFields.ALLIANCE_FIELD_STARTING_TIME);
         //结束周期
         Integer endMonth = configFieldService.getFieldInteger(AllianceFields.ALLIANCE_FIELD_STARTING_CYCLE);
-        Date starting=null;
+        Date starting = null;
         try {
             starting = new SimpleDateFormat("yyyy-MM-dd").parse(str);
         } catch (ParseException e) {
-            throw new BusinessException(BusinessCode.BadRequest,"盟友起算时间配置有错");
+            throw new BusinessException(BusinessCode.BadRequest, "盟友起算时间配置有错");
         }
         //计算分红结束时间
-        return AllianceUtil.stepMonth(starting,endMonth);
+        return AllianceUtil.stepMonth(starting, endMonth);
     }
+
     @GetMapping("/getAlliancesByUserId")
     @ApiOperation(value = "根据请求头X-USER-ID获取我的盟友列表", response = Alliance.class)
     public Tip getAlliancesByUserId(@RequestHeader("X-USER-ID") Long id) {
@@ -282,28 +284,29 @@ public class AllianceEndpoint {
         allianceRecord.setCutOffTime(calculationEndTime());
         return SuccessTip.create(allianceService.getSelfProductById(id));
     }
+
     @PutMapping("/updateAllianceShip/{id}")
     @ApiOperation("修改盟友确认支付状态")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
-    public Tip modifyAllianceShip(@PathVariable Long id){
+    public Tip modifyAllianceShip(@PathVariable Long id) {
         return SuccessTip.create(allianceService.modifyAllianceShip(id));
     }
 
     @PostMapping("/{id}/action/setpaid")
     @ApiOperation("修改盟友支付状态-设置为已支付   ")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
-    public Tip paid(@PathVariable Long id){
+    public Tip paid(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
-        if(alliance==null){
-            throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
+        if (alliance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
 
-        if(alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)){
+        if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
             //alliance.setAllianceShipTime(new Date());
 
-        }else {
-            throw new BusinessException(BusinessCode.CodeBase,"状态错误");
+        } else {
+            throw new BusinessException(BusinessCode.CodeBase, "状态错误");
         }
 
         int res = allianceService.updateMaster(alliance);
@@ -314,10 +317,10 @@ public class AllianceEndpoint {
     @PostMapping("/{id}/action/reset")
     @ApiOperation("修改盟友支付状态-支付过期-->待支付  ship 4--->2")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
-    public Tip reset(@PathVariable Long id){
+    public Tip reset(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
-        if(alliance==null){
-            throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
+        if (alliance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
 
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
@@ -329,19 +332,19 @@ public class AllianceEndpoint {
     @PostMapping("/{id}/action/upgraded")
     @ApiOperation("修改盟友支付状态- 升级盟友 --->  普通盟友---> 分红盟友。type  1--->2")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
-    public Tip upgrade(@PathVariable Long id){
+    public Tip upgrade(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
-        if(alliance==null){
-            throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
+        if (alliance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
-        if(!alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_OK)){
-            throw new BusinessException(BusinessCode.CodeBase,"非正式盟友，无法执行升级操作！");//alliacneShip=0 才能 升级盟友
+        if (!alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_OK)) {
+            throw new BusinessException(BusinessCode.CodeBase, "非正式盟友，无法执行升级操作！");//alliacneShip=0 才能 升级盟友
         }
 
-        if(!alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)){
+        if (!alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
             alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
-        }else {
-            throw new BusinessException(BusinessCode.CodeBase,"非普通盟友身份，无法执行升级操作！");
+        } else {
+            throw new BusinessException(BusinessCode.CodeBase, "非普通盟友身份，无法执行升级操作！");
         }
         alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
@@ -349,6 +352,49 @@ public class AllianceEndpoint {
         return SuccessTip.create(res);
     }
 
+    @PostMapping("/{id}/action/upwallet")
+    @ApiOperation("线下盟友充值")
+    @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
+    public Tip upwallet(@PathVariable Long id, @RequestParam("balance") BigDecimal balance) {
+        Alliance alliance = allianceService.retrieveMaster(id);
+        Integer res=0;
+        if (alliance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
+        }
+        Long userId = alliance.getUserId();
+        Wallet wallet = null;
+        if (userId != null && userId > 0) {
+            wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+        } else {
+            throw new BusinessException(BusinessCode.BadRequest, "该盟友没有被绑定，无法进行充值");
+        }
+        if (wallet == null) {
+            wallet = new Wallet();
+            wallet.setUserId(userId);
+            wallet.setBalance(balance);
+            wallet.setAccumulativeAmount(balance);
+            res += queryWalletDao.insert(wallet);
+
+        } else {
+            BigDecimal balance1 = wallet.getBalance();
+            if (balance1 == null) {
+                balance1 = new BigDecimal(0.00);
+            }
+            wallet.setBalance(balance1.add(balance));
+            BigDecimal accumulativeAmount = wallet.getAccumulativeAmount();
+            if (accumulativeAmount == null) {
+                accumulativeAmount = new BigDecimal(0.00);
+            }
+            wallet.setAccumulativeAmount(accumulativeAmount.add(balance));
+          res +=queryWalletDao.updateById(wallet);
+        }
+        WalletHistory walletHistory=new WalletHistory();
+        walletHistory.setWalletId(wallet.getId());
+        walletHistory.setType(RechargeType.RECHARGE);
+        walletHistory.setAmount(balance);
+        res+=queryWalletHistoryDao.insert(walletHistory);
+        return SuccessTip.create(res);
+    }
 
 
 }
