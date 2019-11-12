@@ -41,7 +41,7 @@ public class BonusServiceImpl implements BonusService {
         if (alliance.compareTo(new BigDecimal(0)) == 0) {
             alliance = new BigDecimal(0);
         }
-        return alliance;
+        return alliance.setScale(2,BigDecimal.ROUND_HALF_UP);
     }
 
     //获得团队贡献占比分红
@@ -81,7 +81,7 @@ public class BonusServiceImpl implements BonusService {
             if (bonus.compareTo(new BigDecimal(0)) == 0) {
                 bonus = new BigDecimal(0);
             }
-            return bonus;
+            return bonus.setScale(2,BigDecimal.ROUND_HALF_UP);
         } else {
             throw new BusinessException(BusinessCode.BadRequest, "数据库数据异常");
         }
@@ -112,7 +112,7 @@ public class BonusServiceImpl implements BonusService {
             }
         }
 
-        return teamBonus;
+        return teamBonus.setScale(2,BigDecimal.ROUND_HALF_UP);
     }
 
     @Override
@@ -123,11 +123,11 @@ public class BonusServiceImpl implements BonusService {
                 BigDecimal month = this.getSelfBonus(r.getUserId(), BonusDateType.MONTH)
                         .add(this.getTeamProportionBonus(r.getUserId(), BonusDateType.MONTH))
                         .add(this.getTeamBonus(r.getUserId(), BonusDateType.MONTH));
-                r.setCurrentMonthBonus(month);
+                r.setCurrentMonthBonus(month.setScale(2,BigDecimal.ROUND_HALF_UP));
                 BigDecimal year = this.getSelfBonus(r.getUserId(), null)
                         .add(this.getTeamProportionBonus(r.getUserId(), null))
                         .add(this.getTeamBonus(r.getUserId(), null));
-                r.setTotalBonus(year);
+                r.setTotalBonus(year.setScale(2,BigDecimal.ROUND_HALF_UP));
             }
         }
         Collections.sort(allianceReconciliations);
