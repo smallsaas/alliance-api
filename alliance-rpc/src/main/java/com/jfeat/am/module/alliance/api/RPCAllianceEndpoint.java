@@ -13,6 +13,7 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory
 import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
+import com.jfeat.am.module.log.annotation.BusinessLog;
 import com.jfeat.util.Cip;
 import com.jfeat.util.SuccessCip;
 import io.swagger.annotations.Api;
@@ -79,6 +80,7 @@ public class RPCAllianceEndpoint {
     private Long millisecond=86400000L;//24 * 60 * 60 * 1000 毫秒
 
     //@BusinessLog(name = "Alliance", value = "create Alliance")
+    @BusinessLog(name = "盟友", value = "新建盟友")
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
     public Cip createAlliance(@RequestHeader("X-USER-ID") Long userId,@RequestBody AllianceRequest entity) throws ServerException, ParseException {
@@ -211,6 +213,7 @@ public class RPCAllianceEndpoint {
     }
 
     //@BusinessLog(name = "Alliance", value = "update Alliance")
+    @BusinessLog(name = "盟友", value = "修改盟友")
     @PutMapping("/{id}")
     @ApiOperation(value = "修改 Alliance", response = Alliance.class)
     public Cip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException, ParseException {
@@ -242,14 +245,15 @@ public class RPCAllianceEndpoint {
         return SuccessCip.create(allianceService.updateMaster(entity));
     }
 
-    //@BusinessLog(name = "Alliance", value = "delete Alliance")
+
+    @BusinessLog(name = "盟友", value = "删除盟友")
     @DeleteMapping("/{id}")
     @ApiOperation("删除 Alliance")
     public Cip deleteAlliance(@PathVariable Long id) {
         return SuccessCip.create(allianceService.deleteMaster(id));
     }
 
-    //@BusinessLog(name = "Alliance", value = "delete Alliance")
+
     @ApiOperation(value = "Alliance 列表信息", response = AllianceRecord.class)
     @GetMapping
     @ApiImplicitParams({
@@ -423,6 +427,7 @@ public class RPCAllianceEndpoint {
         return SuccessCip.create(setMeals);
     }
 
+    @BusinessLog(name = "盟友", value = "根据手机号，姓名，邀请码，添加盟友")
     @ApiOperation(value = "根据手机号，姓名，邀请码，添加盟友",response = Cip.class)
     @PostMapping("/createAlliance")
     public Cip createAlliance(@RequestHeader("X-USER-ID") Long userId,@RequestBody RequestAlliance requestAlliance) {

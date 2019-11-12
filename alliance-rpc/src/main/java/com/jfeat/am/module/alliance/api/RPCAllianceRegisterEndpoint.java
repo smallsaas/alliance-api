@@ -6,6 +6,7 @@ import com.jfeat.am.module.alliance.services.domain.service.AllianceService;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
+import com.jfeat.am.module.log.annotation.BusinessLog;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
 import com.jfeat.util.Cip;
@@ -44,7 +45,7 @@ public class RPCAllianceRegisterEndpoint {
     @Resource
     ConfigFieldService configFieldService;
 
-
+    @BusinessLog(name = "盟友", value = "改变盟友状态")
     @ApiOperation(value = "改变盟友状太，仅限于测试使用 0-正式盟友 1-不是盟友 2-待支付/申请中 3-已支付 4-支付过期 5-状态错误",response = Cip.class)
     @PostMapping("/changeship/{phone}")
     public Cip bindingAndCheckIsAlliance(@PathVariable("phone") String phone,
@@ -69,6 +70,7 @@ public class RPCAllianceRegisterEndpoint {
         return ErrorCip.create(1, "设置失败");
     }
 
+    @BusinessLog(name = "盟友", value = "对历史盟友绑定手机号")
     @ApiOperation(value = "对历史盟友绑定手机号，并检查是否为盟友",response = Cip.class)
     @PostMapping("/register")
     public Cip bindingAndCheckIsAlliance(@RequestHeader("X-USER-ID") Long userId, @RequestBody AllianceRegisterRequest request) {
