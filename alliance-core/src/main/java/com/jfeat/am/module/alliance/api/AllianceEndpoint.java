@@ -75,13 +75,8 @@ public class AllianceEndpoint {
 
     private Long millisecond = 86400000L;//24 * 60 * 60 * 1000 毫秒
 
-<<<<<<< HEAD
-    //@BusinessLog(name = "Alliance", value = "create Alliance")
-=======
-    private Long millisecond=86400000L;//24 * 60 * 60 * 1000 毫秒
 
     @BusinessLog(name = "盟友", value = "新增盟友")
->>>>>>> 79b7a770027a9db1f1d1bdb4b6f688409375f4a8
     @PostMapping
     @ApiOperation(value = "新建 Alliance", response = Alliance.class)
     @Permission(AlliancePermission.ALLIANCE_ADD)
@@ -253,10 +248,7 @@ public class AllianceEndpoint {
         return AllianceUtil.stepMonth(starting, endMonth);
     }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 79b7a770027a9db1f1d1bdb4b6f688409375f4a8
     @GetMapping("/getAlliancesByUserId")
     @ApiOperation(value = "根据请求头X-USER-ID获取我的盟友列表", response = Alliance.class)
     public Tip getAlliancesByUserId(@RequestHeader("X-USER-ID") Long id) {
@@ -296,10 +288,7 @@ public class AllianceEndpoint {
         return SuccessTip.create(allianceService.getSelfProductById(id));
     }
 
-<<<<<<< HEAD
-=======
     @BusinessLog(name = "盟友", value = "修改盟友确认支付状态")
->>>>>>> 79b7a770027a9db1f1d1bdb4b6f688409375f4a8
     @PutMapping("/updateAllianceShip/{id}")
     @ApiOperation("修改盟友确认支付状态")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
