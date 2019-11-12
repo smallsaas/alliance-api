@@ -12,10 +12,10 @@
                 and to_days(o.created_date)=to_days(now())
             </when>
             <when test="dateType=='2'">
-                and to_days(o.created_date)=to_days(now())
+                and date_format(o.created_date, '%Y%m' ) = date_format( curdate() , '%Y%m' )
             </when>
             <when test="dateType=='3'">
-                and to_days(o.created_date)=to_days(now())
+                and quarter(o.created_date)=quarter(now())
             </when>
         </choose>
 
@@ -32,10 +32,10 @@
                 and to_days(o.created_date)=to_days(now())
             </when>
             <when test="dateType=='2'">
-                and to_days(o.created_date)=to_days(now())
+                and date_format(o.created_date, '%Y%m' ) = date_format( curdate() , '%Y%m' )
             </when>
             <when test="dateType=='3'">
-                and to_days(o.created_date)=to_days(now())
+                and quarter(o.created_date)=quarter(now())
             </when>
         </choose>
     </select>
@@ -46,17 +46,37 @@
 
     <select id="querySales" resultType="com.jfeat.am.module.bonus.services.domain.model.ProductSalesRecord">
         <bind name="off_set" value="(pageNum-1)*pageSize"/>
-        select p.id,p.name,p.cover,oitem.quantity as quantity ,pc.name as category, CONCAT('瓶') as unit,p.price*oitem.quantity as sales from t_product p LEFT JOIN (select o.id as
+        select p.id,p.name,p.cover,oitem.quantity as quantity ,pc.name as category, p.unit as
+        unit,p.price*oitem.quantity as sales from t_product p LEFT JOIN (select o.id as
         order_id,oi.product_id,oi.quantity from t_order o,t_order_item oi where oi.order_id=o.id and o.created_date
         between (select STR_TO_DATE(VALUE,'%Y-%m-%d') from t_config_field where field='starting_time') and
         DATE_ADD((select STR_TO_DATE(VALUE,'%Y-%m-%d') from t_config_field where field='starting_time')
         ,INTERVAL (select value from t_config_field where field='settlement_cycle' ) MONTH)
-        ) as oitem ON p.id=oitem.product_id LEFT JOIN t_product_category pc on p.category_id=pc.id GROUP BY p.id ORDER BY oitem.quantity desc   limit #{off_set},#{pageSize}
+        ) as oitem ON p.id=oitem.product_id LEFT JOIN t_product_category pc on p.category_id=pc.id GROUP BY p.id ORDER
+        BY oitem.quantity desc limit #{off_set},#{pageSize}
     </select>
 
     <select id="queryReInformation" resultType="com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation">
         <bind name="off_set" value="(pageNum-1)*pageSize"/>
-        select a.id,a.alliance_name as allianceName,a.user_id as userId , count(children.id)+1 as teamCount from t_alliance a
-        left JOIN t_alliance children on a.id=children.invitor_alliance_id where a.alliance_ship=0 group by a.id limit #{off_set},#{pageSize}
+        select a.id,a.alliance_name as allianceName,a.user_id as userId , count(children.id)+1 as teamCount from
+        t_alliance a
+        left JOIN t_alliance children on a.id=children.invitor_alliance_id where a.alliance_ship=0 group by a.id limit
+        #{off_set},#{pageSize}
+    </select>
+
+    <select id="queryBonusOrder" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+        select sum(p.price*oi.quantity) from t_alliance a,t_order o,t_order_item oi,t_product p where a.user_id=#{userId} and o.user_id=a.user_id
+AND
+oi.order_id=o.id and p.id=oi.product_id and a.alliance_ship=0 and  date_format(o.created_date, '%Y%m' ) = date_format( curdate() , '%Y%m' )
+    </select>
+
+    <select id="queryAllianceName" resultType="string" parameterType="java.lang.Long">
+        select alliance_name from t_alliance where user_id=#{userId}
+    </select>
+    <select id="queryShip" resultType="Integer" parameterType="java.lang.Long">
+        select alliance_ship from t_alliance where user_id=#{userId}
+    </select>
+    <select id="queryType" resultType="Integer" parameterType="java.lang.Long">
+        select alliance_type from t_alliance where user_id=#{userId}
     </select>
 </mapper>
