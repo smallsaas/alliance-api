@@ -23,6 +23,7 @@
         <crud-plus.version>0.0.6</crud-plus.version>
         <crud-core.version>0.0.2</crud-core.version>
         <crud-dev.version>0.0.1</crud-dev.version>
+        <crud-log.version>0.0.1</crud-log.version>
     </properties>
 
     <dependencies>
@@ -30,6 +31,11 @@
             <groupId>com.jfeat</groupId>
             <artifactId>field-config</artifactId>
             <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>crud-log</artifactId>
+            <version>${crud-log.version}</version>
         </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
