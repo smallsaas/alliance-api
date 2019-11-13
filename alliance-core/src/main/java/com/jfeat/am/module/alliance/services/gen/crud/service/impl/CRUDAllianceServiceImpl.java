@@ -25,8 +25,7 @@ import com.jfeat.crud.plus.impl.CRUDServiceOnlyImpl;
 public class CRUDAllianceServiceImpl  extends CRUDServiceOnlyImpl<Alliance> implements CRUDAllianceService {
 
 
-
-
+        private static final  String EAV_ENTITY_NAME = "alliance";
 
         @Resource
         protected AllianceMapper allianceMapper;
@@ -36,10 +35,10 @@ public class CRUDAllianceServiceImpl  extends CRUDServiceOnlyImpl<Alliance> impl
                 return allianceMapper;
         }
 
-
-
-
-
+        @Override
+        protected String entityName() {
+                return EAV_ENTITY_NAME;
+        }
 
 
 }
