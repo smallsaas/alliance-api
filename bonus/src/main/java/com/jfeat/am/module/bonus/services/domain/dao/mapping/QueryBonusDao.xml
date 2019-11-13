@@ -7,6 +7,7 @@
         o.user_id=#{userId} and oi.order_id= o.id and p.id=oi.product_id and a.user_id=o.user_id and a.alliance_type=1
         and b.product_id=p.id and b.type = 'STOCKHOLDER' and a.alliance_ship=0
         and o.created_date > STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d')
+        and o.status='CLOSED_CONFIRMED'
         <choose>
             <when test="dateType=='1'">
                 and to_days(o.created_date)=to_days(now())
@@ -27,6 +28,7 @@
         o.user_id=#{userId} and oi.order_id= o.id and p.id=oi.product_id and a.user_id=o.user_id and b.product_id=p.id
         and b.type = 'RECOMMEND' and a.alliance_ship=0
         and o.created_date > STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d')
+        and o.status='CLOSED_CONFIRMED'
         <choose>
             <when test="dateType=='1'">
                 and to_days(o.created_date)=to_days(now())
@@ -48,7 +50,7 @@
         <bind name="off_set" value="(pageNum-1)*pageSize"/>
         select p.id,p.name,p.cover,oitem.quantity as quantity ,pc.name as category, p.unit as
         unit,p.price*oitem.quantity as sales from t_product p LEFT JOIN (select o.id as
-        order_id,oi.product_id,oi.quantity from t_order o,t_order_item oi where oi.order_id=o.id and o.created_date
+        order_id,oi.product_id,oi.quantity from t_order o,t_order_item oi where oi.order_id=o.id and o.status='CLOSED_CONFIRMED' and  o.created_date
         between (select STR_TO_DATE(VALUE,'%Y-%m-%d') from t_config_field where field='starting_time') and
         DATE_ADD((select STR_TO_DATE(VALUE,'%Y-%m-%d') from t_config_field where field='starting_time')
         ,INTERVAL (select value from t_config_field where field='settlement_cycle' ) MONTH)
