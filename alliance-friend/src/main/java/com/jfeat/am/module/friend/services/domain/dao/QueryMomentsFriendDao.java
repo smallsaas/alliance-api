@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import com.jfeat.am.module.friend.services.gen.persistence.model.MomentsFriend;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -25,4 +27,18 @@ public interface QueryMomentsFriendDao extends BaseMapper<MomentsFriend> {
     Long insertOrder(@Param("userId")Long id, @Param("totalPrice")BigDecimal totalPrice,@Param("phone")String phone,@Param("mname")String mname,@Param("detail")String detail);
     Long selectProductId(@Param("barcode")String barcode);
     Integer insertOrderItem(@Param("orderId")Long orderId,@Param("barcode")String barcode,@Param("productName")String productName,@Param("quantity")Integer quantity,@Param("finalPrice") BigDecimal finalPrice);
+    @Select("select alliance_name from t_alliance where user_id=#{userId} and alliance_ship=0")
+    String queryAllianceName(Long userId);
+
+    @Update("update t_wallet set balance=#{balance} where user_id=#{userId}")
+    Integer upWallet(@Param("userId") Long userId,@Param("balance") BigDecimal balance);
+
+    @Select("select balance from t_wallet where user_id=#{userId}")
+    BigDecimal queryWalletBalance(Long userId);
+
+    @Select("select stock_balance from t_product where id=#{productId}")
+    Integer queryStockBalance(Long productId);
+
+    @Update("update t_product set stock_balance=#{balance} where id=#{productId}")
+    Integer upProduct(@Param("productId") Long productId, @Param("balance") Integer balance);
 }
