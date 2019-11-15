@@ -37,6 +37,7 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 import javax.annotation.Resource;
 import java.rmi.ServerException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -412,7 +413,27 @@ public class RPCAllianceEndpoint {
             }
         }
         alliance.setCommissionOrder(royalties);
+        //盟友消息
+        List<Alliance> alliances = queryAllianceDao.queryWeekAlliance(id);
+        if(alliance!=null){
+            alliance.setAllianceMessages(JSONArray.parseArray(JSON.toJSONString(alliances)));
+        }else {
+            alliance.setAllianceMessages(new JSONArray());
+        }
 
+        List<JSONObject> jsonOrders = queryAllianceDao.queryWeekOrder(id);
+
+        if(jsonOrders!=null){
+            alliance.setTeamAllianceOrderMessages(JSONArray.parseArray(JSON.toJSONString(jsonOrders)));
+        }else {
+            alliance.setTeamAllianceOrderMessages(new JSONArray());
+        }
+        List<JSONObject> orderDelivers = queryAllianceDao.queryWeekOrderDeliver(id);
+        if(orderDelivers!=null){
+            alliance.setDeliverMessage(JSONArray.parseArray(JSON.toJSONString(orderDelivers)));
+        }else {
+            alliance.setDeliverMessage(new JSONArray());
+        }
         return SuccessCip.create(alliance);
 
     }

@@ -16,6 +16,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.dao.DuplicateKeyException;
@@ -330,7 +331,7 @@ public class AllianceEndpoint {
 
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
         int res = allianceService.updateMaster(alliance);
-
+        res+=  queryAllianceDao.resetUserId(id);
         return SuccessTip.create(res);
     }
 

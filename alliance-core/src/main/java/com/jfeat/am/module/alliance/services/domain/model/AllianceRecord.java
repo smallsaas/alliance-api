@@ -2,6 +2,7 @@ package com.jfeat.am.module.alliance.services.domain.model;
 
 import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jfeat.am.module.alliance.api.AllianceMessage;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,6 +21,36 @@ public class AllianceRecord extends Alliance{
     String wechatAvatar;
     String wechatNick;
     private BigDecimal balance;
+
+    JSONArray AllianceMessages;
+    JSONArray TeamAllianceOrderMessages;
+    JSONArray DeliverMessage;
+
+    public JSONArray getTeamAllianceOrderMessages() {
+        return TeamAllianceOrderMessages;
+    }
+
+    public void setTeamAllianceOrderMessages(JSONArray teamAllianceOrderMessages) {
+        TeamAllianceOrderMessages = teamAllianceOrderMessages;
+    }
+
+    public JSONArray getAllianceMessages() {
+        return AllianceMessages;
+    }
+
+    public void setAllianceMessages(JSONArray allianceMessages) {
+        AllianceMessages = allianceMessages;
+    }
+
+
+    public JSONArray getDeliverMessage() {
+        return DeliverMessage;
+    }
+
+    public void setDeliverMessage(JSONArray deliverMessage) {
+        DeliverMessage = deliverMessage;
+    }
+
     //结算时间
     @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     Date cutOffTime;

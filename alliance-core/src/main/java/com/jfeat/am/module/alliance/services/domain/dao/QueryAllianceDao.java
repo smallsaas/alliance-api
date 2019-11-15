@@ -57,8 +57,18 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     @Select("select b.* from t_alliance a INNER JOIN t_alliance b ON b.invitor_alliance_id=a.id where a.user_id=#{userId} and DATE_SUB(CURDATE(), INTERVAL 7 DAY)<b.alliance_ship_time")
     public List<Alliance> queryWeekAlliance(@Param("userId")Long userId);
 
-    //
-    @Select("select * from t_order o where  user_id in (select b.user_id from t_alliance a INNER JOIN t_alliance b ON b.invitor_alliance_id=a.id where a.user_id=#{userId}\n" +
-            "and b.alliance_ship=0) and  DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= o.created_date")
+    //一周内发货订单
+    @Select("select * from t_order where user_id = 11 and status='DELIVERED_CONFIRM_PENDING' and DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= created_date\n")
+    public List<JSONObject> queryWeekOrderDeliver(@Param("userId") Long userId);
+
+    //一周内盟友下单
+    @Select("select a.alliance_name as allianceName,o.* from t_order o,(select b.user_id,b.alliance_name from t_alliance a INNER JOIN t_alliance b ON b.invitor_alliance_id=a.id where a.user_id=#{userId}\n" +
+            "and b.alliance_ship=0) as a where o.user_id = a.user_id and  DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= o.created_date and o.status='PAID_CONFIRM_PENDING'")
     public List<JSONObject> queryWeekOrder(@Param("userId") Long userId);
+
+    @Update("update t_alliance set user_id=null where id=#{id}")
+    Integer resetUserId(@Param("id")Long id);
+
+
+
 }
