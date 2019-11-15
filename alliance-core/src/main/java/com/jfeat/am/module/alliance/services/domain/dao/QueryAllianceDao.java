@@ -8,7 +8,9 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +22,10 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     List<AllianceRecord> findAlliancePage(Page<AllianceRecord> page, @Param("record") AllianceRecord record,
                                           @Param("search") String search, @Param("orderBy") String orderBy,
                                           @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
     List<AllianceRecord> findAlliancePageShip(Page<AllianceRecord> page, @Param("record") AllianceRecord record,
-                                          @Param("search") String search, @Param("orderBy") String orderBy,
-                                          @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+                                              @Param("search") String search, @Param("orderBy") String orderBy,
+                                              @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     List<Map> getCurrentMonthOrderByUserId(@Param("id") Long id);
 
@@ -47,4 +50,15 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
                                 @Param("record") AllianceRecord record,
                                 @Param("search") String search);
 
+    @Select("select total_price as totalPrice,user_id as userId from t_order where id=#{orderId}")
+    public JSONObject queryOrderMoney(@Param("orderId") Long orderId);
+
+    //一周内加入的盟友
+    @Select("select b.* from t_alliance a INNER JOIN t_alliance b ON b.invitor_alliance_id=a.id where a.user_id=#{userId} and DATE_SUB(CURDATE(), INTERVAL 7 DAY)<b.alliance_ship_time")
+    public List<Alliance> queryWeekAlliance(@Param("userId")Long userId);
+
+    //
+    @Select("select * from t_order o where  user_id in (select b.user_id from t_alliance a INNER JOIN t_alliance b ON b.invitor_alliance_id=a.id where a.user_id=#{userId}\n" +
+            "and b.alliance_ship=0) and  DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= o.created_date")
+    public List<JSONObject> queryWeekOrder(@Param("userId") Long userId);
 }

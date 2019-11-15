@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author admin
@@ -38,18 +38,18 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     @Transactional
     public Integer createOrder(RequestOrder requestOrder) throws ServerException {
         List<Long> userIds = queryMomentsFriendDao.selectUserId(requestOrder.getById());
-        if (userIds==null||userIds.size()==0) {
+        if (userIds == null || userIds.size() == 0) {
             throw new ServerException("该下单人不存在");
         }
-        if(userIds.size()>1){
+        if (userIds.size() > 1) {
             throw new ServerException("该下单人姓名相同的有好几个");
         }
         Long productId = queryMomentsFriendDao.selectProductId(requestOrder.getBarcode());
-        if(productId==null){
-            throw new ServerException("该表形码"+requestOrder.getBarcode()+"的商品不存在");
+        if (productId == null) {
+            throw new ServerException("该表形码" + requestOrder.getBarcode() + "的商品不存在");
         }
         requestOrder.setTotalPrice(requestOrder.getFinalPrice().multiply(new BigDecimal(requestOrder.getQuantity())));
-        FriendOrder order=new FriendOrder();
+        FriendOrder order = new FriendOrder();
         order.setUserId(userIds.get(0));
         order.setPhone(requestOrder.getPhone());
         order.setDetail(requestOrder.getDetail());
@@ -63,25 +63,25 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         queryMomentsFriendOverOrderDao.insert(order);
         Integer res = queryMomentsFriendDao.insertOrderItem(order.getId(), requestOrder.getBarcode(), requestOrder.getProductName(), requestOrder.getQuantity(), requestOrder.getFinalPrice());
         String allianceName = queryMomentsFriendDao.queryAllianceName(userIds.get(0));
-        if(allianceName==null||allianceName.length()==0){
-            throw new BusinessException(BusinessCode.BadRequest,"该下单人不是正式盟友");
-        }else {
+        if (allianceName == null || allianceName.length() == 0) {
+            throw new BusinessException(BusinessCode.BadRequest, "该下单人不是正式盟友");
+        } else {
             Integer stockBalance = queryMomentsFriendDao.queryStockBalance(productId);
-            stockBalance=stockBalance-requestOrder.getQuantity();
-            if(stockBalance>=0){
-                queryMomentsFriendDao.upProduct(productId,stockBalance);
-            }else {
-                throw new BusinessException(BusinessCode.BadRequest,"该商品库存不足");
+            stockBalance = stockBalance - requestOrder.getQuantity();
+            if (stockBalance >= 0) {
+                queryMomentsFriendDao.upProduct(productId, stockBalance);
+            } else {
+                throw new BusinessException(BusinessCode.BadRequest, "该商品库存不足");
             }
             BigDecimal balance = queryMomentsFriendDao.queryWalletBalance(userIds.get(0));
-            if(balance==null||balance.compareTo(new BigDecimal(0.00))<=0){
-                throw new BusinessException(BusinessCode.BadRequest,"该用户余额不足");
-            }else {
-                balance=balance.subtract(requestOrder.getTotalPrice());
-                if(balance.compareTo(new BigDecimal(0.00))<0){
-                    throw new BusinessException(BusinessCode.BadRequest,"该用户余额不足");
-                }else {
-                    queryMomentsFriendDao.upWallet(userIds.get(0),balance);
+            if (balance == null || balance.compareTo(new BigDecimal(0.00)) <= 0) {
+                throw new BusinessException(BusinessCode.BadRequest, "该用户余额不足");
+            } else {
+                balance = balance.subtract(requestOrder.getTotalPrice());
+                if (balance.compareTo(new BigDecimal(0.00)) < 0) {
+                    throw new BusinessException(BusinessCode.BadRequest, "该用户余额不足");
+                } else {
+                    queryMomentsFriendDao.upWallet(userIds.get(0), balance);
                 }
             }
         }
@@ -92,9 +92,10 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
 }
 
 /**
-     * 生成订单编号
-     * @return
-     */
+ * 生成订单编号
+ *
+ * @return
+ */
 /*
 class OrderNumber extends Thread{
 

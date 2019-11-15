@@ -28,4 +28,6 @@ public interface AllianceService extends CRUDAllianceService{
     public Integer modify(Long id,AllianceRequest entity) throws ParseException;
 
     public Integer modifyAllianceShip(Long id);
+
+
 }
