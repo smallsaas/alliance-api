@@ -49,7 +49,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
     QueryWalletHistoryDao queryWalletHistoryDao;
     @Resource
     QueryWalletDao queryWalletDao;
-    Long millisecond=86400000L;
+    Long millisecond=86400000L;//一天
     @Override
     public Alliance findAllianceByPhoneNumber(String phoneNumber) {
 

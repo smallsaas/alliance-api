@@ -82,7 +82,7 @@ public class RPCAllianceEndpoint {
     private final Integer ALLIANCE_TYPE_BONUS = 1;
     private final Integer ALLIANCE_TYPE_COMMON = 2;
 
-    private Long millisecond = 86400000L;//24 * 60 * 60 * 1000 毫秒
+    private Long millisecond = 86400000L;//24 * 60 * 60 * 1000 毫秒 一天
 
     //@BusinessLog(name = "Alliance", value = "create Alliance")
     @PostMapping

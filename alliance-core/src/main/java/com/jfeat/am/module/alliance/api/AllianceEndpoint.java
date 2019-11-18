@@ -74,7 +74,7 @@ public class AllianceEndpoint {
     private final Integer ALLIANCE_TYPE_BONUS = 1;
     private final Integer ALLIANCE_TYPE_COMMON = 2;
 
-    private Long millisecond = 86400000L;//24 * 60 * 60 * 1000 毫秒
+    private Long millisecond = 86400000L;//24 * 60 * 60 * 1000 毫秒 一天
 
 
     @BusinessLog(name = "盟友", value = "新增盟友")
@@ -218,7 +218,12 @@ public class AllianceEndpoint {
         record.setAllianceHobby(allianceHobby);
         record.setAlliancePhone(alliancePhone);
         record.setAllianceDob(allianceDob);
-        List<AllianceRecord> alliancePage = queryAllianceDao.findAlliancePage(page, record, search, orderBy, null, null);
+        List<AllianceRecord> alliancePage = null;
+        try {
+            alliancePage = queryAllianceDao.findAlliancePage(page, record, search, orderBy, null, null);
+        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+        }
 //        Date end = calculationEndTime();
 //        for(AllianceRecord allianceRecord: alliancePage){
 //            allianceRecord.setCutOffTime(end);
@@ -230,6 +235,7 @@ public class AllianceEndpoint {
 //                }
 //            }
 //        }
+
         page.setRecords(alliancePage);
         return SuccessTip.create(page);
     }
@@ -331,7 +337,7 @@ public class AllianceEndpoint {
 
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
         int res = allianceService.updateMaster(alliance);
-        res+=  queryAllianceDao.resetUserId(id);
+        res += queryAllianceDao.resetUserId(id);
         return SuccessTip.create(res);
     }
 
@@ -363,7 +369,7 @@ public class AllianceEndpoint {
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
     public Tip upwallet(@PathVariable Long id, @RequestParam("balance") BigDecimal balance) {
         Alliance alliance = allianceService.retrieveMaster(id);
-        Integer res=0;
+        Integer res = 0;
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
@@ -392,13 +398,13 @@ public class AllianceEndpoint {
                 accumulativeAmount = new BigDecimal(0.00);
             }
             wallet.setAccumulativeAmount(accumulativeAmount.add(balance));
-          res +=queryWalletDao.updateById(wallet);
+            res += queryWalletDao.updateById(wallet);
         }
-        WalletHistory walletHistory=new WalletHistory();
+        WalletHistory walletHistory = new WalletHistory();
         walletHistory.setWalletId(wallet.getId());
         walletHistory.setType(RechargeType.RECHARGE);
         walletHistory.setAmount(balance);
-        res+=queryWalletHistoryDao.insert(walletHistory);
+        res += queryWalletHistoryDao.insert(walletHistory);
         return SuccessTip.create(res);
     }
 

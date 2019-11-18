@@ -23,7 +23,7 @@
     </select>
 
     <select id="findAlliancePage" resultType="AllianceRecord" parameterType="AllianceRecord">
-       select (case when t_alliance.alliance_ship=0 or t_alliance.alliance_ship=3 then  ((case when t_wallet.balance is NULL or t_wallet.balance=0 then t_alliance.alliance_inventory_amount else t_wallet.balance end) ) else (0 ) end ) as balance,
+        select (case when t_alliance.alliance_ship=0 or t_alliance.alliance_ship=3 then  ((case when t_wallet.balance is NULL or t_wallet.balance=0 then t_alliance.alliance_inventory_amount else t_wallet.balance end) ) else (0 ) end ) as balance,
         DATE_ADD((select STR_TO_DATE(VALUE,'%Y-%m-%d') from t_config_field where field='starting_time')
         ,INTERVAL (select value from t_config_field where field='settlement_cycle' ) MONTH) as cutOffTime,
         t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as
