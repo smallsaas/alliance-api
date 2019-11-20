@@ -434,6 +434,8 @@ public class RPCAllianceEndpoint {
         }else {
             alliance.setDeliverMessage(new JSONArray());
         }
+
+
         return SuccessCip.create(alliance);
 
     }

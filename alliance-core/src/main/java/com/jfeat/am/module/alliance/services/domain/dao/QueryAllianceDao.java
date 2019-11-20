@@ -66,8 +66,13 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
             "and b.alliance_ship=0) as a where o.user_id = a.user_id and  DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= o.created_date and o.status='PAID_CONFIRM_PENDING'")
     public List<JSONObject> queryWeekOrder(@Param("userId") Long userId);
 
+    //重置userID
     @Update("update t_alliance set user_id=null where id=#{id}")
     Integer resetUserId(@Param("id")Long id);
+
+    //团队下单奖励
+
+    //团队盟友升级
 
 
 

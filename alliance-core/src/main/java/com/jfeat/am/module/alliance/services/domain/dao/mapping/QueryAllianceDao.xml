@@ -19,7 +19,6 @@
         LEFT JOIN t_alliance kid ON t_alliance.invitor_alliance_id=kid.id
         where t_alliance.id=#{id}
         GROUP BY t_alliance.id
-
     </select>
 
     <select id="findAlliancePage" resultType="AllianceRecord" parameterType="AllianceRecord">
@@ -35,7 +34,7 @@
         LEFT JOIN t_alliance kid ON t_alliance.invitor_alliance_id=kid.id
         LEFT JOIN t_user ON t_alliance.user_id = t_user.id
         LEFT JOIN t_wallet on t_wallet.user_id=t_alliance.user_id
-        WHERE 1=1
+        WHERE t_alliance.alliance_status > 0
         <if test="record.allianceType != null and record.allianceType>0 ">
             AND t_alliance.alliance_type= #{record.allianceType}
         </if>
