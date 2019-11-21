@@ -25,13 +25,16 @@ public class AllianceReconciliationEndpoint {
     @GetMapping("/sales")
     @Permission(BonusPermission.BONUS_VIEW)
     public Tip sales(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
-                     @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize){
-        return SuccessTip.create(queryBonusDao.querySales(pageNum,pageSize));
+                     @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                     @RequestParam(name = "search", required = false) String search){
+
+        return SuccessTip.create(queryBonusDao.querySales(pageNum,pageSize,search));
     }
     @GetMapping("/allianceReconciliation")
     @Permission(BonusPermission.BONUS_DIVIDEND)
     public Tip allianceReconciliation(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
-                     @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize){
-        return SuccessTip.create(bonusService.getAllianceReconciliation(pageNum,pageSize));
+                     @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                      @RequestParam(name = "search", required = false) String search){
+        return SuccessTip.create(bonusService.getAllianceReconciliation(pageNum,pageSize,search));
     }
 }

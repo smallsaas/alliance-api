@@ -15,6 +15,6 @@ public interface BonusService {
   //获得自己的团队奖励
   BigDecimal getTeamBonus(Long paramLong, Integer dateType);
 
-  List<AllianceReconciliation> getAllianceReconciliation(Integer pageNum, Integer pageSize);
+  List<AllianceReconciliation> getAllianceReconciliation(Integer pageNum, Integer pageSize,String search);
 }
 
