@@ -4,7 +4,6 @@
     <sql id="Base_Column_List">
         t_alliance.*
     </sql>
-
     <sql id="QueryOwnedOrgIds">
         SELECT children.id FROM t_sys_org, t_sys_org as children WHERE t_sys_org.left_num &lt;= children.left_num AND
         t_sys_org.right_num >= children.left_num and t_sys_org.id=#{ownerOrgId} order by t_sys_org.node_level ASC
@@ -19,7 +18,9 @@
         GROUP BY t_alliance.id
     </select>
     <select id="findAlliancePage" resultType="AllianceRecord" parameterType="AllianceRecord">
-        select (case when t_alliance.alliance_ship=0 or t_alliance.alliance_ship=3 then  ((case when t_wallet.balance is NULL or t_wallet.balance=0 then t_alliance.alliance_inventory_amount else t_wallet.balance end) ) else (0 ) end ) as balance,
+        select (case when t_alliance.alliance_ship=0 or t_alliance.alliance_ship=3 then ((case when t_wallet.balance is
+        NULL or t_wallet.balance=0 then t_alliance.alliance_inventory_amount else t_wallet.balance end) ) else (0 ) end
+        ) as balance,
         DATE_ADD((select STR_TO_DATE(VALUE,'%Y-%m-%d') from t_config_field where field='starting_time')
         ,INTERVAL (select value from t_config_field where field='settlement_cycle' ) MONTH) as cutOffTime,
         t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as
@@ -113,7 +114,9 @@
 
 
     <select id="findAlliancePageShip" resultType="AllianceRecord" parameterType="AllianceRecord">
-        select (case when t_alliance.alliance_ship=0 or t_alliance.alliance_ship=3 then  ((case when t_wallet.balance is NULL or t_wallet.balance=0 then t_alliance.alliance_inventory_amount else t_wallet.balance end) ) else (0 ) end ) as balance,
+        select (case when t_alliance.alliance_ship=0 or t_alliance.alliance_ship=3 then ((case when t_wallet.balance is
+        NULL or t_wallet.balance=0 then t_alliance.alliance_inventory_amount else t_wallet.balance end) ) else (0 ) end
+        ) as balance,
         DATE_ADD((select STR_TO_DATE(VALUE,'%Y-%m-%d') from t_config_field where field='starting_time')
         ,INTERVAL (select value from t_config_field where field='settlement_cycle' ) MONTH) as cutOffTime,
         t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as
@@ -125,7 +128,7 @@
         LEFT JOIN t_alliance kid ON t_alliance.invitor_alliance_id=kid.id
         LEFT JOIN t_user ON t_alliance.user_id = t_user.id
         LEFT JOIN t_wallet on t_wallet.user_id=t_alliance.user_id
-        WHERE  1=1 and t_alliance.alliance_ship=0 and t_alliance.alliance_status > 0
+        WHERE 1=1 and t_alliance.alliance_ship=0 and t_alliance.alliance_status > 0
         <if test="record.allianceType != null and record.allianceType>0 ">
             AND t_alliance.alliance_type= #{record.allianceType}
         </if>

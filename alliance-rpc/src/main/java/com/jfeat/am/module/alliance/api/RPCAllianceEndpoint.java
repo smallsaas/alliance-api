@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.mapper.Condition;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Royalty;
@@ -15,6 +16,7 @@ import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
+import com.jfeat.crud.base.tips.Tip;
 import com.jfeat.util.Cip;
 import com.jfeat.util.SuccessCip;
 import io.swagger.annotations.Api;
@@ -127,7 +129,7 @@ public class RPCAllianceEndpoint {
                 walletHistory.setCreatedTime(create);
                 walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                 walletHistory.setAmount(new BigDecimal(0));
-                walletHistory.setGift_amount(new BigDecimal(0));
+                walletHistory.setGiftBalance(new BigDecimal(0));
                 walletHistory.setWalletId(new Long(walletCondition.getId()));
                 queryWalletHistoryDao.insert(walletHistory);
 
@@ -145,7 +147,7 @@ public class RPCAllianceEndpoint {
                 WalletHistory walletHistory = new WalletHistory();
                 walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                 walletHistory.setAmount(new BigDecimal(0));
-                walletHistory.setGift_amount(new BigDecimal(0));
+                walletHistory.setGiftAmount(new BigDecimal(0));
                 walletHistory.setWalletId(new Long(wallet.getId()));
                 queryWalletHistoryDao.insert(walletHistory);
 
@@ -172,7 +174,7 @@ public class RPCAllianceEndpoint {
                 WalletHistory walletHistory = new WalletHistory();
                 walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
                 walletHistory.setAmount(new BigDecimal(0));
-                walletHistory.setGift_amount(new BigDecimal(0));
+                walletHistory.setGiftAmount(new BigDecimal(0));
                 walletHistory.setWalletId(new Long(walletCondition.getId()));
                 walletHistory.setType(RechargeType.RECHARGE);
                 queryWalletHistoryDao.insert(walletHistory);
@@ -190,7 +192,7 @@ public class RPCAllianceEndpoint {
                 WalletHistory walletHistory = new WalletHistory();
                 walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
                 walletHistory.setAmount(new BigDecimal(0));
-                walletHistory.setGift_amount(new BigDecimal(0));
+                walletHistory.setGiftAmount(new BigDecimal(0));
                 walletHistory.setWalletId(new Long(wallet.getId()));
                 walletHistory.setType(RechargeType.RECHARGE);
                 queryWalletHistoryDao.insert(walletHistory);
@@ -376,7 +378,7 @@ public class RPCAllianceEndpoint {
 
         if (alliance != null) {
             if (currentMonthOrderByUserId != null && currentMonthOrderByUserId.size() > 0) {
-                alliance.setCurrentMonthOrder(JSON.parseArray(JSON.toJSONString(queryAllianceDao.getCurrentMonthOrderByUserId(id),SerializerFeature.WriteDateUseDateFormat)));
+                alliance.setCurrentMonthOrder(JSON.parseArray(JSON.toJSONString(queryAllianceDao.getCurrentMonthOrderByUserId(id), SerializerFeature.WriteDateUseDateFormat)));
             } else {
                 alliance.setCurrentMonthOrder(new JSONArray());
             }
@@ -415,23 +417,23 @@ public class RPCAllianceEndpoint {
         alliance.setCommissionOrder(royalties);
         //盟友消息
         List<Alliance> alliances = queryAllianceDao.queryWeekAlliance(id);
-        if(alliance!=null){
+        if (alliance != null) {
             alliance.setAllianceMessages(JSONArray.parseArray(JSON.toJSONString(alliances)));
-        }else {
+        } else {
             alliance.setAllianceMessages(new JSONArray());
         }
 
         List<JSONObject> jsonOrders = queryAllianceDao.queryWeekOrder(id);
 
-        if(jsonOrders!=null){
+        if (jsonOrders != null) {
             alliance.setTeamAllianceOrderMessages(JSONArray.parseArray(JSON.toJSONString(jsonOrders)));
-        }else {
+        } else {
             alliance.setTeamAllianceOrderMessages(new JSONArray());
         }
         List<JSONObject> orderDelivers = queryAllianceDao.queryWeekOrderDeliver(id);
-        if(orderDelivers!=null){
+        if (orderDelivers != null) {
             alliance.setDeliverMessage(JSONArray.parseArray(JSON.toJSONString(orderDelivers)));
-        }else {
+        } else {
             alliance.setDeliverMessage(new JSONArray());
         }
 
@@ -464,7 +466,19 @@ public class RPCAllianceEndpoint {
     @ApiOperation(value = "根据手机号，姓名，邀请码，添加盟友", response = Cip.class)
     @PostMapping("/createAlliance")
     public Cip createAlliance(@RequestHeader("X-USER-ID") Long userId, @RequestBody RequestAlliance requestAlliance) {
-
         return SuccessCip.create(allianceService.createAlliance(requestAlliance, userId));
     }
+
+    @GetMapping("/withdrawalsRecord")
+    @ApiOperation(value = "提现记录", response = Cip.class)
+    public Cip withdrawalsRecord(@RequestHeader("X-USER-ID") Long id) {
+        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(id));
+        if (wallet != null) {
+            List list = queryWalletHistoryDao.selectList(new EntityWrapper().eq(WalletHistory.WALLET_ID, wallet.getId()).orderBy(WalletHistory.CREATED_TIME, false));
+            return SuccessCip.create(list);
+        } else {
+            throw new BusinessException(BusinessCode.BadRequest, "钱包未初始化");
+        }
+    }
+
 }
