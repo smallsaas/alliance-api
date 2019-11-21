@@ -305,7 +305,7 @@ public class AllianceEndpoint {
 
     @BusinessLog(name = "盟友", value = "修改盟友支付状态-设置为已支付")
     @PostMapping("/{id}/action/setpaid")
-    @ApiOperation("修改盟友支付状态-设置为已支付   ")
+    @ApiOperation("修改盟友支付状态-设置为待绑定   ")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
     public Tip paid(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
@@ -313,8 +313,31 @@ public class AllianceEndpoint {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
 
-        if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
+        if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_EXISTPAID)) {
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
+            //alliance.setAllianceShipTime(new Date());
+
+        } else {
+            throw new BusinessException(BusinessCode.CodeBase, "状态错误");
+        }
+
+        int res = allianceService.updateMaster(alliance);
+
+        return SuccessTip.create(res);
+    }
+
+    @BusinessLog(name = "盟友", value = "修改盟友支付状态-设置为已支付")
+    @PostMapping("/{id}/action/setexistpaid")
+    @ApiOperation("修改盟友支付状态-设置为已支付   ")
+    @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
+    public Tip setexistpaid(@PathVariable Long id) {
+        Alliance alliance = allianceService.retrieveMaster(id);
+        if (alliance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
+        }
+
+        if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
+            alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_EXISTPAID);
             //alliance.setAllianceShipTime(new Date());
 
         } else {
@@ -386,7 +409,6 @@ public class AllianceEndpoint {
             wallet.setBalance(balance);
             wallet.setAccumulativeAmount(balance);
             res += queryWalletDao.insert(wallet);
-
         } else {
             BigDecimal balance1 = wallet.getBalance();
             if (balance1 == null) {

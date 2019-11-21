@@ -170,6 +170,9 @@ public class Alliance extends Model<Alliance> {
      */
     @TableField("alliance_hobby")
     private String allianceHobby;
+
+    @TableField("role")
+    private String role;
     /**
      * 电话
      */
@@ -182,6 +185,14 @@ public class Alliance extends Model<Alliance> {
     @TableField("alliance_dob")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date allianceDob;
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 
     public Integer getAge() {
         return age;

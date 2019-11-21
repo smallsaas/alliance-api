@@ -282,7 +282,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
             WalletHistory walletHistory = new WalletHistory();
             walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
             walletHistory.setAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
-            walletHistory.setGift_amount(new BigDecimal(0));
+            walletHistory.setGiftAmount(new BigDecimal(0));
             walletHistory.setWalletId(new Long(walletCondition.getId()));
             walletHistory.setType(RechargeType.RECHARGE);
             queryWalletHistoryDao.insert(walletHistory);
@@ -300,7 +300,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
             WalletHistory walletHistory = new WalletHistory();
             walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
             walletHistory.setAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
-            walletHistory.setGift_amount(new BigDecimal(0));
+            walletHistory.setGiftAmount(new BigDecimal(0));
             walletHistory.setWalletId(new Long(wallet.getId()));
             walletHistory.setType(RechargeType.RECHARGE);
             set+=queryWalletHistoryDao.insert(walletHistory);
