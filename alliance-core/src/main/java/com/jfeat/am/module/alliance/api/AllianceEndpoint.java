@@ -313,7 +313,8 @@ public class AllianceEndpoint {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
 
-        if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_EXISTPAID)) {
+//        if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_EXISTPAID)) {
+        if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
             //alliance.setAllianceShipTime(new Date());
 

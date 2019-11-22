@@ -394,7 +394,7 @@ public class RPCAllianceEndpoint {
         } else {
             alliance.setAllianceTeam(new JSONArray());
         }
-        //----------------------
+        //-------------------------------------------------
         alliance.setSelfBonus(bonusService.getSelfBonus(id, dateType).add(bonusService.getTeamProportionBonus(id, dateType)));
         alliance.setTeamSelfBonus(bonusService.getTeamBonus(id, dateType));
         alliance.setTotalSelfBonus(bonusService.getSelfBonus(id, dateType).add(bonusService.getTeamProportionBonus(id, dateType)).add(bonusService.getTeamBonus(id, dateType)));
