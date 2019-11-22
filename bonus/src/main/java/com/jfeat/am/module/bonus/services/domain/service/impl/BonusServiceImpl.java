@@ -116,8 +116,8 @@ public class BonusServiceImpl implements BonusService {
     }
 
     @Override
-    public List<AllianceReconciliation> getAllianceReconciliation(Integer pageNum, Integer pageSize) {
-        List<AllianceReconciliation> allianceReconciliations = queryBonusDao.queryReInformation(pageNum, pageSize);
+    public List<AllianceReconciliation> getAllianceReconciliation(Integer pageNum, Integer pageSize,String search) {
+        List<AllianceReconciliation> allianceReconciliations = queryBonusDao.queryReInformation(pageNum, pageSize,search);
         if (allianceReconciliations != null && allianceReconciliations.size() > 0) {
             for (AllianceReconciliation r : allianceReconciliations) {
                 BigDecimal month = this.getSelfBonus(r.getUserId(), BonusDateType.MONTH)
