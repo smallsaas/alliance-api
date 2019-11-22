@@ -371,7 +371,10 @@ public class RPCAllianceEndpoint {
         AllianceRecord alliance = queryAllianceDao.selectAllianceOneByUserId(id);
         Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(id));
         if (wallet != null) {
-            alliance.setBalance(wallet.getBalance());
+            if (wallet.getBalance() != null)
+                alliance.setBalance(wallet.getBalance());
+            else
+                alliance.setBalance(new BigDecimal(0.00));
         }
 
         List<Map> currentMonthOrderByUserId = queryAllianceDao.getCurrentMonthOrderByUserId(id);
