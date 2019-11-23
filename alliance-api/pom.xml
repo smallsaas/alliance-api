@@ -61,11 +61,11 @@
             <version>0.0.2</version>
         </dependency>
         <!---dev 环境依赖crud-dev-->
-        <dependency>
+<!--        <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>crud-dev</artifactId>
             <version>${crud-dev.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--crud core-->
         <dependency>
