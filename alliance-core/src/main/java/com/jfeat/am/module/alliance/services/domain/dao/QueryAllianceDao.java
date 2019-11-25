@@ -5,6 +5,7 @@ import com.jfeat.am.module.alliance.services.domain.model.AllianceRecord;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 import org.apache.ibatis.annotations.Select;
@@ -73,6 +74,10 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     //团队下单奖励
 
     //团队盟友升级
+
+    //删除表的数据
+    @Delete("delete from ${tableName}")
+    public Integer deleteTableData(@Param("tableName") String tableName);
 
 
 

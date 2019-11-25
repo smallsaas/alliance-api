@@ -79,7 +79,7 @@ public class RPCAllianceRegisterEndpoint {
          * 2.  手机号码有效， 检查手机号码是否已存在 盟友， 存在盟友即检查盟友的 状态是否为 已确认状态， 是否关联user_id, user_id 是否与 X_USER_ID 一致，
          *    根据盟友类型，库存额是否为 2000或10000,   t_wallet 里面的额度是与库存额一致。  条件满足， 即返回 是盟友 标识
          * 3.  手机号码有效， 但不在盟友列表中， 即此人不是盟友， 可以记录为联系人线索（考虑新建一个表，也可以暂时放弃这个电话信息），  即返回不是盟友标识
-         */
+         **/
 
         // 没有传送手机号码
         if(request==null || StringUtils.isEmpty(request.getPhoneNumber())){

@@ -2,21 +2,30 @@ package com.jfeat.am.module.alliance.api;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.jfeat.am.common.annotation.Permission;
+import com.jfeat.am.core.jwt.JWTKit;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 import com.jfeat.am.module.alliance.services.domain.definition.AlliancePermission;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
+import com.jfeat.am.module.alliance.util.RestClient;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import com.jfeat.am.module.log.annotation.BusinessLog;
+import com.jfeat.am.uaas.common.Md5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Update;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.dao.DuplicateKeyException;
@@ -26,6 +35,7 @@ import com.jfeat.crud.base.tips.Tip;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
 
+import java.io.*;
 import java.math.BigDecimal;
 
 import com.jfeat.am.module.alliance.services.domain.service.AllianceService;
@@ -36,9 +46,7 @@ import javax.annotation.Resource;
 import java.rmi.ServerException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -55,7 +63,7 @@ import java.util.Map;
 @RequestMapping("/api/crud/alliance/alliances")
 public class AllianceEndpoint {
 
-
+    private final static RestClient rest = new RestClient();
     @Resource
     AllianceService allianceService;
 
@@ -100,6 +108,7 @@ public class AllianceEndpoint {
     @ApiOperation(value = "修改 Alliance", response = Alliance.class)
     @Permission(AlliancePermission.ALLIANCE_EDIT)
     public Tip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException, ParseException {
+
         return SuccessTip.create(allianceService.modify(id, entity));
     }
 
@@ -265,7 +274,7 @@ public class AllianceEndpoint {
 //                alliance.setCutOffTime(calculationEndTime());
 //            }
 //        }
-        return SuccessTip.create();
+        return SuccessTip.create(alliances);
     }
 
     @GetMapping("/getAllianceInformationByUserId")
@@ -317,13 +326,11 @@ public class AllianceEndpoint {
 //        if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
             //alliance.setAllianceShipTime(new Date());
-
+            alliance.setAllianceInventoryAmount(new BigDecimal(0.00));
         } else {
             throw new BusinessException(BusinessCode.CodeBase, "状态错误");
         }
-
         int res = allianceService.updateMaster(alliance);
-
         return SuccessTip.create(res);
     }
 
@@ -339,12 +346,11 @@ public class AllianceEndpoint {
 
         if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_EXISTPAID);
+            alliance.setAllianceInventoryAmount(new BigDecimal(0.00));
             //alliance.setAllianceShipTime(new Date());
-
         } else {
             throw new BusinessException(BusinessCode.CodeBase, "状态错误");
         }
-
         int res = allianceService.updateMaster(alliance);
 
         return SuccessTip.create(res);
@@ -358,10 +364,35 @@ public class AllianceEndpoint {
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
-
+        Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
+        Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
         int res = allianceService.updateMaster(alliance);
         res += queryAllianceDao.resetUserId(id);
+        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(alliance.getUserId()));
+        if (wallet != null) {
+            if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
+                wallet.setBalance(new BigDecimal(bonusConfig));
+                res += queryWalletDao.updateById(wallet);
+                WalletHistory walletHistory = new WalletHistory();
+                walletHistory.setAmount(new BigDecimal(bonusConfig));
+                walletHistory.setWalletId(wallet.getId());
+                walletHistory.setNote("初始化盟友");
+                walletHistory.setType(RechargeType.RECHARGE);
+                walletHistory.setCreatedTime(new Date());
+                res += queryWalletHistoryDao.insert(walletHistory);
+            } else if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
+                wallet.setBalance(new BigDecimal(commonConfig));
+                res += queryWalletDao.updateById(wallet);
+                WalletHistory walletHistory = new WalletHistory();
+                walletHistory.setAmount(new BigDecimal(commonConfig));
+                walletHistory.setWalletId(wallet.getId());
+                walletHistory.setNote("初始化盟友");
+                walletHistory.setType(RechargeType.RECHARGE);
+                walletHistory.setCreatedTime(new Date());
+                res += queryWalletHistoryDao.insert(walletHistory);
+            }
+        }
         return SuccessTip.create(res);
     }
 
@@ -377,22 +408,51 @@ public class AllianceEndpoint {
             throw new BusinessException(BusinessCode.CodeBase, "非正式盟友，无法执行升级操作！");//alliacneShip=0 才能 升级盟友
         }
 
-        if (!alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
+        if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
             alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
         } else {
             throw new BusinessException(BusinessCode.CodeBase, "非普通盟友身份，无法执行升级操作！");
         }
+
         alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
         int res = allianceService.updateMaster(alliance);
+
+        //获取金额配置
+        Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
+        Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
+        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(alliance.getId()));
+        if (wallet != null) {
+            if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
+                if (wallet.getBalance() != null && wallet.getBalance().intValue() > 0) {
+                    BigDecimal subtract = wallet.getBalance().subtract(new BigDecimal(commonConfig));
+
+                    //余额小于0
+//                    if (subtract.intValue() < 0) {
+//                        subtract = new BigDecimal(0.00);
+//                    }
+
+                    wallet.setBalance(subtract);
+                } else if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
+                    BigDecimal subtract = wallet.getBalance().subtract(new BigDecimal(bonusConfig));
+                    //余额小于0
+//                    if (subtract.intValue() < 0) {
+//                        subtract = new BigDecimal(0.00);
+//                    }
+                    wallet.setBalance(subtract);
+                }
+            }
+        }
+        res += queryWalletDao.updateById(wallet);
         return SuccessTip.create(res);
     }
 
     @PostMapping("/{id}/action/upwallet")
     @ApiOperation("线下盟友充值")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
-    public Tip upwallet(@PathVariable Long id, @RequestParam("balance") BigDecimal balance) {
+    public Tip upwallet(@PathVariable Long id,@RequestBody RechargeBalance rechargeBalance) {
         Alliance alliance = allianceService.retrieveMaster(id);
+        BigDecimal balance=rechargeBalance.getBalance();
         Integer res = 0;
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
@@ -427,9 +487,41 @@ public class AllianceEndpoint {
         walletHistory.setWalletId(wallet.getId());
         walletHistory.setType(RechargeType.RECHARGE);
         walletHistory.setAmount(balance);
+        walletHistory.setCreatedTime(new Date());
         res += queryWalletHistoryDao.insert(walletHistory);
         return SuccessTip.create(res);
     }
 
+    @GetMapping("/deleteTable")
+    public Tip deleteTable(@RequestParam String table, @RequestParam String secretKey) throws IOException {
+        Integer res = 0;
+        Long time = (new Date().getTime()) / 1000;
+        Long userid = JWTKit.getUserId();
+        String base = userid + secretKey + time;
+        String enc = Md5Utils.encrypt(base);
+        String url = "http://team.muaskin.com/admin/webapi/deluser.html";
+        JSONObject object = new JSONObject();
+        object.put("signature", enc);
+        object.put("userid", String.valueOf(1000));
+        object.put("ctime", time);
+        HttpEntity<String> requestEntity = new HttpEntity<String>(JSONObject.toJSONString(object));
+        ResponseEntity<String> responseEntity = rest.exchange(url, HttpMethod.POST, requestEntity, String.class);
+        String body = responseEntity.getBody();
+        JSONObject parse = (JSONObject) JSON.parse(body);
+        if (parse.get("code").equals(200)) {
+            JSONObject data = (JSONObject) parse.get("data");
+            if (data.get("code").equals(200)) {
+                if (table != null && table.length() > 0)
+                    res += queryAllianceDao.deleteTableData(table);
+            } else {
+                throw new BusinessException(BusinessCode.BadRequest, data.getString("msg"));
+            }
+        } else {
+            throw new BusinessException(BusinessCode.BadRequest, parse.getString("message"));
+        }
+
+
+        return SuccessTip.create(parse);
+    }
 
 }
