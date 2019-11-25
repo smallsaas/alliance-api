@@ -418,7 +418,7 @@ public class AllianceEndpoint {
         //获取金额配置
         Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
         Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
-        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(alliance.getId()));
+        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(alliance.getUserId()));
         if (wallet != null) {
             if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
                 if (wallet.getBalance() != null && wallet.getBalance().intValue() > 0) {
