@@ -79,6 +79,8 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     @Delete("delete from ${tableName}")
     public Integer deleteTableData(@Param("tableName") String tableName);
 
+    @Select("select JSON_EXTRACT(t_product_settlement_proportion.proportion, '$.value')  from t_product_settlement_proportion")
+    public List<Float> getJson();
 
 
 }

@@ -204,9 +204,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
             }
         }
         if (entity.getInvitorPhoneNumber() != null && entity.getInvitorPhoneNumber().length() > 0) {
-
             alliance = this.findAllianceByPhoneNumber(entity.getInvitorPhoneNumber());
-
         }
         if (alliance != null) {
             Alliance allianceShip = this.retrieveMaster(id);

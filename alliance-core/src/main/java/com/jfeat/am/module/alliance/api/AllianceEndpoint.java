@@ -326,7 +326,6 @@ public class AllianceEndpoint {
 //        if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
             //alliance.setAllianceShipTime(new Date());
-            alliance.setAllianceInventoryAmount(new BigDecimal(0.00));
         } else {
             throw new BusinessException(BusinessCode.CodeBase, "状态错误");
         }
@@ -346,7 +345,6 @@ public class AllianceEndpoint {
 
         if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_EXISTPAID);
-            alliance.setAllianceInventoryAmount(new BigDecimal(0.00));
             //alliance.setAllianceShipTime(new Date());
         } else {
             throw new BusinessException(BusinessCode.CodeBase, "状态错误");
