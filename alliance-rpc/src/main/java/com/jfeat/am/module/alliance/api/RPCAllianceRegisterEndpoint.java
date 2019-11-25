@@ -123,19 +123,19 @@ public class RPCAllianceRegisterEndpoint {
         float bonus_alliance_inventory = configFieldService.getFieldFloat(AllianceShips.BONUS_ALLIANCE_FIELD);
 
         /// 查查盟友库存额
-        if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_COMMON){
-            if(registeredAlliance.getAllianceInventoryAmount().intValue() != (int)common_alliance_inventory){
-                return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友类型与库存额度不匹配");
-            }
-
-        }else if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_BONUS){
-            if(registeredAlliance.getAllianceInventoryAmount().intValue() != (int)bonus_alliance_inventory){
-                return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友类型与库存额度不匹配");
-            }
-
-        }else{
-            return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友类型Unknown: " + registeredAlliance.getAllianceType());
-        }
+//        if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_COMMON){
+//            if(registeredAlliance.getAllianceInventoryAmount().intValue() != (int)common_alliance_inventory){
+//                return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友类型与库存额度不匹配");
+//            }
+//
+//        }else if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_BONUS){
+//            if(registeredAlliance.getAllianceInventoryAmount().intValue() != (int)bonus_alliance_inventory){
+//                return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友类型与库存额度不匹配");
+//            }
+//
+//        }else{
+//            return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "盟友类型Unknown: " + registeredAlliance.getAllianceType());
+//        }
 
 
         /// 盟友已确定， 直接返回盟友类型

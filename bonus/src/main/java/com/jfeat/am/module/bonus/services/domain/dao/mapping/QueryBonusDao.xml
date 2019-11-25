@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao">
     <select id="getAllianceBonus" resultType="java.math.BigDecimal">
-        select sum((p.price-p.cost_price)*oi.quantity*b.bonus_proportion/(100.0)) from t_order o,t_order_item
-        oi,t_product p ,t_bonus_proportion b,t_alliance a where
+        select sum((p.price-p.cost_price)*oi.quantity*(JSON_EXTRACT(b.proportion,'$.value')/(100.0))) from t_order o,t_order_item
+        oi,t_product p ,t_product_settlement_proportion b,t_alliance a where
         o.user_id=#{userId} and oi.order_id= o.id and p.id=oi.product_id and a.user_id=o.user_id and a.alliance_type=1
         and b.product_id=p.id and b.type = 'STOCKHOLDER' and a.alliance_ship=0
         and o.created_date > STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d')
@@ -22,10 +22,10 @@
     </select>
 
     <select id="getTeamBonus" resultType="java.math.BigDecimal">
-        select sum((p.price-p.cost_price)*oi.quantity*b.bonus_proportion/(100.0)) from t_order o,t_order_item
-        oi,t_product p ,t_bonus_proportion b,t_alliance a where
+        select sum((p.price-p.cost_price)*oi.quantity*(JSON_EXTRACT(b.proportion,'$.value')/(100.0))) from t_order o,t_order_item
+        oi,t_product p ,t_product_settlement_proportion b,t_alliance a where
         o.user_id=#{userId} and oi.order_id= o.id and p.id=oi.product_id and a.user_id=o.user_id and b.product_id=p.id
-        and b.type = 'RECOMMEND' and a.alliance_ship=0
+        and b.type = 'ALLIANCE' and a.alliance_ship=0
         and o.created_date > STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d')
         and o.status='CLOSED_CONFIRMED'
         <choose>

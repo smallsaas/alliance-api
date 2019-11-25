@@ -411,7 +411,6 @@ public class AllianceEndpoint {
         } else {
             throw new BusinessException(BusinessCode.CodeBase, "非普通盟友身份，无法执行升级操作！");
         }
-
         alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
         int res = allianceService.updateMaster(alliance);
