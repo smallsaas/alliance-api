@@ -485,7 +485,7 @@ public class RPCAllianceEndpoint {
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "当前盟友不存在");
         }
-        if (alliance.getAllianceType() == 2) {
+        if (alliance.getAllianceType() == 2&&alliance.getAllianceShip()==AllianceShips.ALLIANCE_SHIP_OK) {
             OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(id));
             if (ownerBalance == null) {
                 ownerBalance = new OwnerBalance();
@@ -500,7 +500,14 @@ public class RPCAllianceEndpoint {
             int monthDiff = getMonthDiff(allianceShipTime, new Date());
             if (monthDiff < 2) {
                 BigDecimal bonus_balance = ownerBalanceRecord.getBonus_balance();
+                if(bonus_balance==null){
+                    bonus_balance=new BigDecimal(0.00);
+                }
+
                 BigDecimal expected_bonus = ownerBalanceRecord.getExpected_bonus();
+                if(expected_bonus==null){
+                    expected_bonus=new BigDecimal(0.00);
+                }
                 expected_bonus = expected_bonus.add(bonus_balance);
                 ownerBalanceRecord.setBonus_balance(new BigDecimal(0.00));
             }

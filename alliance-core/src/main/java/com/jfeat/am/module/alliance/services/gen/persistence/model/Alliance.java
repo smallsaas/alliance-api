@@ -123,8 +123,8 @@ public class Alliance extends Model<Alliance> {
     /**
      * 去年结余
      */
-    @TableField("balance")
-    private BigDecimal balance;
+//    @TableField("balance")
+//    private BigDecimal balance;
     /**
      * 积分
      */
@@ -244,13 +244,13 @@ public class Alliance extends Model<Alliance> {
         this.startingCycle = startingCycle;
     }
 
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
+//    public BigDecimal getBalance() {
+//        return balance;
+//    }
+//
+//    public void setBalance(BigDecimal balance) {
+//        this.balance = balance;
+//    }
 
     public Integer getAllianceRank() {
         return allianceRank;

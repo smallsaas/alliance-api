@@ -214,12 +214,14 @@
     <select id="myTeam" resultType="AllianceRecord" parameterType="AllianceRecord">
         select t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as
         invitorPhone,
+        t_wallet.balance,
         t_user.avatar as wechatAvatar,
         t_user.name as wechatNick
         from t_alliance
         left JOIN t_alliance as children on t_alliance.id=children.invitor_alliance_id
         LEFT JOIN t_alliance kid ON t_alliance.invitor_alliance_id=kid.id
         LEFT JOIN t_user ON t_alliance.user_id = t_user.id
+        LEFT JOIN t_wallet on t_wallet.user_id =t_user.id
         WHERE 1=1
 
         AND t_alliance.invitor_alliance_id = #{id}

@@ -82,12 +82,10 @@ public class AllianceRecord extends Alliance {
         this.cutOffTime = cutOffTime;
     }
 
-    @Override
     public BigDecimal getBalance() {
         return balance;
     }
 
-    @Override
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }

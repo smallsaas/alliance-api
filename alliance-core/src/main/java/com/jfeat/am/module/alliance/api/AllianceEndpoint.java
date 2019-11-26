@@ -158,7 +158,7 @@ public class AllianceEndpoint {
             @ApiImplicitParam(name = "allianceStatus", dataType = "Integer"),
             @ApiImplicitParam(name = "allianceInventoryAmount", dataType = "BigDecimal"),
             @ApiImplicitParam(name = "alliancePoint", dataType = "BigDecimal"),
-            @ApiImplicitParam(name = "balance", dataType = "BigDecimal"),
+//            @ApiImplicitParam(name = "balance", dataType = "BigDecimal"),
             @ApiImplicitParam(name = "allianceName", dataType = "String"),
             @ApiImplicitParam(name = "allianceSex", dataType = "Integer"),
             @ApiImplicitParam(name = "allianceOccupation", dataType = "String"),
@@ -341,7 +341,7 @@ public class AllianceEndpoint {
         if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_EXISTPAID)) {
 //        if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
-            //alliance.setAllianceShipTime(new Date());
+            alliance.setAllianceShipTime(new Date());
         } else {
             throw new BusinessException(BusinessCode.CodeBase, "状态错误");
         }
@@ -374,19 +374,20 @@ public class AllianceEndpoint {
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
     public Tip reset(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
+        Long userId=alliance.getUserId();
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
+        Integer allianceType = alliance.getAllianceType();
         Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
         Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
-        Long userId = queryAllianceDao.queryUserIdByPhone(alliance.getAlliancePhone());
         int res = allianceService.updateMaster(alliance);
         res += queryAllianceDao.resetUserId(id);
         if(alliance.getUserId()!=null){
             Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
             if (wallet != null) {
-                if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
+                if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
                     wallet.setBalance(wallet.getBalance().subtract(new BigDecimal(bonusConfig)));
                     res += queryWalletDao.updateById(wallet);
                     WalletHistory walletHistory = new WalletHistory();
@@ -396,7 +397,7 @@ public class AllianceEndpoint {
                     walletHistory.setType(RechargeType.RECHARGE);
                     walletHistory.setCreatedTime(new Date());
                     res += queryWalletHistoryDao.insert(walletHistory);
-                } else if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
+                } else if (allianceType.equals(Alliance.ALLIANCE_TYPE_COMMON)) {
                     wallet.setBalance(wallet.getBalance().subtract(new BigDecimal(commonConfig)));
                     res += queryWalletDao.updateById(wallet);
                     WalletHistory walletHistory = new WalletHistory();
@@ -409,7 +410,7 @@ public class AllianceEndpoint {
                 }
             } else {
                 wallet = new Wallet().setUserId(userId);
-                if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
+                if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
                     wallet.setBalance(new BigDecimal(bonusConfig));
                     res += queryWalletDao.insert(wallet);
                     WalletHistory walletHistory = new WalletHistory();
@@ -419,7 +420,7 @@ public class AllianceEndpoint {
                     walletHistory.setType(RechargeType.RECHARGE);
                     walletHistory.setCreatedTime(new Date());
                     res += queryWalletHistoryDao.insert(walletHistory);
-                } else if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
+                } else if (allianceType.equals(Alliance.ALLIANCE_TYPE_COMMON)) {
                     wallet.setBalance(new BigDecimal(commonConfig));
                     res += queryWalletDao.insert(wallet);
                     WalletHistory walletHistory = new WalletHistory();
@@ -441,6 +442,8 @@ public class AllianceEndpoint {
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
     public Tip upgrade(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
+        Long userId=alliance.getUserId();
+        Integer allianceType = alliance.getAllianceType();
         Float bonus = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
@@ -462,9 +465,9 @@ public class AllianceEndpoint {
         //获取金额配置
         Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
         Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
-        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(alliance.getUserId()));
+        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
         if (wallet != null) {
-            if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
+            if (allianceType.equals(Alliance.ALLIANCE_TYPE_COMMON)) {
                 if (wallet.getBalance() != null && wallet.getBalance().intValue() > 0) {
                     BigDecimal subtract = wallet.getBalance().subtract(new BigDecimal(commonConfig));
 
@@ -474,7 +477,7 @@ public class AllianceEndpoint {
 //                    }
 
                     wallet.setBalance(subtract);
-                } else if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
+                } else if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
                     BigDecimal subtract = wallet.getBalance().subtract(new BigDecimal(bonusConfig));
                     //余额小于0
 //                    if (subtract.intValue() < 0) {

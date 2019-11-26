@@ -29,7 +29,7 @@
 		<result column="alliance_phone" property="alliancePhone" />
 		<result column="alliance_dob" property="allianceDob" />
 		<result column="starting_cycle" property="startingCycle" />
-		<result column="balance" property="balance" />
+<!--		<result column="balance" property="balance" />-->
 		<result column="avator" property="avator" />
 		<result column="role" property="role" />
 	</resultMap>

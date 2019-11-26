@@ -60,6 +60,7 @@ public class RPCAllianceRegisterEndpoint {
         }
 
         Alliance updatedAlliance = new Alliance();
+
         updatedAlliance.setId(registeredAlliance.getId());
         updatedAlliance.setAllianceShip(request.getAllianceShip());
         int affected = allianceService.updateMaster(updatedAlliance, false); /// false means update by Id
