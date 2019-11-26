@@ -46,14 +46,14 @@ public interface QueryBonusDao {
 
     List<ProductSalesRecord> querySales(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize,@Param("search") String search);
 
-    List<AllianceReconciliation> queryReInformation(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize,@Param("search") String search);
-
+    List<AllianceReconciliation> queryReInformation(@Param("search") String search);
 
     BigDecimal queryBonusOrder(@Param("userId") Long userId);
 
     String queryAllianceName(@Param("userId") Long userId);
 
     Integer queryShip(@Param("userId") Long userId);
+
     Integer queryType(@Param("userId") Long userId);
 
 

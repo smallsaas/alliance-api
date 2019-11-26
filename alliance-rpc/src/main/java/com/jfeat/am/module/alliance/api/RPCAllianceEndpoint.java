@@ -9,9 +9,9 @@ import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
-import com.jfeat.am.module.alliance.services.gen.persistence.model.Royalty;
-import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
-import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
+import com.jfeat.am.module.alliance.services.domain.dao.mapping.QueryOwnerBalanceDao;
+import com.jfeat.am.module.alliance.services.domain.model.OwnerBalanceRecord;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.*;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
@@ -34,15 +34,11 @@ import java.math.BigDecimal;
 
 import com.jfeat.am.module.alliance.services.domain.service.AllianceService;
 import com.jfeat.am.module.alliance.services.domain.model.AllianceRecord;
-import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 
 import javax.annotation.Resource;
 import java.rmi.ServerException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -80,6 +76,9 @@ public class RPCAllianceEndpoint {
 
     @Resource
     QueryWalletHistoryDao queryWalletHistoryDao;
+
+    @Resource
+    QueryOwnerBalanceDao queryOwnerBalanceDao;
 
     private final Integer ALLIANCE_TYPE_BONUS = 1;
     private final Integer ALLIANCE_TYPE_COMMON = 2;
@@ -132,9 +131,7 @@ public class RPCAllianceEndpoint {
                 walletHistory.setGiftBalance(new BigDecimal(0));
                 walletHistory.setWalletId(new Long(walletCondition.getId()));
                 queryWalletHistoryDao.insert(walletHistory);
-
             } else {
-
                 if (wallet.getAccumulativeAmount() != null) {
                     BigDecimal common_alliance = wallet.getBalance().add(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                     wallet.setBalance(common_alliance);
@@ -142,7 +139,6 @@ public class RPCAllianceEndpoint {
                 } else {
                     wallet.setAccumulativeAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                     queryWalletDao.updateById(wallet);
-
                 }
                 WalletHistory walletHistory = new WalletHistory();
                 walletHistory.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
@@ -150,7 +146,6 @@ public class RPCAllianceEndpoint {
                 walletHistory.setGiftAmount(new BigDecimal(0));
                 walletHistory.setWalletId(new Long(wallet.getId()));
                 queryWalletHistoryDao.insert(walletHistory);
-
             }
         } else if (entity.getAllianceType().equals(ALLIANCE_TYPE_BONUS)) {
 //            entity.setStockholderShipTime(new Date());
@@ -164,7 +159,6 @@ public class RPCAllianceEndpoint {
                 walletCondition.setUserId(entity.getUserId());
             }
             Wallet wallet = queryWalletDao.selectOne(walletCondition);
-
             if (wallet == null) {
                 wallet = new Wallet();
                 walletCondition.setAccumulativeAmount(new BigDecimal(0));
@@ -178,9 +172,7 @@ public class RPCAllianceEndpoint {
                 walletHistory.setWalletId(new Long(walletCondition.getId()));
                 walletHistory.setType(RechargeType.RECHARGE);
                 queryWalletHistoryDao.insert(walletHistory);
-
             } else {
-
                 if (wallet.getAccumulativeAmount() != null) {
                     BigDecimal common_alliance = wallet.getBalance().add(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                     wallet.setBalance(common_alliance);
@@ -228,10 +220,7 @@ public class RPCAllianceEndpoint {
         if (alliance_phone.size() > 0) {
             throw new ServerException("该手机号以被注册盟友，不能重复");
         }
-
-
         //根据邀请人电话查找邀请人信息
-
         Alliance alliance = null;
         if (entity.getInvitorPhoneNumber() != null) {
             alliance = allianceService.findAllianceByPhoneNumber(entity.getInvitorPhoneNumber());
@@ -369,6 +358,9 @@ public class RPCAllianceEndpoint {
         Alliance entity = new Alliance();
         entity.setUserId(id);
         AllianceRecord alliance = queryAllianceDao.selectAllianceOneByUserId(id);
+        if(alliance==null){
+            throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
+        }
         Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(id));
         if (wallet != null) {
             if (wallet.getBalance() != null)
@@ -376,9 +368,7 @@ public class RPCAllianceEndpoint {
             else
                 alliance.setBalance(new BigDecimal(0.00));
         }
-
         List<Map> currentMonthOrderByUserId = queryAllianceDao.getCurrentMonthOrderByUserId(id);
-
         if (alliance != null) {
             if (currentMonthOrderByUserId != null && currentMonthOrderByUserId.size() > 0) {
                 alliance.setCurrentMonthOrder(JSON.parseArray(JSON.toJSONString(queryAllianceDao.getCurrentMonthOrderByUserId(id), SerializerFeature.WriteDateUseDateFormat)));
@@ -395,9 +385,15 @@ public class RPCAllianceEndpoint {
             alliance.setAllianceTeam(new JSONArray());
         }
         //-------------------------------------------------
-        alliance.setSelfBonus(bonusService.getSelfBonus(id, dateType).add(bonusService.getTeamProportionBonus(id, dateType)));
-        alliance.setTeamSelfBonus(bonusService.getTeamBonus(id, dateType));
-        alliance.setTotalSelfBonus(bonusService.getSelfBonus(id, dateType).add(bonusService.getTeamProportionBonus(id, dateType)).add(bonusService.getTeamBonus(id, dateType)));
+        if (alliance.getAllianceType() == Alliance.ALLIANCE_TYPE_BONUS) {
+            alliance.setSelfBonus(bonusService.getSelfBonus(id, dateType).add(bonusService.getTeamProportionBonus(id, dateType)));
+            alliance.setTeamSelfBonus(bonusService.getTeamBonus(id, dateType));
+            alliance.setTotalSelfBonus(bonusService.getSelfBonus(id, dateType).add(bonusService.getTeamProportionBonus(id, dateType)).add(bonusService.getTeamBonus(id, dateType)));
+        } else {
+            alliance.setSelfBonus(new BigDecimal(0.00));
+            alliance.setTeamSelfBonus(new BigDecimal(0.00));
+            alliance.setTotalSelfBonus(new BigDecimal(0.00));
+        }
         JSONArray royalties = new JSONArray();
         List<Long> team = queryBonusDao.getTeam(id);
         if (team != null && team.size() > 0) {
@@ -425,7 +421,6 @@ public class RPCAllianceEndpoint {
         } else {
             alliance.setAllianceMessages(new JSONArray());
         }
-
         List<JSONObject> jsonOrders = queryAllianceDao.queryWeekOrder(id);
 
         if (jsonOrders != null) {
@@ -439,16 +434,15 @@ public class RPCAllianceEndpoint {
         } else {
             alliance.setDeliverMessage(new JSONArray());
         }
-
-
+        OwnerBalanceRecord ownerBalanceRecord = queryOwnerBalance(id);
+        alliance.setBonus_balance(ownerBalanceRecord.getBonus_balance());
+        alliance.setExpected_bonus(ownerBalanceRecord.getExpected_bonus());
         return SuccessCip.create(alliance);
-
     }
 
     @ApiOperation(value = "根据盟友id获取我的盟友信息,携带自营商品selfProducts", response = Alliance.class)
     @GetMapping("/getAllianceInformationByUserId/{id}")
     public Cip getSelfProductById(@PathVariable Long id) {
-
         return SuccessCip.create(allianceService.getSelfProductById(id));
     }
 
@@ -482,6 +476,68 @@ public class RPCAllianceEndpoint {
         } else {
             throw new BusinessException(BusinessCode.BadRequest, "钱包未初始化");
         }
+
+
     }
 
+    private OwnerBalanceRecord queryOwnerBalance(Long id) {
+        Alliance alliance = queryAllianceDao.selectOne(new Alliance().setUserId(id));
+        if (alliance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "当前盟友不存在");
+        }
+        if (alliance.getAllianceType() == 2) {
+            OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(id));
+            if (ownerBalance == null) {
+                ownerBalance = new OwnerBalance();
+            }
+            OwnerBalanceRecord ownerBalanceRecord = JSON.parseObject(JSON.toJSONString(ownerBalance), OwnerBalanceRecord.class);
+            BigDecimal add = bonusService.getSelfBonus(id, 2).add(bonusService.getTeamProportionBonus(id, 2)).add(bonusService.getTeamBonus(id, 2));
+            if (add == null) {
+                add = new BigDecimal(0.00);
+            }
+            ownerBalanceRecord.setExpected_bonus(add);
+            Date allianceShipTime = alliance.getAllianceShipTime();
+            int monthDiff = getMonthDiff(allianceShipTime, new Date());
+            if (monthDiff < 2) {
+                BigDecimal bonus_balance = ownerBalanceRecord.getBonus_balance();
+                BigDecimal expected_bonus = ownerBalanceRecord.getExpected_bonus();
+                expected_bonus = expected_bonus.add(bonus_balance);
+                ownerBalanceRecord.setBonus_balance(new BigDecimal(0.00));
+            }
+            return ownerBalanceRecord;
+        } else {
+            OwnerBalanceRecord ownerBalanceRecord = new OwnerBalanceRecord();
+            ownerBalanceRecord.setBonus_balance(new BigDecimal(0.00));
+            ownerBalanceRecord.setExpected_bonus(new BigDecimal(0.00));
+            return ownerBalanceRecord;
+        }
+
+    }
+
+    public int getMonthDiff(Date d1, Date d2) {
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(d1);
+        c2.setTime(d2);
+        int year1 = c1.get(Calendar.YEAR);
+        int year2 = c2.get(Calendar.YEAR);
+        int month1 = c1.get(Calendar.MONTH);
+        int month2 = c2.get(Calendar.MONTH);
+        int day1 = c1.get(Calendar.DAY_OF_MONTH);
+        int day2 = c2.get(Calendar.DAY_OF_MONTH);
+        // 获取年的差值 
+        int yearInterval = year1 - year2;
+        // 如果 d1的 月-日 小于 d2的 月-日 那么 yearInterval-- 这样就得到了相差的年数
+        if (month1 < month2 || month1 == month2 && day1 < day2) {
+            yearInterval--;
+        }
+        // 获取月数差值
+        int monthInterval = (month1 + 12) - month2;
+        if (day1 < day2) {
+            monthInterval--;
+        }
+        monthInterval %= 12;
+        int monthsDiff = Math.abs(yearInterval * 12 + monthInterval);
+        return monthsDiff;
+    }
 }

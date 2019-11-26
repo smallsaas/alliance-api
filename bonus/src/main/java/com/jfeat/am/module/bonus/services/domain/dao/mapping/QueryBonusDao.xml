@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao">
     <select id="getAllianceBonus" resultType="java.math.BigDecimal">
-        select sum((p.price-p.cost_price)*oi.quantity*(JSON_EXTRACT(b.proportion,'$.value')/(100.0))) from t_order o,t_order_item
-        oi,t_product p ,t_product_settlement_proportion b,t_alliance a where
-        o.user_id=#{userId} and oi.order_id= o.id and p.id=oi.product_id and a.user_id=o.user_id and a.alliance_type=1
-        and b.product_id=p.id and b.type = 'STOCKHOLDER' and a.alliance_ship=0
-        and o.created_date > STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d')
-        and o.status='CLOSED_CONFIRMED'
+        select sum((oi.quantity*(p.price-p.cost_price))*JSON_EXTRACT(b.proportion,'$.value')/(100.0))
+        from t_order o,t_order_item oi ,t_product p,t_product_settlement_proportion b
+        where
+        o.created_date > STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d')
+        and o.status='CLOSED_CONFIRMED' and o.user_id=#{userId} and p.id=oi.product_id and b.product_id=p.id
+        and b.type='STOCKHOLDER'
         <choose>
             <when test="dateType=='1'">
                 and to_days(o.created_date)=to_days(now())
@@ -17,17 +17,20 @@
             </when>
             <when test="dateType=='3'">
                 and quarter(o.created_date)=quarter(now())
+            </when>
+            <when test="dateType=='4'">
+                and date_format(o.created_date, '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y %m')
             </when>
         </choose>
     </select>
 
     <select id="getTeamBonus" resultType="java.math.BigDecimal">
-        select sum((p.price-p.cost_price)*oi.quantity*(JSON_EXTRACT(b.proportion,'$.value')/(100.0))) from t_order o,t_order_item
-        oi,t_product p ,t_product_settlement_proportion b,t_alliance a where
-        o.user_id=#{userId} and oi.order_id= o.id and p.id=oi.product_id and a.user_id=o.user_id and b.product_id=p.id
-        and b.type = 'ALLIANCE' and a.alliance_ship=0
-        and o.created_date > STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d')
-        and o.status='CLOSED_CONFIRMED'
+        select sum((oi.quantity*(p.price-p.cost_price))*JSON_EXTRACT(b.proportion,'$.value')/(100.0))
+        from t_order o,t_order_item oi ,t_product p,t_product_settlement_proportion b
+        where
+        o.created_date > STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d')
+        and o.status='CLOSED_CONFIRMED' and o.user_id=#{userId} and p.id=oi.product_id and b.product_id=p.id
+        and b.type='ALLIANCE'
         <choose>
             <when test="dateType=='1'">
                 and to_days(o.created_date)=to_days(now())
@@ -37,6 +40,9 @@
             </when>
             <when test="dateType=='3'">
                 and quarter(o.created_date)=quarter(now())
+            </when>
+            <when test="dateType=='4'">
+                and date_format(o.created_date, '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y %m')
             </when>
         </choose>
     </select>
@@ -58,8 +64,8 @@
         ) as oitem ON p.id=oitem.product_id LEFT JOIN t_product_category pc on p.category_id=pc.id
 
         <if test="search != null and search != ''">
-        where
-             p.name LIKE CONCAT('%',#{search},'%')
+            where
+            p.name LIKE CONCAT('%',#{search},'%')
             OR pc.name LIKE CONCAT('%',#{search},'%')
         </if>
 
@@ -68,7 +74,6 @@
     </select>
 
     <select id="queryReInformation" resultType="com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation">
-        <bind name="off_set" value="(pageNum-1)*pageSize"/>
         select a.id,a.alliance_name as allianceName,a.user_id as userId , count(children.id)+1 as teamCount from
         t_alliance a
         left JOIN t_alliance children on a.id=children.invitor_alliance_id where a.alliance_ship=0
@@ -76,8 +81,7 @@
         <if test="search != null and search != ''">
             and a.alliance_name LIKE CONCAT('%',#{search},'%')
         </if>
-        group by a.id limit
-        #{off_set},#{pageSize}
+        group by a.id
     </select>
 
     <select id="queryBonusOrder" resultType="java.math.BigDecimal" parameterType="java.lang.Long">

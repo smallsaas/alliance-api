@@ -24,25 +24,26 @@ public class RefundEndpoint {
     QueryAllianceDao queryAllianceDao;
     @Resource
     QueryWalletDao queryWalletDao;
+
     @PostMapping
-    public Cip refund(@RequestParam Long orderId){
-        int affect=0;
+    public Cip refund(@RequestParam Long orderId) {
+        int affect = 0;
         JSONObject object = queryAllianceDao.queryOrderMoney(orderId);
         BigDecimal totalPrice = object.getBigDecimal("totalPrice");
-        Long userId=object.getLong("userId");
-        if(totalPrice!=null&&userId!=null){
+        Long userId = object.getLong("userId");
+        if (totalPrice != null && userId != null) {
             Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
-            if(wallet!=null){
+            if (wallet != null) {
                 BigDecimal balance = wallet.getBalance();
-                if(balance!=null){
+                if (balance != null) {
                     wallet.setBalance(balance.add(totalPrice));
                 }
-                affect+=queryWalletDao.updateById(wallet);
-            }else {
-                throw new BusinessException(BusinessCode.BadRequest,"该用户钱包不存在");
+                affect += queryWalletDao.updateById(wallet);
+            } else {
+                throw new BusinessException(BusinessCode.BadRequest, "该用户钱包不存在");
             }
-        }else {
-            throw new BusinessException(BusinessCode.BadRequest,"该订单有问题");
+        } else {
+            throw new BusinessException(BusinessCode.BadRequest, "该订单有问题");
         }
         return SuccessCip.create(affect);
     }

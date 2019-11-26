@@ -8,6 +8,7 @@ import com.jfeat.am.common.annotation.Permission;
 import com.jfeat.am.core.jwt.JWTKit;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
+import com.jfeat.am.module.alliance.services.domain.dao.mapping.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.domain.definition.AlliancePermission;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
@@ -75,8 +76,12 @@ public class AllianceEndpoint {
 
     @Resource
     QueryWalletDao queryWalletDao;
+
     @Resource
     QueryWalletHistoryDao queryWalletHistoryDao;
+
+    @Resource
+    QueryOwnerBalanceDao queryOwnerBalanceDao;
 
 
     private final Integer ALLIANCE_TYPE_BONUS = 1;
@@ -559,5 +564,7 @@ public class AllianceEndpoint {
 
         return SuccessTip.create(parse);
     }
+
+
 
 }

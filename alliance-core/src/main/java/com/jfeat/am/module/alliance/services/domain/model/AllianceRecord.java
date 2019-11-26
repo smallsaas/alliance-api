@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * Created by Code Generator on 2019-10-14
  */
-public class AllianceRecord extends Alliance{
+public class AllianceRecord extends Alliance {
     //团队人数
     Integer teamCount;
     String invitorName;
@@ -25,6 +25,25 @@ public class AllianceRecord extends Alliance{
     JSONArray AllianceMessages;
     JSONArray TeamAllianceOrderMessages;
     JSONArray DeliverMessage;
+
+    private BigDecimal bonus_balance;
+    private BigDecimal expected_bonus;
+
+    public BigDecimal getBonus_balance() {
+        return bonus_balance;
+    }
+
+    public void setBonus_balance(BigDecimal bonus_balance) {
+        this.bonus_balance = bonus_balance;
+    }
+
+    public BigDecimal getExpected_bonus() {
+        return expected_bonus;
+    }
+
+    public void setExpected_bonus(BigDecimal expected_bonus) {
+        this.expected_bonus = expected_bonus;
+    }
 
     public JSONArray getTeamAllianceOrderMessages() {
         return TeamAllianceOrderMessages;
@@ -52,7 +71,7 @@ public class AllianceRecord extends Alliance{
     }
 
     //结算时间
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     Date cutOffTime;
 
     public Date getCutOffTime() {
@@ -88,6 +107,7 @@ public class AllianceRecord extends Alliance{
         this.commissionOrder = commissionOrder;
     }
 
+    //
 
 
     //自己的总分红=自己的分红+自己团队的分红
