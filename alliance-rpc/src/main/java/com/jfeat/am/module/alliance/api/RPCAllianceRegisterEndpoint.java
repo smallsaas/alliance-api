@@ -202,8 +202,16 @@ public class RPCAllianceRegisterEndpoint {
 
                 }else if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_BONUS){
                     BigDecimal bigDecimal = new BigDecimal(bonus_alliance_inventory);
-                    originWallet.setBalance(bigDecimal);
-                    originWallet.setAccumulativeAmount(bigDecimal);
+                    if(originWallet.getBalance()!=null){
+                        originWallet.setBalance(bigDecimal.add(originWallet.getBalance()));
+                    }else {
+                        originWallet.setBalance(bigDecimal);
+                    }
+                    if(originWallet.getAccumulativeAmount()!=null){
+                        originWallet.setAccumulativeAmount(bigDecimal.add(originWallet.getAccumulativeAmount()));
+                    }else {
+                        originWallet.setAccumulativeAmount(bigDecimal);
+                    }
                 }
                 queryWalletDao.updateById(originWallet);
             }

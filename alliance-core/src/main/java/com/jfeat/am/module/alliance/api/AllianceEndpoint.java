@@ -375,10 +375,11 @@ public class AllianceEndpoint {
         Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
         Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
+        Long userId = queryAllianceDao.queryUserIdByPhone(alliance.getAlliancePhone());
         int res = allianceService.updateMaster(alliance);
         res += queryAllianceDao.resetUserId(id);
         if(alliance.getUserId()!=null){
-            Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(alliance.getUserId()));
+            Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
             if (wallet != null) {
                 if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
                     wallet.setBalance(wallet.getBalance().subtract(new BigDecimal(bonusConfig)));
@@ -402,7 +403,7 @@ public class AllianceEndpoint {
                     res += queryWalletHistoryDao.insert(walletHistory);
                 }
             } else {
-                wallet = new Wallet().setUserId(alliance.getUserId());
+                wallet = new Wallet().setUserId(userId);
                 if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
                     wallet.setBalance(new BigDecimal(bonusConfig));
                     res += queryWalletDao.insert(wallet);
@@ -435,6 +436,7 @@ public class AllianceEndpoint {
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
     public Tip upgrade(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
+        Float bonus = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
@@ -449,6 +451,7 @@ public class AllianceEndpoint {
         }
         alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
+        alliance.setAllianceInventoryAmount(new BigDecimal(bonus));
         int res = allianceService.updateMaster(alliance);
 
         //获取金额配置
