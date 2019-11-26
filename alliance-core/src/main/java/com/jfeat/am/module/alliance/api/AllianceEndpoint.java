@@ -119,8 +119,9 @@ public class AllianceEndpoint {
     public Tip deleteAlliance(@PathVariable Long id) {
         Alliance alliance = queryAllianceDao.selectOne(new Alliance().setId(id));
         if (alliance != null) {
-            if (alliance.getUserId() != null && alliance.getUserId() > 0) {
-                Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(alliance.getUserId()));
+            Long userId = queryAllianceDao.queryUserIdByPhone(alliance.getAlliancePhone());
+            if (userId != null && userId > 0) {
+                Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
                 if (wallet != null) {
                     queryWalletHistoryDao.delete(new Condition().eq(WalletHistory.WALLET_ID, wallet.getId()));
                     queryWalletDao.deleteById(wallet.getId());

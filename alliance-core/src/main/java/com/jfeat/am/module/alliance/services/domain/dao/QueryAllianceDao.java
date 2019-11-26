@@ -82,5 +82,9 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     @Select("select JSON_EXTRACT(t_product_settlement_proportion.proportion, '$.value')  from t_product_settlement_proportion")
     public List<Float> getJson();
 
+    //查询userid
+    @Select("select id from t_user where phone=${phone}")
+    Long queryUserIdByPhone(@Param("phone") String phone);
+
 
 }
