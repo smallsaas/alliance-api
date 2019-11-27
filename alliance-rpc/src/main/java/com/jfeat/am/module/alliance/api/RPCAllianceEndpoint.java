@@ -404,7 +404,11 @@ public class RPCAllianceEndpoint {
             alliance.setTotalSelfBonus(new BigDecimal(0.00));
         }
         alliance.setStockholderCount(queryBonusDao.stockholderCount());
-        alliance.setProportion(queryBonusDao.queryProportion(id));
+        Float aFloat = queryBonusDao.queryProportion(id);
+        if(aFloat==null){
+            aFloat=0F;
+        }
+        alliance.setProportion(aFloat*100);
 //        JSONArray royalties = new JSONArray();
 //        List<Long> team = queryBonusDao.getTeam(id);
 //        if (team != null && team.size() > 0) {

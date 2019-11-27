@@ -121,8 +121,7 @@ public class BonusServiceImpl implements BonusService {
             for (AllianceReconciliation r : allianceReconciliations) {
                 r.setRoyalty(queryBonusDao.getCommissionTotal(r.getId()));
                 if (r.getAllianceType() == AllianceField.ALLIANCE_TYPE_BONUS) {
-                    BigDecimal month = this.getSelfBonus(r.getUserId(), BonusDateType.MONTH)
-                            .add(this.getTeamProportionBonus(r.getUserId(), BonusDateType.MONTH));
+                    BigDecimal month = queryBonusDao.getAverageBonus();
                     r.setCurrentMonthBonus(month.setScale(2, BigDecimal.ROUND_HALF_UP));
                     BigDecimal year = this.getSelfBonus(r.getUserId(), null)
                             .add(this.getTeamProportionBonus(r.getUserId(), null));
