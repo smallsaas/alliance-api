@@ -60,15 +60,11 @@
 
     <select id="querySales" resultType="com.jfeat.am.module.bonus.services.domain.model.ProductSalesRecord">
         <bind name="off_set" value="(pageNum-1)*pageSize"/>
-        select p.id,p.name,p.cover,oitem.quantity as quantity ,pc.name as category, p.unit as
-        unit,p.price*oitem.quantity as sales
-        from t_product p LEFT JOIN (select o.id as
-        order_id,oi.product_id,oi.quantity from t_order o,t_order_item oi where oi.order_id=o.id and
-        o.status='CLOSED_CONFIRMED' and o.created_date
-        between (select STR_TO_DATE(VALUE,'%Y-%m-%d') from t_config_field where field='starting_time') and
-        DATE_ADD((select STR_TO_DATE(VALUE,'%Y-%m-%d') from t_config_field where field='starting_time')
-        ,INTERVAL (select value from t_config_field where field='settlement_cycle' ) MONTH)
-        ) as oitem ON p.id=oitem.product_id LEFT JOIN t_product_category pc on p.category_id=pc.id
+        select p.id,p.name,p.cover,item.quantity,pc.name as category ,p.unit as
+        unit,p.price*item.quantity as sales from t_order_item item
+        LEFT JOIN t_order o on item.order_id=o.id and o.status='CLOSED_CONFIRMED'
+        LEFT JOIN t_product p on p.id=item.product_id
+        LEFT JOIN t_product_category pc on p.category_id=pc.id
 
         <if test="search != null and search != ''">
             where
@@ -77,7 +73,7 @@
         </if>
 
         GROUP BY p.id ORDER
-        BY oitem.quantity desc limit #{off_set},#{pageSize}
+        BY item.quantity desc limit #{off_set},#{pageSize}
     </select>
 
     <select id="queryReInformation" resultType="com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation">
