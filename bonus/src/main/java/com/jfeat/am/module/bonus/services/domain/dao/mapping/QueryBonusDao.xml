@@ -25,7 +25,7 @@
     </select>
 
 
-<!--给别人的提成-->
+    <!--给别人的提成-->
     <select id="getTeamBonus" resultType="java.math.BigDecimal">
         select sum((oi.quantity*(p.price-p.cost_price))*JSON_EXTRACT(b.proportion,'$.value')/(100.0))
         from t_order o,t_order_item oi ,t_product p,t_product_settlement_proportion b
@@ -50,7 +50,6 @@
                 and date_format(o.created_date, '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y %m')
             </when>
         </choose>
-
 
 
     </select>
@@ -82,7 +81,8 @@
     </select>
 
     <select id="queryReInformation" resultType="com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation">
-        select a.alliance_type as allianceType,a.id,a.alliance_name as allianceName,a.user_id as userId , count(children.id)+1 as teamCount from
+        select a.alliance_type as allianceType,a.id,a.alliance_name as allianceName,a.user_id as userId ,
+        count(children.id)+1 as teamCount from
         t_alliance a
         left JOIN t_alliance children on a.id=children.invitor_alliance_id where a.alliance_ship=0
 
@@ -109,4 +109,15 @@ oi.order_id=o.id and p.id=oi.product_id and a.alliance_ship=0 and  date_format(o
     <select id="queryType" resultType="Integer" parameterType="java.lang.Long">
         select alliance_type from t_alliance where user_id=#{userId}
     </select>
+
+    <select id="getCommissionOrder" parameterType="java.lang.Long" resultType="com.alibaba.fastjson.JSONObject">
+select u.name as invitorName,item.price*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100 as commission,o.total_price orderMoney from t_order_item item
+LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
+LEFT JOIN t_alliance a on a.user_id = #{userId}
+LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id  where o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
+    </select>
+
+
+
 </mapper>

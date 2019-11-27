@@ -3,6 +3,8 @@ package com.jfeat.am.module.bonus.services.domain.dao;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
 import com.jfeat.am.module.bonus.services.domain.model.ProductSalesRecord;
 import org.apache.ibatis.annotations.Param;
@@ -57,6 +59,7 @@ public interface QueryBonusDao {
     Integer queryType(@Param("userId") Long userId);
 
 
+    List<JSONObject> getCommissionOrder(Long id);
 }
 
 

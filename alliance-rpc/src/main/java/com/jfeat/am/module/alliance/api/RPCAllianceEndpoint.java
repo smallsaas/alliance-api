@@ -354,7 +354,7 @@ public class RPCAllianceEndpoint {
 
     @GetMapping("/getAllianceInformationByUserId")
     @ApiOperation(value = "根据X-USER-ID获取我的盟友信息,可以获取当月订单currentMonthOrder和我的盟友列表,还有分红信息（只有是股东能有分红）dateType参数--->1当天，2当月，3当季", response = AllianceRecord.class)
-    public Cip getAllianceInformationByUserId(@RequestHeader("X-USER-ID") Long id, @RequestParam(name = "dateType", required = false) Integer dateType) throws ParseException {
+    public Cip getAllianceInformationByUserId(@RequestHeader("X-USER-ID") Long id, @RequestParam(name = "dateType", defaultValue = "2") Integer dateType) throws ParseException {
         Alliance entity = new Alliance();
         entity.setUserId(id);
         AllianceRecord alliance = queryAllianceDao.selectAllianceOneByUserId(id);
@@ -394,26 +394,26 @@ public class RPCAllianceEndpoint {
             alliance.setTeamSelfBonus(new BigDecimal(0.00));
             alliance.setTotalSelfBonus(new BigDecimal(0.00));
         }
-        JSONArray royalties = new JSONArray();
-        List<Long> team = queryBonusDao.getTeam(id);
-        if (team != null && team.size() > 0) {
-            for (Long t : team) {
-                if (t != null && t > 0) {
-                    if (queryBonusDao.queryShip(t) == 0 && queryBonusDao.queryType(id) == Alliance.ALLIANCE_TYPE_BONUS) {
-                        String name = queryBonusDao.queryAllianceName(t);
-                        BigDecimal teamProportionBonus = queryBonusDao.getTeamBonus(t, dateType);
-                        BigDecimal orderBonus = queryBonusDao.queryBonusOrder(t);
-                        Royalty ls = new Royalty();
-                        ls.setInvitorName(name);
-                        ls.setOrderMoney(orderBonus);
-                        ls.setCommission(teamProportionBonus);
-                        ls.setCreateTime(new Date());
-                        royalties.add(ls);
-                    }
-                }
-            }
-        }
-        alliance.setCommissionOrder(royalties);
+//        JSONArray royalties = new JSONArray();
+//        List<Long> team = queryBonusDao.getTeam(id);
+//        if (team != null && team.size() > 0) {
+//            for (Long t : team) {
+//                if (t != null && t > 0) {
+//                    if (queryBonusDao.queryShip(t) == 0 && queryBonusDao.queryType(id) == Alliance.ALLIANCE_TYPE_BONUS) {
+//                        String name = queryBonusDao.queryAllianceName(t);
+//                        BigDecimal teamProportionBonus = queryBonusDao.getTeamBonus(t, dateType);
+//                        BigDecimal orderBonus = queryBonusDao.queryBonusOrder(t);
+//                        Royalty ls = new Royalty();
+//                        ls.setInvitorName(name);
+//                        ls.setOrderMoney(orderBonus);
+//                        ls.setCommission(teamProportionBonus);
+//                        ls.setCreateTime(new Date());
+//                        royalties.add(ls);
+//                    }
+//                }
+//            }
+//        }
+        alliance.setCommissionOrder(JSONArray.parseArray(JSON.toJSONString(queryBonusDao.getCommissionOrder(id))));
         //盟友消息
         List<Alliance> alliances = queryAllianceDao.queryWeekAlliance(id);
         if (alliance != null) {
