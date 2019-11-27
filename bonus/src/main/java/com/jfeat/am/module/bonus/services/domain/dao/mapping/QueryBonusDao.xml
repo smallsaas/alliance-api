@@ -178,12 +178,12 @@ select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.pr
 LEFT JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
 LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
-    <select id="getAllBonusRatioMoth" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+    <select id="getAllBonusRatioMonth" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
 select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select value/100.0 from t_config_field where field='ratio_proportion')*((select alliance_inventory_amount from t_alliance where user_id = #{userId})/((select sum(a1.alliance_inventory_amount) from t_alliance a1,t_alliance a2 where a1.invitor_alliance_id=a2.id and a2.user_id=#{userId} and a1.alliance_ship=0)+(select alliance_inventory_amount from t_alliance where user_id = #{userId}))),2) from t_order_item item
 LEFT JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED' and month(o.created_date) = month(curdate()) and year(o.created_date) = year(curdate())
 LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
-    <select id="getAverageBonus" resultType="java.math.BigDecimal">
+    <select id="getAverageBonusMonth" resultType="java.math.BigDecimal">
 select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select value/100.0 from t_config_field where field='fixed_proportion')/(select count(id) from t_alliance where alliance_type=1 and alliance_ship=0),2) from t_order_item item
 LEFT JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED' and month(o.created_date) = month(curdate()) and year(o.created_date) = year(curdate())
 LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'

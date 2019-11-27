@@ -119,12 +119,29 @@ public class BonusServiceImpl implements BonusService {
         List<AllianceReconciliation> allianceReconciliations = queryBonusDao.queryReInformation(search);
         if (allianceReconciliations != null && allianceReconciliations.size() > 0) {
             for (AllianceReconciliation r : allianceReconciliations) {
-                r.setRoyalty(queryBonusDao.getCommissionTotal(r.getId()));
+                r.setRoyalty(queryBonusDao.getCommissionTotal(r.getUserId()));
                 if (r.getAllianceType() == AllianceField.ALLIANCE_TYPE_BONUS) {
-                    BigDecimal month = queryBonusDao.getAverageBonus();
+                    BigDecimal averageBonusMonth = queryBonusDao.getAverageBonusMonth();
+                    BigDecimal allBonusRatioMonth = queryBonusDao.getAllBonusRatioMonth(r.getUserId());
+                    if(averageBonusMonth==null){
+                        averageBonusMonth=new BigDecimal(0.00);
+                    }
+                    if(allBonusRatioMonth==null){
+                        allBonusRatioMonth=new BigDecimal(0.00);
+                    }
+                    BigDecimal month = allBonusRatioMonth.add(averageBonusMonth);
+
                     r.setCurrentMonthBonus(month.setScale(2, BigDecimal.ROUND_HALF_UP));
-                    BigDecimal year = this.getSelfBonus(r.getUserId(), null)
-                            .add(this.getTeamProportionBonus(r.getUserId(), null));
+
+                    BigDecimal averageBonus = queryBonusDao.getAverageBonus();
+                    BigDecimal allBonusRatio = queryBonusDao.getAllBonusRatio(r.getUserId());
+                    if(averageBonus==null){
+                        averageBonus=new BigDecimal(0.00);
+                    }
+                    if(allBonusRatio==null){
+                        allBonusRatio=new BigDecimal(0.00);
+                    }
+                    BigDecimal year = allBonusRatio.add(averageBonus);
                     r.setTotalBonus(year.setScale(2, BigDecimal.ROUND_HALF_UP));
                 } else {
                     r.setCurrentMonthBonus(new BigDecimal(0.00));

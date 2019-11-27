@@ -72,6 +72,9 @@ public interface QueryBonusDao {
     BigDecimal getAverageBonus();
 
     BigDecimal getAllBonusRatio(@Param("userId")Long userId);
+    BigDecimal getAverageBonusMonth();
+
+    BigDecimal getAllBonusRatioMonth(@Param("userId")Long userId);
 
     Integer stockholderCount();
 
