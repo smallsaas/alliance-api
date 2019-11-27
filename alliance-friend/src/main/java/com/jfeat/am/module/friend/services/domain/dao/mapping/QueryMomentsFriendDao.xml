@@ -126,6 +126,10 @@
     <select id="selectUserId" parameterType="java.lang.String" resultType="java.lang.Long">
     select id from t_user where name=#{name}
     </select>
+    <select id="selectByUserId"  resultType="com.jfeat.am.module.friend.services.domain.model.MomentsFriendUser">
+    select id,`name` from t_user where id=#{id}
+    </select>
+
     <insert id="insertOrder" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="java.util.Map">
         insert into t_order (user_id,total_price,phone,mname,detail) value
         (#{userId},#{totalPrice},#{phone},#{mname},#{detail})
@@ -133,6 +137,11 @@
     <select id="selectProductId" parameterType="java.lang.String" resultType="java.lang.Long">
     select id from t_product where barcode=#{barcode}
     </select>
+
+    <select id="selectBarcodeByProductId"  resultType="java.lang.String">
+       select barcode from t_product where id=#{productId}
+    </select>
+
     <insert id="insertOrderItem" parameterType="java.util.Map">
         insert into t_order_item (order_id,barcode,product_name,quantity,final_price) value
          (#{orderId},#{barcode},#{productName},#{quantity},#{finalPrice})

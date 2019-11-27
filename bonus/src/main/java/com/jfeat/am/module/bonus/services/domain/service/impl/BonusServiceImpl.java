@@ -116,7 +116,7 @@ public class BonusServiceImpl implements BonusService {
     }
 
     @Override
-    public List<AllianceReconciliation> getAllianceReconciliation(Integer pageNum, Integer pageSize,String search) {
+    public List<AllianceReconciliation> getAllianceReconciliation(Integer pageNum, Integer pageSize, String search){
         List<AllianceReconciliation> allianceReconciliations = queryBonusDao.queryReInformation(search);
         if (allianceReconciliations != null && allianceReconciliations.size() > 0) {
             for (AllianceReconciliation r : allianceReconciliations) {
