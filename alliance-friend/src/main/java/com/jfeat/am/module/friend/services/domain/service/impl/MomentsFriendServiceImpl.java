@@ -5,6 +5,7 @@ import com.jfeat.am.module.friend.api.OrderStatus;
 import com.jfeat.am.module.friend.api.RequestOrder;
 import com.jfeat.am.module.friend.services.domain.dao.QueryMomentsFriendDao;
 import com.jfeat.am.module.friend.services.domain.dao.mapping.QueryMomentsFriendOverOrderDao;
+import com.jfeat.am.module.friend.services.domain.model.MomentsFriendUser;
 import com.jfeat.am.module.friend.services.domain.service.MomentsFriendService;
 import com.jfeat.am.module.friend.services.gen.crud.service.impl.CRUDMomentsFriendServiceImpl;
 import com.jfeat.am.module.friend.services.gen.persistence.model.FriendOrder;
@@ -37,20 +38,29 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     @Override
     @Transactional
     public Integer createOrder(RequestOrder requestOrder) throws ServerException {
-        List<Long> userIds = queryMomentsFriendDao.selectUserId(requestOrder.getById());
+        /*List<Long> userIds = queryMomentsFriendDao.selectUserId(requestOrder.getById());
         if (userIds == null || userIds.size() == 0) {
             throw new ServerException("该下单人不存在");
         }
         if (userIds.size() > 1) {
             throw new ServerException("该下单人姓名相同的有好几个");
-        }
-        Long productId = queryMomentsFriendDao.selectProductId(requestOrder.getBarcode());
+        }*/
+        MomentsFriendUser user = queryMomentsFriendDao.selectByUserId(requestOrder.getUserId());
+
+       /* Long productId = queryMomentsFriendDao.selectProductId(requestOrder.getBarcode());
         if (productId == null) {
             throw new ServerException("该表形码" + requestOrder.getBarcode() + "的商品不存在");
-        }
+        }*/
+        Long productId = requestOrder.getProductId();
+        //根据产品id查找barcode
+        String barcode=queryMomentsFriendDao.selectBarcodeByProductId(productId);
+
         requestOrder.setTotalPrice(requestOrder.getFinalPrice().multiply(new BigDecimal(requestOrder.getQuantity())));
         FriendOrder order = new FriendOrder();
-        order.setUserId(userIds.get(0));
+        //order.setUserId(userIds.get(0));
+        requestOrder.setBarcode(barcode);
+
+        order.setUserId(user.getId());
         order.setPhone(requestOrder.getPhone());
         order.setDetail(requestOrder.getDetail());
         order.setContactUser(requestOrder.getName());
@@ -62,7 +72,8 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         order.setOrderNumber(oderNumber);
         queryMomentsFriendOverOrderDao.insert(order);
         Integer res = queryMomentsFriendDao.insertOrderItem(order.getId(), requestOrder.getBarcode(), requestOrder.getProductName(), requestOrder.getQuantity(), requestOrder.getFinalPrice());
-        String allianceName = queryMomentsFriendDao.queryAllianceName(userIds.get(0));
+        //String allianceName = queryMomentsFriendDao.queryAllianceName(userIds.get(0));
+        String allianceName = queryMomentsFriendDao.queryAllianceName(user.getId());
         if (allianceName == null || allianceName.length() == 0) {
             throw new BusinessException(BusinessCode.BadRequest, "该下单人不是正式盟友");
         } else {
@@ -73,7 +84,8 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
             } else {
                 throw new BusinessException(BusinessCode.BadRequest, "该商品库存不足");
             }
-            BigDecimal balance = queryMomentsFriendDao.queryWalletBalance(userIds.get(0));
+           // BigDecimal balance = queryMomentsFriendDao.queryWalletBalance(userIds.get(0));
+            BigDecimal balance = queryMomentsFriendDao.queryWalletBalance(user.getId());
             if (balance == null || balance.compareTo(new BigDecimal(0.00)) <= 0) {
                 throw new BusinessException(BusinessCode.BadRequest, "该用户余额不足");
             } else {
@@ -81,7 +93,8 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
                 if (balance.compareTo(new BigDecimal(0.00)) < 0) {
                     throw new BusinessException(BusinessCode.BadRequest, "该用户余额不足");
                 } else {
-                    queryMomentsFriendDao.upWallet(userIds.get(0), balance);
+//                    queryMomentsFriendDao.upWallet(userIds.get(0), balance);
+                    queryMomentsFriendDao.upWallet(user.getId(), balance);
                 }
             }
         }

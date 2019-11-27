@@ -49,17 +49,40 @@
             <artifactId>uaas</artifactId>
             <version>${uaas.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>cms-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+
+
+
+   <!--    <dependency>
+        <groupId>com.jfeat</groupId>
+        <artifactId>env-test-saas</artifactId>
+        <version>1.0.0</version>
+    </dependency>-->
+
+       <!-- <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>term-config</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+-->
+
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>org</artifactId>
             <version>1.0.0</version>
         </dependency>
 
-        <dependency>
+      <!--  <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>jwt-core</artifactId>
             <version>0.0.2</version>
-        </dependency>
+        </dependency>-->
         <!---dev 环境依赖crud-dev-->
 <!--        <dependency>
             <groupId>com.jfeat</groupId>
@@ -145,6 +168,9 @@
             <artifactId>aspectjweaver</artifactId>
             <version>1.9.4</version>
         </dependency>
+
+
+
     </dependencies>
 
     <build>

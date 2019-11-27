@@ -5,6 +5,7 @@ import com.jfeat.am.module.friend.services.domain.model.MomentsFriendRecord;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.jfeat.am.module.friend.services.domain.model.MomentsFriendUser;
 import org.apache.ibatis.annotations.Param;
 import com.jfeat.am.module.friend.services.gen.persistence.model.MomentsFriend;
 import org.apache.ibatis.annotations.Select;
@@ -24,8 +25,12 @@ public interface QueryMomentsFriendDao extends BaseMapper<MomentsFriend> {
                                                     @Param("startTime") Date startTime, @Param("endTime") Date endTime);
     Map findOrdersByPhone(@Param("phone") String id, @Param("userId") Long userId);
     List<Long> selectUserId(@Param("name") String name);
+    MomentsFriendUser selectByUserId(@Param("id") Long id);
+
     Long insertOrder(@Param("userId")Long id, @Param("totalPrice")BigDecimal totalPrice,@Param("phone")String phone,@Param("mname")String mname,@Param("detail")String detail);
     Long selectProductId(@Param("barcode")String barcode);
+    String selectBarcodeByProductId(@Param("productId")Long productId);
+
     Integer insertOrderItem(@Param("orderId")Long orderId,@Param("barcode")String barcode,@Param("productName")String productName,@Param("quantity")Integer quantity,@Param("finalPrice") BigDecimal finalPrice);
     @Select("select alliance_name from t_alliance where user_id=#{userId} and alliance_ship=0")
     String queryAllianceName(Long userId);
