@@ -41,7 +41,7 @@ public class BonusServiceImpl implements BonusService {
         if (alliance.compareTo(new BigDecimal(0)) == 0) {
             alliance = new BigDecimal(0);
         }
-        return alliance.setScale(2,BigDecimal.ROUND_HALF_UP);
+        return alliance.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     //获得团队贡献占比分红
@@ -81,7 +81,7 @@ public class BonusServiceImpl implements BonusService {
             if (bonus.compareTo(new BigDecimal(0)) == 0) {
                 bonus = new BigDecimal(0);
             }
-            return bonus.setScale(2,BigDecimal.ROUND_HALF_UP);
+            return bonus.setScale(2, BigDecimal.ROUND_HALF_UP);
         } else {
             throw new BusinessException(BusinessCode.BadRequest, "数据库数据异常");
         }
@@ -111,31 +111,27 @@ public class BonusServiceImpl implements BonusService {
                 teamBonus = teamBonus.add(tmp);
             }
         }
-        return teamBonus.setScale(2,BigDecimal.ROUND_HALF_UP);
+        return teamBonus.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     @Override
-    public List<AllianceReconciliation> getAllianceReconciliation(Integer pageNum, Integer pageSize, String search){
+    public List<AllianceReconciliation> getAllianceReconciliation(Integer pageNum, Integer pageSize, String search) {
         List<AllianceReconciliation> allianceReconciliations = queryBonusDao.queryReInformation(search);
-
         if (allianceReconciliations != null && allianceReconciliations.size() > 0) {
             for (AllianceReconciliation r : allianceReconciliations) {
-
-                if(r.getAllianceType()==AllianceField.ALLIANCE_TYPE_BONUS){
-                    r.setRoyalty(this.getTeamBonus(r.getUserId(), BonusDateType.MONTH));
+                r.setRoyalty(queryBonusDao.getCommissionTotal(r.getId()));
+                if (r.getAllianceType() == AllianceField.ALLIANCE_TYPE_BONUS) {
                     BigDecimal month = this.getSelfBonus(r.getUserId(), BonusDateType.MONTH)
                             .add(this.getTeamProportionBonus(r.getUserId(), BonusDateType.MONTH));
-                    r.setCurrentMonthBonus(month.setScale(2,BigDecimal.ROUND_HALF_UP));
+                    r.setCurrentMonthBonus(month.setScale(2, BigDecimal.ROUND_HALF_UP));
                     BigDecimal year = this.getSelfBonus(r.getUserId(), null)
                             .add(this.getTeamProportionBonus(r.getUserId(), null));
-                    r.setTotalBonus(year.setScale(2,BigDecimal.ROUND_HALF_UP));
-                }else{
+                    r.setTotalBonus(year.setScale(2, BigDecimal.ROUND_HALF_UP));
+                } else {
                     r.setCurrentMonthBonus(new BigDecimal(0.00));
                     r.setTotalBonus(new BigDecimal(0.00));
                 }
-
             }
-
         }
         Collections.sort(allianceReconciliations);
         return allianceReconciliations;

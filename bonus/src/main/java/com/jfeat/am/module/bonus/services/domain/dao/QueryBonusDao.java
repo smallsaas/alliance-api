@@ -46,7 +46,7 @@ public interface QueryBonusDao {
 
     Integer queryAllianceExist(@Param("userId") Long userId);
 
-    List<ProductSalesRecord> querySales(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize,@Param("search") String search);
+    List<ProductSalesRecord> querySales(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize, @Param("search") String search);
 
     List<AllianceReconciliation> queryReInformation(@Param("search") String search);
 
@@ -58,8 +58,16 @@ public interface QueryBonusDao {
 
     Integer queryType(@Param("userId") Long userId);
 
-
     List<JSONObject> getCommissionOrder(Long id);
+
+    List<JSONObject> getCommissionOrderMonth(Long id);
+
+    List<JSONObject> getCommissionOrderLastMonth(Long id);
+    BigDecimal getCommissionTotal(Long id);
+    BigDecimal getCommissionTotalMonth(Long id);
+    BigDecimal getCommissionOrderTotalLastMonth(Long id);
+
+    BigDecimal getAllBonusReal();
 }
 
 

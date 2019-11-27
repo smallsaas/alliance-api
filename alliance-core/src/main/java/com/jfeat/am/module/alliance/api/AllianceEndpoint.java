@@ -575,50 +575,47 @@ public class AllianceEndpoint {
         Alliance alliance = allianceService.retrieveMaster(id);
         Long userId=alliance.getUserId();
         Integer allianceType = alliance.getAllianceType();
-        Float bonus = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
         if (!alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_OK)) {
-            throw new BusinessException(BusinessCode.CodeBase, "非正式盟友，无法执行升级操作！");//alliacneShip=0 才能 升级盟友
+            throw new BusinessException(BusinessCode.CodeBase, "非正式盟友，无法执行降级操作！");//alliacneShip=0 才能 升级盟友
         }
 
-        if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
-            alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
+        if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
+            alliance.setAllianceType(Alliance.ALLIANCE_TYPE_COMMON);
         } else {
-            throw new BusinessException(BusinessCode.CodeBase, "非普通盟友身份，无法执行升级操作！");
+            throw new BusinessException(BusinessCode.CodeBase, "非分红盟友身份，无法执行降级操作！");
         }
         alliance.setAllianceType(Alliance.ALLIANCE_TYPE_BONUS);
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
-        alliance.setAllianceInventoryAmount(new BigDecimal(bonus));
         int res = allianceService.updateMaster(alliance);
-
-        //获取金额配置
-        Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
-        Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
-        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
-        if (wallet != null) {
-            if (allianceType.equals(Alliance.ALLIANCE_TYPE_COMMON)) {
-                if (wallet.getBalance() != null && wallet.getBalance().intValue() > 0) {
-                    BigDecimal subtract = wallet.getBalance().subtract(new BigDecimal(commonConfig));
-
-                    //余额小于0
-//                    if (subtract.intValue() < 0) {
-//                        subtract = new BigDecimal(0.00);
-//                    }
-
-                    wallet.setBalance(subtract);
-                } else if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
-                    BigDecimal subtract = wallet.getBalance().subtract(new BigDecimal(bonusConfig));
-                    //余额小于0
-//                    if (subtract.intValue() < 0) {
-//                        subtract = new BigDecimal(0.00);
-//                    }
-                    wallet.setBalance(subtract);
-                }
-            }
-        }
-        res += queryWalletDao.updateById(wallet);
+//        //获取金额配置
+//        Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
+//        Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
+//        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+//        if (wallet != null) {
+//            if (allianceType.equals(Alliance.ALLIANCE_TYPE_COMMON)) {
+//                if (wallet.getBalance() != null && wallet.getBalance().intValue() > 0) {
+//                    BigDecimal subtract = wallet.getBalance().subtract(new BigDecimal(commonConfig));
+//
+//                    //余额小于0
+////                    if (subtract.intValue() < 0) {
+////                        subtract = new BigDecimal(0.00);
+////                    }
+//
+//                    wallet.setBalance(subtract);
+//                } else if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
+//                    BigDecimal subtract = wallet.getBalance().subtract(new BigDecimal(bonusConfig));
+//                    //余额小于0
+////                    if (subtract.intValue() < 0) {
+////                        subtract = new BigDecimal(0.00);
+////                    }
+//                    wallet.setBalance(subtract);
+//                }
+//            }
+//        }
+//        res += queryWalletDao.updateById(wallet);
         return SuccessTip.create(res);
     }
 
