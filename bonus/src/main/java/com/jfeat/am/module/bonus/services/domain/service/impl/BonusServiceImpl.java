@@ -87,16 +87,16 @@ public class BonusServiceImpl implements BonusService {
         }
     }
 
-    //团队的奖励有问题
+    //提成
     @Override
     public BigDecimal getTeamBonus(Long id, Integer dateType) {
         Integer allianceExist = queryBonusDao.queryAllianceExist(id);
         if (allianceExist == 0) {
             return new BigDecimal(0);
         }
-        if(queryBonusDao.queryType(id)!=AllianceField.ALLIANCE_TYPE_BONUS){
-            return new BigDecimal(0);
-        }
+//        if(queryBonusDao.queryType(id)!=AllianceField.ALLIANCE_TYPE_BONUS){
+//            return new BigDecimal(0);
+//        }
         List<Long> teamUserIds = queryBonusDao.getTeam(id);
         BigDecimal teamBonus = new BigDecimal(0);
         for (Long teamUserId : teamUserIds) {
@@ -111,24 +111,31 @@ public class BonusServiceImpl implements BonusService {
                 teamBonus = teamBonus.add(tmp);
             }
         }
-
         return teamBonus.setScale(2,BigDecimal.ROUND_HALF_UP);
     }
 
     @Override
     public List<AllianceReconciliation> getAllianceReconciliation(Integer pageNum, Integer pageSize,String search) {
         List<AllianceReconciliation> allianceReconciliations = queryBonusDao.queryReInformation(search);
+
         if (allianceReconciliations != null && allianceReconciliations.size() > 0) {
             for (AllianceReconciliation r : allianceReconciliations) {
-                BigDecimal month = this.getSelfBonus(r.getUserId(), BonusDateType.MONTH)
-                        .add(this.getTeamProportionBonus(r.getUserId(), BonusDateType.MONTH))
-                        .add(this.getTeamBonus(r.getUserId(), BonusDateType.MONTH));
-                r.setCurrentMonthBonus(month.setScale(2,BigDecimal.ROUND_HALF_UP));
-                BigDecimal year = this.getSelfBonus(r.getUserId(), null)
-                        .add(this.getTeamProportionBonus(r.getUserId(), null))
-                        .add(this.getTeamBonus(r.getUserId(), null));
-                r.setTotalBonus(year.setScale(2,BigDecimal.ROUND_HALF_UP));
+
+                if(r.getAllianceType()==AllianceField.ALLIANCE_TYPE_BONUS){
+                    r.setRoyalty(this.getTeamBonus(r.getUserId(), BonusDateType.MONTH));
+                    BigDecimal month = this.getSelfBonus(r.getUserId(), BonusDateType.MONTH)
+                            .add(this.getTeamProportionBonus(r.getUserId(), BonusDateType.MONTH));
+                    r.setCurrentMonthBonus(month.setScale(2,BigDecimal.ROUND_HALF_UP));
+                    BigDecimal year = this.getSelfBonus(r.getUserId(), null)
+                            .add(this.getTeamProportionBonus(r.getUserId(), null));
+                    r.setTotalBonus(year.setScale(2,BigDecimal.ROUND_HALF_UP));
+                }else{
+                    r.setCurrentMonthBonus(new BigDecimal(0.00));
+                    r.setTotalBonus(new BigDecimal(0.00));
+                }
+
             }
+
         }
         Collections.sort(allianceReconciliations);
         return allianceReconciliations;

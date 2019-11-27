@@ -2,13 +2,32 @@ package com.jfeat.am.module.bonus.services.domain.model;
 
 import java.math.BigDecimal;
 
-public class AllianceReconciliation implements Comparable<AllianceReconciliation>{
+public class AllianceReconciliation implements Comparable<AllianceReconciliation> {
     private Long id;
     private String allianceName;
     private Integer teamCount;
     private BigDecimal totalBonus;
     private BigDecimal currentMonthBonus;
     private Long userId;
+    private BigDecimal royalty;
+
+    private Integer allianceType;
+
+    public Integer getAllianceType() {
+        return allianceType;
+    }
+
+    public void setAllianceType(Integer allianceType) {
+        this.allianceType = allianceType;
+    }
+
+    public BigDecimal getRoyalty() {
+        return royalty;
+    }
+
+    public void setRoyalty(BigDecimal royalty) {
+        this.royalty = royalty;
+    }
 
     public Long getUserId() {
         return userId;

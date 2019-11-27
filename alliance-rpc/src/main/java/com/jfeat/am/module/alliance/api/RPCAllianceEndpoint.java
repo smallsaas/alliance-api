@@ -485,13 +485,13 @@ public class RPCAllianceEndpoint {
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "当前盟友不存在");
         }
-        if (alliance.getAllianceType() == 2&&alliance.getAllianceShip()==AllianceShips.ALLIANCE_SHIP_OK) {
+        if (alliance.getAllianceShip()==AllianceShips.ALLIANCE_SHIP_OK) {
             OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(id));
             if (ownerBalance == null) {
                 ownerBalance = new OwnerBalance();
             }
             OwnerBalanceRecord ownerBalanceRecord = JSON.parseObject(JSON.toJSONString(ownerBalance), OwnerBalanceRecord.class);
-            BigDecimal add = bonusService.getSelfBonus(id, 2).add(bonusService.getTeamProportionBonus(id, 2)).add(bonusService.getTeamBonus(id, 2));
+            BigDecimal add = bonusService.getTeamBonus(id, 2);
             if (add == null) {
                 add = new BigDecimal(0.00);
             }

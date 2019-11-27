@@ -37,7 +37,7 @@ public class BonusHandle {
         BigDecimal config = new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS));
         List<AllianceReconciliation> allianceReconciliations = queryBonusDao.queryReInformation(null);
         for(AllianceReconciliation r:allianceReconciliations){
-            BigDecimal add = bonusService.getSelfBonus(r.getUserId(), 4).add(bonusService.getTeamProportionBonus(r.getUserId(), 4)).add(bonusService.getTeamBonus(r.getUserId(), 4));
+            BigDecimal add = bonusService.getTeamBonus(r.getUserId(), 4);
             if(add==null){
                 add=new BigDecimal(0.00);
             }

@@ -16,6 +16,7 @@ public class AllianceRecord extends Alliance {
     //团队人数
     Integer teamCount;
     String invitorName;
+
     String invitorPhone;
 
     String wechatAvatar;
@@ -25,7 +26,6 @@ public class AllianceRecord extends Alliance {
     JSONArray AllianceMessages;
     JSONArray TeamAllianceOrderMessages;
     JSONArray DeliverMessage;
-
     private BigDecimal bonus_balance;
     private BigDecimal expected_bonus;
 

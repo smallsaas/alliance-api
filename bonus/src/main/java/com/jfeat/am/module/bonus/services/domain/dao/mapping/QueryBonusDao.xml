@@ -24,27 +24,35 @@
         </choose>
     </select>
 
+
+<!--给别人的提成-->
     <select id="getTeamBonus" resultType="java.math.BigDecimal">
         select sum((oi.quantity*(p.price-p.cost_price))*JSON_EXTRACT(b.proportion,'$.value')/(100.0))
         from t_order o,t_order_item oi ,t_product p,t_product_settlement_proportion b
         where
-        o.created_date > STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d')
-        and o.status='CLOSED_CONFIRMED' and o.user_id=#{userId} and p.id=oi.product_id and b.product_id=p.id
+        o.status='CLOSED_CONFIRMED' and o.user_id=#{userId} and p.id=oi.product_id and b.product_id=p.id
         and b.type='ALLIANCE'
         <choose>
+            <!--当天-->
             <when test="dateType=='1'">
                 and to_days(o.created_date)=to_days(now())
             </when>
+            <!--当月-->
             <when test="dateType=='2'">
                 and date_format(o.created_date, '%Y%m' ) = date_format( curdate() , '%Y%m' )
             </when>
+            <!--当季度-->
             <when test="dateType=='3'">
                 and quarter(o.created_date)=quarter(now())
             </when>
+            <!--上个月-->
             <when test="dateType=='4'">
                 and date_format(o.created_date, '%Y %m') = date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y %m')
             </when>
         </choose>
+
+
+
     </select>
 
     <select id="queryAllianceExist" parameterType="java.lang.Long" resultType="java.lang.Integer">
@@ -74,7 +82,7 @@
     </select>
 
     <select id="queryReInformation" resultType="com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation">
-        select a.id,a.alliance_name as allianceName,a.user_id as userId , count(children.id)+1 as teamCount from
+        select a.alliance_type as allianceType,a.id,a.alliance_name as allianceName,a.user_id as userId , count(children.id)+1 as teamCount from
         t_alliance a
         left JOIN t_alliance children on a.id=children.invitor_alliance_id where a.alliance_ship=0
 

@@ -185,7 +185,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
 
     @Override
     @Transactional
-    public Integer modify(Long id, AllianceRequest entity) throws ParseException {
+    public Integer modify(Long id, AllianceRecord entity) throws ParseException {
         entity.setId(id);
 
         if (entity.getAllianceDob() != null) {
@@ -203,8 +203,8 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
                 throw new BusinessException(BusinessCode.BadRequest, "正式盟友的手机号不能修改");
             }
         }
-        if (entity.getInvitorPhoneNumber() != null && entity.getInvitorPhoneNumber().length() > 0) {
-            alliance = this.findAllianceByPhoneNumber(entity.getInvitorPhoneNumber());
+        if (entity.getInvitorPhone() != null && entity.getInvitorPhone().length() > 0) {
+            alliance = this.findAllianceByPhoneNumber(entity.getInvitorPhone());
         }
         if (alliance != null) {
             Alliance allianceShip = this.retrieveMaster(id);
@@ -214,6 +214,8 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
 //                }
 //            }
             entity.setInvitorAllianceId(alliance.getId());
+        }else {
+            throw new BusinessException(BusinessCode.BadRequest,"邀请人不存在");
         }
         if (entity.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
@@ -221,7 +223,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
 //            entity.setAllianceShip(1);
 
         } else if (entity.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {
-            entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
+//            entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
 //            entity.setAllianceShipTime(new Date());
             entity.setTempAllianceExpiryTime(new Date((new Date().getTime() + configFieldService.getFieldInteger(AllianceFields.ALLIANCE_FIELD_TEMP_ALLIANCE_EXPIRY_TIME) * millisecond)));
 //            entity.setStockholderShip(1);
@@ -235,6 +237,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         Integer integer = this.updateMaster(entity);
         return integer;
     }
+
 
     @Transactional
     @Override

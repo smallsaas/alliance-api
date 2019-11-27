@@ -112,7 +112,7 @@ public class AllianceEndpoint {
     @PutMapping("/{id}")
     @ApiOperation(value = "修改 Alliance", response = Alliance.class)
     @Permission(AlliancePermission.ALLIANCE_EDIT)
-    public Tip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException, ParseException {
+    public Tip updateAlliance(@PathVariable Long id, @RequestBody AllianceRecord entity) throws ServerException, ParseException {
 
         return SuccessTip.create(allianceService.modify(id, entity));
     }

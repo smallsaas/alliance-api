@@ -14,7 +14,7 @@ public interface QueryBonusDao {
     BigDecimal getAllianceBonus(@Param("userId") Long paramLong, @Param("dateType") Integer dateType);
 
 
-    //算出自己的推荐分红(给别人的)
+    //算出自己的给别的提成
     BigDecimal getTeamBonus(@Param("userId") Long paramLong, @Param("dateType") Integer dateType);
 
 

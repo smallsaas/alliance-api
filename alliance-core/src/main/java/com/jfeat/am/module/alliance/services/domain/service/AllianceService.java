@@ -25,7 +25,7 @@ public interface AllianceService extends CRUDAllianceService{
 
     public Integer create(Long userId, AllianceRequest entity)throws ParseException;
 
-    public Integer modify(Long id,AllianceRequest entity) throws ParseException;
+    public Integer modify(Long id,AllianceRecord entity) throws ParseException;
 
     public Integer modifyAllianceShip(Long id);
 
