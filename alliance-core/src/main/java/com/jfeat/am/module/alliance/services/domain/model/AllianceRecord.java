@@ -29,6 +29,7 @@ public class AllianceRecord extends Alliance {
     private BigDecimal bonus_balance;
     private BigDecimal expected_bonus;
 
+
     public BigDecimal getBonus_balance() {
         return bonus_balance;
     }
@@ -116,6 +117,26 @@ public class AllianceRecord extends Alliance {
 
     //自己的分红
     private BigDecimal selfBonus;
+
+    private Integer stockholderCount;//股东总人数
+
+    private float proportion;
+
+    public float getProportion() {
+        return proportion;
+    }
+
+    public void setProportion(float proportion) {
+        this.proportion = proportion;
+    }
+
+    public Integer getStockholderCount() {
+        return stockholderCount;
+    }
+
+    public void setStockholderCount(Integer stockholderCount) {
+        this.stockholderCount = stockholderCount;
+    }
 
     public BigDecimal getTotalSelfBonus() {
         return totalSelfBonus;

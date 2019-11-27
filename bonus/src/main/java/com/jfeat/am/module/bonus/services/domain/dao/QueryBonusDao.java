@@ -68,6 +68,14 @@ public interface QueryBonusDao {
     BigDecimal getCommissionOrderTotalLastMonth(Long id);
 
     BigDecimal getAllBonusReal();
+
+    BigDecimal getAverageBonus();
+
+    BigDecimal getAllBonusRatio(@Param("userId")Long userId);
+
+    Integer stockholderCount();
+
+    Float queryProportion(@Param("userId") Long userId);
 }
 
 

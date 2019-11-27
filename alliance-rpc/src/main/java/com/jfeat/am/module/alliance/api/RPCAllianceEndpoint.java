@@ -386,14 +386,25 @@ public class RPCAllianceEndpoint {
         }
         //-------------------------------------------------
         if (alliance.getAllianceType() == Alliance.ALLIANCE_TYPE_BONUS) {
-            alliance.setSelfBonus(bonusService.getSelfBonus(id, dateType).add(bonusService.getTeamProportionBonus(id, dateType)));
-            alliance.setTeamSelfBonus(bonusService.getTeamBonus(id, dateType));
-            alliance.setTotalSelfBonus(bonusService.getSelfBonus(id, dateType).add(bonusService.getTeamProportionBonus(id, dateType)).add(bonusService.getTeamBonus(id, dateType)));
+            BigDecimal averageBonus = queryBonusDao.getAverageBonus();
+            BigDecimal zero = new BigDecimal(0.00);
+            if(averageBonus==null){
+                averageBonus=zero;
+            }
+            BigDecimal allBonusRatio = queryBonusDao.getAllBonusRatio(id);
+            if(allBonusRatio==null){
+                allBonusRatio=zero;
+            }
+            alliance.setSelfBonus(averageBonus);
+            alliance.setTeamSelfBonus(allBonusRatio);
+            alliance.setTotalSelfBonus(averageBonus.add(allBonusRatio));
         } else {
             alliance.setSelfBonus(new BigDecimal(0.00));
             alliance.setTeamSelfBonus(new BigDecimal(0.00));
             alliance.setTotalSelfBonus(new BigDecimal(0.00));
         }
+        alliance.setStockholderCount(queryBonusDao.stockholderCount());
+        alliance.setProportion(queryBonusDao.queryProportion(id));
 //        JSONArray royalties = new JSONArray();
 //        List<Long> team = queryBonusDao.getTeam(id);
 //        if (team != null && team.size() > 0) {
@@ -413,7 +424,8 @@ public class RPCAllianceEndpoint {
 //                }
 //            }
 //        }
-        alliance.setCommissionOrder(JSONArray.parseArray(JSON.toJSONString(queryBonusDao.getCommissionOrder(id))));
+        //当月提成
+        alliance.setCommissionOrder(JSONArray.parseArray(JSON.toJSONString(queryBonusDao.getCommissionOrderMonth(id))));
         //盟友消息
         List<Alliance> alliances = queryAllianceDao.queryWeekAlliance(id);
         if (alliance != null) {
@@ -491,7 +503,7 @@ public class RPCAllianceEndpoint {
                 ownerBalance = new OwnerBalance();
             }
             OwnerBalanceRecord ownerBalanceRecord = JSON.parseObject(JSON.toJSONString(ownerBalance), OwnerBalanceRecord.class);
-            BigDecimal add = bonusService.getTeamBonus(id, 2);
+            BigDecimal add = queryBonusDao.getCommissionOrderTotalLastMonth(id);
             if (add == null) {
                 add = new BigDecimal(0.00);
             }
