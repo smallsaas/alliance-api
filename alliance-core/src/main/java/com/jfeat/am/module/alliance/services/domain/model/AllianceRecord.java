@@ -26,13 +26,30 @@ public class AllianceRecord extends Alliance {
     JSONArray AllianceMessages;
     JSONArray TeamAllianceOrderMessages;
     JSONArray DeliverMessage;
+
     private BigDecimal bonus_balance;
     private BigDecimal expected_bonus;
 
-    private BigDecimal orderAmount;//入货额
+
     private BigDecimal settlementCommission;//可结算
-    private BigDecimal effectiveCommission;//已生效
+
+
+
     private BigDecimal noEffectiveCommission;//未生效
+
+
+
+    private BigDecimal orderAmount;//入货额
+    private BigDecimal effectiveCommission;//已生效
+    private BigDecimal conditionOrderAmount;//差额条件
+
+    public BigDecimal getConditionOrderAmount() {
+        return conditionOrderAmount;
+    }
+
+    public void setConditionOrderAmount(BigDecimal conditionOrderAmount) {
+        this.conditionOrderAmount = conditionOrderAmount;
+    }
 
     private Integer experienceTime;//剩余体验天数
 
