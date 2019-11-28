@@ -143,7 +143,9 @@
     </select>
 
     <insert id="insertOrderItem" parameterType="java.util.Map">
-        insert into t_order_item (order_id,barcode,product_name,quantity,final_price) value
-         (#{orderId},#{barcode},#{productName},#{quantity},#{finalPrice})
+        insert into t_order_item (order_id,barcode,product_name,quantity,final_price
+                       ,price,cost_price,cover,product_id) value
+         (#{orderId},#{barcode},#{productName},#{quantity},#{finalPrice}
+         ,#{price},#{costPrice},#{cover},#{id})
     </insert>
 </mapper>
