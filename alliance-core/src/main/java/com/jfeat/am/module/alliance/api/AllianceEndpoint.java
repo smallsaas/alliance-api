@@ -580,8 +580,8 @@ public class AllianceEndpoint {
         return SuccessTip.create(parse);
     }
 
-    @PutMapping("{id}/action/downgrade")
-    @ApiOperation("线下盟友充值")
+    @PutMapping("/{id}/action/downgrade")
+    @ApiOperation("盟友降级")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
     public Tip downgrade(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
@@ -628,6 +628,21 @@ public class AllianceEndpoint {
 //            }
 //        }
 //        res += queryWalletDao.updateById(wallet);
+        return SuccessTip.create(res);
+    }
+
+    @PutMapping("/{id}/action/upshiptime")
+    @ApiOperation("修改成为盟友的时间")
+    @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
+    public Tip upShipTime(@PathVariable Long id,@RequestBody AllianceRequestShipTime allianceRequestShipTime) {
+        Alliance alliance = allianceService.retrieveMaster(id);
+        Long userId=alliance.getUserId();
+        Integer allianceType = alliance.getAllianceType();
+        if (alliance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
+        }
+        alliance.setAllianceShipTime(allianceRequestShipTime.getAllianceShipTime());
+        Integer res = queryAllianceDao.updateById(alliance);
         return SuccessTip.create(res);
     }
 

@@ -7,6 +7,7 @@ import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Resource;
@@ -119,7 +120,11 @@ public class BonusServiceImpl implements BonusService {
         List<AllianceReconciliation> allianceReconciliations = queryBonusDao.queryReInformation(search);
         if (allianceReconciliations != null && allianceReconciliations.size() > 0) {
             for (AllianceReconciliation r : allianceReconciliations) {
-                r.setRoyalty(queryBonusDao.getCommissionTotal(r.getUserId()));
+                BigDecimal commissionTotal = queryBonusDao.getCommissionTotalMonth(r.getUserId());
+                if(commissionTotal==null){
+                    commissionTotal=new BigDecimal(0.00);
+                }
+                r.setRoyalty(commissionTotal);
                 if (r.getAllianceType() == AllianceField.ALLIANCE_TYPE_BONUS) {
                     BigDecimal averageBonusMonth = queryBonusDao.getAverageBonusMonth();
                     BigDecimal allBonusRatioMonth = queryBonusDao.getAllBonusRatioMonth(r.getUserId());
@@ -150,6 +155,7 @@ public class BonusServiceImpl implements BonusService {
             }
         }
         Collections.sort(allianceReconciliations);
+        List<AllianceReconciliation> currentPageList=new ArrayList<>();
         return allianceReconciliations;
     }
 }

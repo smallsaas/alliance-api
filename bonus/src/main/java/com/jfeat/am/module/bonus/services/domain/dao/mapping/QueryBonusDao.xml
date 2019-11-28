@@ -73,7 +73,7 @@
         </if>
 
         GROUP BY p.id ORDER
-        BY item.quantity desc limit #{off_set},#{pageSize}
+        BY item.quantity desc
     </select>
 
     <select id="queryReInformation" resultType="com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation">
@@ -107,7 +107,7 @@ oi.order_id=o.id and p.id=oi.product_id and a.alliance_ship=0 and  date_format(o
     </select>
 
     <select id="getCommissionOrder" parameterType="java.lang.Long" resultType="com.alibaba.fastjson.JSONObject">
-select u.name as invitorName,FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2) as commission,o.total_price orderMoney from t_order_item item
+select u.name as invitorName,FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2) as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as orderNumber,1 as status from t_order_item item
 LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
 LEFT JOIN t_alliance a on a.user_id = #{userId}
 LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
@@ -115,7 +115,7 @@ LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id  w
     </select>
 
     <select id="getCommissionOrderMonth" parameterType="java.lang.Long" resultType="com.alibaba.fastjson.JSONObject">
-select u.name as invitorName,FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2) as commission,o.total_price orderMoney from t_order_item item
+select u.name as invitorName,FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2) as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as orderNumber,1 as status from t_order_item item
 LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
 LEFT JOIN t_alliance a on a.user_id = #{userId}
 LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
@@ -123,7 +123,7 @@ LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id  w
     </select>
     <select id="getCommissionOrderLastMonth" parameterType="java.lang.Long"
             resultType="com.alibaba.fastjson.JSONObject">
-select u.name as invitorName,FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2) as commission,o.total_price orderMoney from t_order_item item
+select u.name as invitorName,FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2) as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as orderNumber,1 as status from t_order_item item
 LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
 LEFT JOIN t_alliance a on a.user_id = #{userId}
 LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
