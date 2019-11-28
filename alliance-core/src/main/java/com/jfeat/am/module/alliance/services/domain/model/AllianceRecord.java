@@ -34,6 +34,16 @@ public class AllianceRecord extends Alliance {
     private BigDecimal effectiveCommission;//已生效
     private BigDecimal noEffectiveCommission;//未生效
 
+    private Integer experienceTime;//剩余体验天数
+
+    public Integer getExperienceTime() {
+        return experienceTime;
+    }
+
+    public void setExperienceTime(Integer experienceTime) {
+        this.experienceTime = experienceTime;
+    }
+
     public BigDecimal getSettlementCommission() {
         return settlementCommission;
     }
