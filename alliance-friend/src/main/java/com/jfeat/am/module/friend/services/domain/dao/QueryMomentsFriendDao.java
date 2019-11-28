@@ -1,5 +1,6 @@
 package com.jfeat.am.module.friend.services.domain.dao;
 
+import com.jfeat.am.module.friend.api.AllianceProduct;
 import com.jfeat.am.module.friend.services.domain.model.MomentsFriendOverOrdersRecord;
 import com.jfeat.am.module.friend.services.domain.model.MomentsFriendRecord;
 
@@ -31,7 +32,9 @@ public interface QueryMomentsFriendDao extends BaseMapper<MomentsFriend> {
     Long selectProductId(@Param("barcode")String barcode);
     String selectBarcodeByProductId(@Param("productId")Long productId);
 
-    Integer insertOrderItem(@Param("orderId")Long orderId,@Param("barcode")String barcode,@Param("productName")String productName,@Param("quantity")Integer quantity,@Param("finalPrice") BigDecimal finalPrice);
+    Integer insertOrderItem(@Param("orderId")Long orderId,@Param("barcode")String barcode,@Param("productName")String productName,@Param("quantity")Integer quantity,@Param("finalPrice") BigDecimal finalPrice
+              ,@Param("price") BigDecimal price,@Param("costPrice") BigDecimal costPrice,@Param("cover") String cover,@Param("id") Long id);
+
     @Select("select alliance_name from t_alliance where user_id=#{userId} and alliance_ship=0")
     String queryAllianceName(Long userId);
 
@@ -46,4 +49,7 @@ public interface QueryMomentsFriendDao extends BaseMapper<MomentsFriend> {
 
     @Update("update t_product set stock_balance=#{balance} where id=#{productId}")
     Integer upProduct(@Param("productId") Long productId, @Param("balance") Integer balance);
+
+    @Select("select * from t_product where id=#{productId}")
+    AllianceProduct queryProductById(Long productId);
 }

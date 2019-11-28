@@ -1,6 +1,7 @@
 package com.jfeat.am.module.friend.services.domain.service.impl;
 
 import com.baomidou.mybatisplus.toolkit.IdWorker;
+import com.jfeat.am.module.friend.api.AllianceProduct;
 import com.jfeat.am.module.friend.api.OrderStatus;
 import com.jfeat.am.module.friend.api.RequestOrder;
 import com.jfeat.am.module.friend.api.RequestProduct;
@@ -109,12 +110,19 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
            queryMomentsFriendOverOrderDao.insert(order);
 
            for (RequestProduct product:productList) {
+
+               AllianceProduct allianceProduct = queryMomentsFriendDao.queryProductById(product.getId());
+
                //插入订单项数据
                res = queryMomentsFriendDao.insertOrderItem
                        (order.getId(), product.getBarcode(),
                                product.getName(),
                                product.getQuantity(),
-                               product.getTotalPrice()
+                               product.getTotalPrice(),
+                               allianceProduct.getPrice(),
+                               allianceProduct.getCostPrice(),
+                               allianceProduct.getCover(),
+                               allianceProduct.getId()
                               );
            }
        }
