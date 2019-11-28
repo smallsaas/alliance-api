@@ -30,6 +30,53 @@ public class AllianceRecord extends Alliance {
     private BigDecimal expected_bonus;
 
 
+    private BigDecimal quota;//入货额
+    private BigDecimal settlementCommission;//可结算
+    private BigDecimal effectiveCommission;//已生效
+    private BigDecimal noEffectiveCommission;//未生效
+
+    public BigDecimal getQuota() {
+        return quota;
+    }
+
+    public void setQuota(BigDecimal quota) {
+        this.quota = quota;
+    }
+
+    public BigDecimal getSettlementCommission() {
+        return settlementCommission;
+    }
+
+    public void setSettlementCommission(BigDecimal settlementCommission) {
+        this.settlementCommission = settlementCommission;
+    }
+
+    public BigDecimal getEffectiveCommission() {
+        return effectiveCommission;
+    }
+
+    public void setEffectiveCommission(BigDecimal effectiveCommission) {
+        this.effectiveCommission = effectiveCommission;
+    }
+
+    public BigDecimal getNoEffectiveCommission() {
+        return noEffectiveCommission;
+    }
+
+    public void setNoEffectiveCommission(BigDecimal noEffectiveCommission) {
+        this.noEffectiveCommission = noEffectiveCommission;
+    }
+
+    private String dividedTime;
+
+    public String getDividedTime() {
+        return dividedTime;
+    }
+
+    public void setDividedTime(String dividedTime) {
+        this.dividedTime = dividedTime;
+    }
+
     public BigDecimal getBonus_balance() {
         return bonus_balance;
     }

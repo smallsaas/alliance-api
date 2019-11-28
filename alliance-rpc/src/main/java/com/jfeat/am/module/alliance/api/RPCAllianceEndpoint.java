@@ -14,6 +14,7 @@ import com.jfeat.am.module.alliance.services.domain.model.OwnerBalanceRecord;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.*;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
+import com.jfeat.am.module.bonus.services.domain.filter.AllianceField;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import com.jfeat.crud.base.tips.Tip;
@@ -38,6 +39,7 @@ import com.jfeat.am.module.alliance.services.domain.model.AllianceRecord;
 import javax.annotation.Resource;
 import java.rmi.ServerException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -462,6 +464,14 @@ public class RPCAllianceEndpoint {
         OwnerBalanceRecord ownerBalanceRecord = queryOwnerBalance(id);
         alliance.setBonus_balance(ownerBalanceRecord.getBonus_balance());
         alliance.setExpected_bonus(ownerBalanceRecord.getExpected_bonus());
+        String starting_time = configFieldService.getFieldString(AllianceFields.ALLIANCE_FIELD_STARTING_TIME);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = formatter.parse(starting_time);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, configFieldService.getFieldInteger(AllianceFields.ALLIANCE_FIELD_STARTING_CYCLE));
+        Date endTime = calendar.getTime();
+        alliance.setDividedTime(starting_time+"至"+formatter.format(endTime));
         return SuccessCip.create(alliance);
     }
 
@@ -572,4 +582,5 @@ public class RPCAllianceEndpoint {
         int monthsDiff = Math.abs(yearInterval * 12 + monthInterval);
         return monthsDiff;
     }
+
 }
