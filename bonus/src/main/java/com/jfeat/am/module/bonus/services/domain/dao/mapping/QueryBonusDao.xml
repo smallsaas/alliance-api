@@ -73,7 +73,7 @@
         </if>
 
         GROUP BY p.id ORDER
-        BY item.quantity desc limit #{off_set},#{pageSize}
+        BY item.quantity desc
     </select>
 
     <select id="queryReInformation" resultType="com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation">
