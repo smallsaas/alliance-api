@@ -54,11 +54,18 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
            }
            //订单处理
            FriendOrder order = new FriendOrder();
+           //封面处理
+           if( requestOrder.getImges()!=null&& requestOrder.getImges().size()>0){
+               order.setCover(requestOrder.getImges().get(0).getUrl()) ;
+           }
+
+
            order.setUserId(user.getId());
            order.setPhone(requestOrder.getPhone());
            order.setDetail(requestOrder.getDetail());
            order.setContactUser(requestOrder.getName());
-           order.setPaymentType(requestOrder.getPaymentType());
+           //支付类型 默认线下支付
+           order.setPaymentType("STORE");
            //默认状态
            order.setStatus(OrderStatus.CLOSED_CONFIRMED);
            //订单类型 线下订单
