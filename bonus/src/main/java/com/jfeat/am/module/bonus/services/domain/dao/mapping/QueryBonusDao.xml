@@ -167,9 +167,9 @@ LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id 
 select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select value/100.0 from t_config_field where field='ratio_proportion')*((
 			(
 				SELECT
-					sum(
+					ifnull(sum(
 						a1.alliance_inventory_amount
-					)
+					),0)
 				FROM
 					t_alliance a1,
 					t_alliance a2
@@ -199,9 +199,9 @@ LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id 
 select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select value/100.0 from t_config_field where field='ratio_proportion')*((
 			(
 				SELECT
-					sum(
+					ifnull(sum(
 						a1.alliance_inventory_amount
-					)
+					),0)
 				FROM
 					t_alliance a1,
 					t_alliance a2
@@ -234,9 +234,9 @@ LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id 
 select FORMAT(((
 			(
 				SELECT
-					sum(
+					ifnull(sum(
 						a1.alliance_inventory_amount
-					)
+					),0)
 				FROM
 					t_alliance a1,
 					t_alliance a2
