@@ -3,6 +3,7 @@ package com.jfeat.am.module.friend.services.domain.service.impl;
 import com.baomidou.mybatisplus.toolkit.IdWorker;
 import com.jfeat.am.module.friend.api.OrderStatus;
 import com.jfeat.am.module.friend.api.RequestOrder;
+import com.jfeat.am.module.friend.api.RequestProduct;
 import com.jfeat.am.module.friend.services.domain.dao.QueryMomentsFriendDao;
 import com.jfeat.am.module.friend.services.domain.dao.mapping.QueryMomentsFriendOverOrderDao;
 import com.jfeat.am.module.friend.services.domain.model.MomentsFriendUser;
@@ -38,53 +39,62 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     @Override
     @Transactional
     public Integer createOrder(RequestOrder requestOrder) throws ServerException {
-        /*List<Long> userIds = queryMomentsFriendDao.selectUserId(requestOrder.getById());
-        if (userIds == null || userIds.size() == 0) {
-            throw new ServerException("该下单人不存在");
-        }
-        if (userIds.size() > 1) {
-            throw new ServerException("该下单人姓名相同的有好几个");
-        }*/
+
+        Integer res=0;
+        //之前是获取名字 现在更改为获取id
         MomentsFriendUser user = queryMomentsFriendDao.selectByUserId(requestOrder.getUserId());
+       //订单项不为空 处理订单项
+       if(requestOrder.getItems().size()!=0){
 
-       /* Long productId = queryMomentsFriendDao.selectProductId(requestOrder.getBarcode());
-        if (productId == null) {
-            throw new ServerException("该表形码" + requestOrder.getBarcode() + "的商品不存在");
-        }*/
-        Long productId = requestOrder.getProductId();
-        //根据产品id查找barcode
-        String barcode=queryMomentsFriendDao.selectBarcodeByProductId(productId);
+           //查询该用户是否为盟友
+           String allianceName = queryMomentsFriendDao.queryAllianceName(user.getId());
+           if (allianceName == null || allianceName.length() == 0) {
+               throw new BusinessException(BusinessCode.BadRequest, "该下单人不是正式盟友");
+           }
+           //插入订单
+           FriendOrder order = new FriendOrder();
+           order.setUserId(user.getId());
+           order.setPhone(requestOrder.getPhone());
+           order.setDetail(requestOrder.getDetail());
+           order.setContactUser(requestOrder.getName());
+           //默认状态
+           order.setStatus(OrderStatus.CLOSED_CONFIRMED);
+           //订单类型 线下订单
+           order.setType("STORE_ORDER");
+           order.setCreatedDate(new Date());
+           String oderNumber = IdWorker.getIdStr();
+           order.setOrderNumber(oderNumber);
+           //此处留到最后处理
+           order.setTotalPrice(requestOrder.getTotalPrice());
+           queryMomentsFriendOverOrderDao.insert(order);
 
-        requestOrder.setTotalPrice(requestOrder.getFinalPrice().multiply(new BigDecimal(requestOrder.getQuantity())));
-        FriendOrder order = new FriendOrder();
-        //order.setUserId(userIds.get(0));
-        requestOrder.setBarcode(barcode);
+           //循环遍历
+           List<RequestProduct> productList= requestOrder.getItems();
+           for (RequestProduct product:productList) {
+               Long productId = product.getId();
+               //根据产品id查找barcode
+               String barcode=queryMomentsFriendDao.selectBarcodeByProductId(productId);
+               requestOrder.setTotalPrice(requestOrder.getFinalPrice().multiply(new BigDecimal(requestOrder.getQuantity())));
 
-        order.setUserId(user.getId());
-        order.setPhone(requestOrder.getPhone());
-        order.setDetail(requestOrder.getDetail());
-        order.setContactUser(requestOrder.getName());
-        order.setStatus(OrderStatus.CLOSED_CONFIRMED);
-        order.setType("STORE_ORDER");
-        order.setTotalPrice(requestOrder.getTotalPrice());
-        order.setCreatedDate(new Date());
-        String oderNumber = IdWorker.getIdStr();
-        order.setOrderNumber(oderNumber);
-        queryMomentsFriendOverOrderDao.insert(order);
-        Integer res = queryMomentsFriendDao.insertOrderItem(order.getId(), requestOrder.getBarcode(), requestOrder.getProductName(), requestOrder.getQuantity(), requestOrder.getFinalPrice());
-        //String allianceName = queryMomentsFriendDao.queryAllianceName(userIds.get(0));
-        String allianceName = queryMomentsFriendDao.queryAllianceName(user.getId());
-        if (allianceName == null || allianceName.length() == 0) {
-            throw new BusinessException(BusinessCode.BadRequest, "该下单人不是正式盟友");
-        } else {
-            Integer stockBalance = queryMomentsFriendDao.queryStockBalance(productId);
-            stockBalance = stockBalance - requestOrder.getQuantity();
-            if (stockBalance >= 0) {
-                queryMomentsFriendDao.upProduct(productId, stockBalance);
-            } else {
-                throw new BusinessException(BusinessCode.BadRequest, "该商品库存不足");
-            }
-           // BigDecimal balance = queryMomentsFriendDao.queryWalletBalance(userIds.get(0));
+               requestOrder.setBarcode(barcode);
+
+               //todo
+               Integer stockBalance = queryMomentsFriendDao.queryStockBalance(productId);
+               stockBalance = stockBalance - requestOrder.getQuantity();
+               if (stockBalance >= 0) {
+                   queryMomentsFriendDao.upProduct(productId, stockBalance);
+               } else {
+                   throw new BusinessException(BusinessCode.BadRequest, "该商品库存不足");
+               }
+
+           }
+           //插入订单项数据
+            res = queryMomentsFriendDao.insertOrderItem(order.getId(), requestOrder.getBarcode(), requestOrder.getProductName(), requestOrder.getQuantity(), requestOrder.getFinalPrice());
+       }
+       //订单项为空则抛出
+       else{ throw new BusinessException(BusinessCode.BadRequest, "请添加产品");}
+
+
             BigDecimal balance = queryMomentsFriendDao.queryWalletBalance(user.getId());
             if (balance == null || balance.compareTo(new BigDecimal(0.00)) <= 0) {
                 throw new BusinessException(BusinessCode.BadRequest, "该用户余额不足");
@@ -97,7 +107,7 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
                     queryMomentsFriendDao.upWallet(user.getId(), balance);
                 }
             }
-        }
+
 
         return res;
     }
