@@ -389,6 +389,11 @@ public class AllianceEndpoint {
             if (wallet != null) {
                 if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
                     wallet.setBalance(wallet.getBalance().subtract(new BigDecimal(bonusConfig)));
+                    BigDecimal accumulativeAmount = wallet.getAccumulativeAmount();
+                    if(accumulativeAmount==null){
+                        accumulativeAmount=new BigDecimal(0.00);
+                    }
+                    wallet.setAccumulativeAmount(accumulativeAmount.subtract(new BigDecimal(bonusConfig)));
                     res += queryWalletDao.updateById(wallet);
                     WalletHistory walletHistory = new WalletHistory();
                     walletHistory.setAmount(new BigDecimal(bonusConfig));
@@ -399,6 +404,11 @@ public class AllianceEndpoint {
                     res += queryWalletHistoryDao.insert(walletHistory);
                 } else if (allianceType.equals(Alliance.ALLIANCE_TYPE_COMMON)) {
                     wallet.setBalance(wallet.getBalance().subtract(new BigDecimal(commonConfig)));
+                    BigDecimal accumulativeAmount = wallet.getAccumulativeAmount();
+                    if(accumulativeAmount==null){
+                        accumulativeAmount=new BigDecimal(0.00);
+                    }
+                    wallet.setAccumulativeAmount(accumulativeAmount.subtract(new BigDecimal(commonConfig)));
                     res += queryWalletDao.updateById(wallet);
                     WalletHistory walletHistory = new WalletHistory();
                     walletHistory.setAmount(new BigDecimal(commonConfig));
@@ -412,6 +422,7 @@ public class AllianceEndpoint {
                 wallet = new Wallet().setUserId(userId);
                 if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
                     wallet.setBalance(new BigDecimal(bonusConfig));
+                    wallet.setAccumulativeAmount(new BigDecimal(bonusConfig));
                     res += queryWalletDao.insert(wallet);
                     WalletHistory walletHistory = new WalletHistory();
                     walletHistory.setAmount(new BigDecimal(bonusConfig));
@@ -422,6 +433,7 @@ public class AllianceEndpoint {
                     res += queryWalletHistoryDao.insert(walletHistory);
                 } else if (allianceType.equals(Alliance.ALLIANCE_TYPE_COMMON)) {
                     wallet.setBalance(new BigDecimal(commonConfig));
+                    wallet.setAccumulativeAmount(new BigDecimal(bonusConfig));
                     res += queryWalletDao.insert(wallet);
                     WalletHistory walletHistory = new WalletHistory();
                     walletHistory.setAmount(new BigDecimal(commonConfig));

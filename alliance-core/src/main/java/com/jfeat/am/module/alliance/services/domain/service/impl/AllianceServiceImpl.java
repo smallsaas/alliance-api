@@ -302,9 +302,11 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
             if (wallet.getAccumulativeAmount() != null) {
                 BigDecimal common_alliance = wallet.getBalance().add(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                 wallet.setBalance(common_alliance);
+                wallet.setAccumulativeAmount(wallet.getAccumulativeAmount().add(common_alliance));
                 queryWalletDao.updateById(wallet);
             } else {
                 wallet.setAccumulativeAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
+                wallet.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
                 queryWalletDao.updateById(wallet);
             }
             WalletHistory walletHistory = new WalletHistory();
