@@ -63,6 +63,11 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
            order.setUserId(user.getId());
            order.setPhone(requestOrder.getPhone());
            order.setDetail(requestOrder.getDetail());
+           //省市区
+           order.setProvince(requestOrder.getProvince());
+           order.setCity(requestOrder.getCity());
+           order.setDistrict(requestOrder.getDistrict());
+
            order.setContactUser(requestOrder.getName());
            //支付类型 默认线下支付
            order.setPaymentType("STORE");
