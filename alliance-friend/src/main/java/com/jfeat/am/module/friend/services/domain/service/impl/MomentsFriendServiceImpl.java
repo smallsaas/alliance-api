@@ -51,12 +51,13 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
            if (allianceName == null || allianceName.length() == 0) {
                throw new BusinessException(BusinessCode.BadRequest, "该下单人不是正式盟友");
            }
-           //插入订单
+           //订单处理
            FriendOrder order = new FriendOrder();
            order.setUserId(user.getId());
            order.setPhone(requestOrder.getPhone());
            order.setDetail(requestOrder.getDetail());
            order.setContactUser(requestOrder.getName());
+           order.setPaymentType(requestOrder.getPaymentType());
            //默认状态
            order.setStatus(OrderStatus.CLOSED_CONFIRMED);
            //订单类型 线下订单
@@ -64,51 +65,61 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
            order.setCreatedDate(new Date());
            String oderNumber = IdWorker.getIdStr();
            order.setOrderNumber(oderNumber);
-           //此处留到最后处理
-           order.setTotalPrice(requestOrder.getTotalPrice());
-           queryMomentsFriendOverOrderDao.insert(order);
 
-           //循环遍历
+           //获取订单数据//循环遍历
            List<RequestProduct> productList= requestOrder.getItems();
+           //总价
+           BigDecimal finalPrice=new BigDecimal(0);
            for (RequestProduct product:productList) {
                Long productId = product.getId();
                //根据产品id查找barcode
                String barcode=queryMomentsFriendDao.selectBarcodeByProductId(productId);
-               requestOrder.setTotalPrice(requestOrder.getFinalPrice().multiply(new BigDecimal(requestOrder.getQuantity())));
+               //设置订单总价
+               //处理产品总价
+               product.setTotalPrice(product.getPrice().multiply(new BigDecimal(product.getQuantity())));
+               finalPrice=product.getTotalPrice().add(finalPrice);
 
-               requestOrder.setBarcode(barcode);
+               /*requestOrder.setTotalPrice(requestOrder.getFinalPrice().multiply(new BigDecimal(requestOrder.getQuantity())));*/
+              /* requestOrder.setBarcode(barcode);*/
 
-               //todo
+               //查找库存
                Integer stockBalance = queryMomentsFriendDao.queryStockBalance(productId);
-               stockBalance = stockBalance - requestOrder.getQuantity();
-               if (stockBalance >= 0) {
-                   queryMomentsFriendDao.upProduct(productId, stockBalance);
+               //更改后的库存量
+               stockBalance = stockBalance - product.getQuantity();
+               if (stockBalance < 0) { throw new BusinessException(BusinessCode.BadRequest, "商品库存不足"); }
+
+               BigDecimal balance = queryMomentsFriendDao.queryWalletBalance(user.getId());
+               if (balance == null || balance.compareTo(new BigDecimal(0.00)) <= 0) {
+                   throw new BusinessException(BusinessCode.BadRequest, "该用户余额不足");
                } else {
-                   throw new BusinessException(BusinessCode.BadRequest, "该商品库存不足");
+                   balance = balance.subtract(product.getTotalPrice());
+                   if (balance.compareTo(new BigDecimal(0.00)) < 0) {
+                       throw new BusinessException(BusinessCode.BadRequest, "该用户余额不足");
+                   } else {
+                       //更新用户余额
+                       queryMomentsFriendDao.upWallet(user.getId(), balance);
+                   }
                }
+               //更新产品库存
+               queryMomentsFriendDao.upProduct(productId, stockBalance);
 
            }
-           //插入订单项数据
-            res = queryMomentsFriendDao.insertOrderItem(order.getId(), requestOrder.getBarcode(), requestOrder.getProductName(), requestOrder.getQuantity(), requestOrder.getFinalPrice());
+           //插入订单
+           order.setTotalPrice(finalPrice);
+           queryMomentsFriendOverOrderDao.insert(order);
+
+           for (RequestProduct product:productList) {
+               //插入订单项数据
+               res = queryMomentsFriendDao.insertOrderItem
+                       (order.getId(), product.getBarcode(),
+                               product.getName(),
+                               product.getQuantity(),
+                               product.getTotalPrice()
+                              );
+           }
        }
        //订单项为空则抛出
        else{ throw new BusinessException(BusinessCode.BadRequest, "请添加产品");}
-
-
-            BigDecimal balance = queryMomentsFriendDao.queryWalletBalance(user.getId());
-            if (balance == null || balance.compareTo(new BigDecimal(0.00)) <= 0) {
-                throw new BusinessException(BusinessCode.BadRequest, "该用户余额不足");
-            } else {
-                balance = balance.subtract(requestOrder.getTotalPrice());
-                if (balance.compareTo(new BigDecimal(0.00)) < 0) {
-                    throw new BusinessException(BusinessCode.BadRequest, "该用户余额不足");
-                } else {
-//                    queryMomentsFriendDao.upWallet(userIds.get(0), balance);
-                    queryMomentsFriendDao.upWallet(user.getId(), balance);
-                }
-            }
-
-
         return res;
     }
 

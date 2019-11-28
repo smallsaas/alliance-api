@@ -26,9 +26,19 @@ public class RequestOrder {
     private String productName;
     //商品id
     private Long productId;
+    //支付类型
+    private String paymentType;
 
     //产品 用于接收前端返回的数据 用于存入放入orderItem中
     private List<RequestProduct> items;
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
 
     public List<RequestProduct> getItems() {
         return items;
