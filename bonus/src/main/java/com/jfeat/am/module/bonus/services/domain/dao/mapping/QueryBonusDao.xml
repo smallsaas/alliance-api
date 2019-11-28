@@ -177,14 +177,7 @@ select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.pr
 					a1.invitor_alliance_id = a2.id
 				AND a2.user_id = #{userId}
 				AND a1.alliance_ship = 0
-			) + (
-				SELECT
-					alliance_inventory_amount
-				FROM
-					t_alliance
-				WHERE
-					user_id = #{userId}
-			)
+			) 
 		)/(select sum(alliance_inventory_amount) from t_alliance where alliance_ship=0)),2) from t_order_item item
 inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
 LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
@@ -209,13 +202,6 @@ select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.pr
 					a1.invitor_alliance_id = a2.id
 				AND a2.user_id = #{userId}
 				AND a1.alliance_ship = 0
-			) + (
-				SELECT
-					alliance_inventory_amount
-				FROM
-					t_alliance
-				WHERE
-					user_id = #{userId}
 			)
 		)/(select sum(alliance_inventory_amount) from t_alliance where alliance_ship=0)),2) from t_order_item item
 inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED' and month(o.created_date) = month(curdate()) and year(o.created_date) = year(curdate())
@@ -244,13 +230,6 @@ select FORMAT(((
 					a1.invitor_alliance_id = a2.id
 				AND a2.user_id = #{userId}
 				AND a1.alliance_ship = 0
-			) + (
-				SELECT
-					alliance_inventory_amount
-				FROM
-					t_alliance
-				WHERE
-					user_id = #{userId}
 			)
 		)/(select sum(alliance_inventory_amount) from t_alliance where alliance_ship=0)),2)
 
