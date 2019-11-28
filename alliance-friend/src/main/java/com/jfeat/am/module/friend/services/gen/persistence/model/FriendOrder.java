@@ -18,7 +18,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
  * @author Code Generator
  * @since 2019-10-17
  */
-@TableName("t_Order")
+@TableName("t_order")
 public class FriendOrder extends Model<FriendOrder> {
 
     @TableField(exist = false)
@@ -155,7 +155,7 @@ public class FriendOrder extends Model<FriendOrder> {
 	@TableField("binding_store_cover")
 	private String bindingStoreCover;
     /**
-     * �?货款金额
+     * 货款金额
      */
 	@TableField("refund_fee")
 	private BigDecimal refundFee;

@@ -1,6 +1,7 @@
 package com.jfeat.am.module.friend.api;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class RequestOrder {
     //价格
@@ -25,6 +26,17 @@ public class RequestOrder {
     private String productName;
     //商品id
     private Long productId;
+
+    //产品 用于接收前端返回的数据 用于存入放入orderItem中
+    private List<RequestProduct> items;
+
+    public List<RequestProduct> getItems() {
+        return items;
+    }
+
+    public void setItems(List<RequestProduct> items) {
+        this.items = items;
+    }
 
     public Long getUserId() {
         return userId;
