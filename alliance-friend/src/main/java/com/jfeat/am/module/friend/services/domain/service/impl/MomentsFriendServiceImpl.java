@@ -45,7 +45,7 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         //之前是获取名字 现在更改为获取id
         MomentsFriendUser user = queryMomentsFriendDao.selectByUserId(requestOrder.getUserId());
        //订单项不为空 处理订单项
-       if(requestOrder.getItems().size()!=0){
+       if(requestOrder.getItems()!=null&&requestOrder.getItems().size()>0){
 
            //查询该用户是否为盟友
            String allianceName = queryMomentsFriendDao.queryAllianceName(user.getId());
