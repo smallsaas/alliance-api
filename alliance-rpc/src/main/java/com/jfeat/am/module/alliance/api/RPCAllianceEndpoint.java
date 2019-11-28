@@ -398,6 +398,11 @@ public class RPCAllianceEndpoint {
             alliance.setSelfBonus(averageBonus);
             alliance.setTeamSelfBonus(allBonusRatio);
             alliance.setTotalSelfBonus(averageBonus.add(allBonusRatio));
+            BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalMonth(id);
+            if(commissionOrderMonth==null){
+                commissionOrderMonth=zero;
+            }
+            alliance.setCommissionBalance(commissionOrderMonth);
         } else {
             alliance.setSelfBonus(new BigDecimal(0.00));
             alliance.setTeamSelfBonus(new BigDecimal(0.00));

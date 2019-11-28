@@ -120,6 +120,16 @@ public class AllianceRecord extends Alliance {
 
     private Integer stockholderCount;//股东总人数
 
+    private BigDecimal commissionBalance;//提成总数
+
+    public BigDecimal getCommissionBalance() {
+        return commissionBalance;
+    }
+
+    public void setCommissionBalance(BigDecimal commissionBalance) {
+        this.commissionBalance = commissionBalance;
+    }
+
     private float proportion;
 
     public float getProportion() {
