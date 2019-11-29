@@ -41,12 +41,17 @@ public class BonusHandle {
             int condition = add.subtract(config).compareTo(new BigDecimal(0.00));
             if(condition>=0){
                 OwnerBalance theownerBalance =  new OwnerBalance();
-                theownerBalance.setUserId(r.getUserId().intValue());
+                theownerBalance.setUserId(r.getUserId());
                 OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(theownerBalance);
                 if(ownerBalance==null){
                     ownerBalance=new OwnerBalance();
+<<<<<<< HEAD
+                    ownerBalance.setUserId(r.getUserId());
+                    ownerBalance.setBonus_balance(add);
+=======
                     ownerBalance.setUserId(r.getUserId().intValue());
                     ownerBalance.setBalance(add);
+>>>>>>> 09d0a36d8a34dddb102d73444bf7f8156560dcd9
                     queryOwnerBalanceDao.insert(ownerBalance);
                 }else {
                     BigDecimal bonus_balance = ownerBalance.getBalance();

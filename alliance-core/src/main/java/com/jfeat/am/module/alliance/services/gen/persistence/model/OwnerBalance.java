@@ -36,7 +36,7 @@ public class OwnerBalance extends Model<OwnerBalance> {
 	@TableId(value="id", type= IdType.AUTO)
 	private Integer id;
 	@TableField("user_id")
-	private Integer userId;
+	private Long userId;
 	@TableField("balance")
 	private BigDecimal balance;
 
@@ -51,12 +51,13 @@ public class OwnerBalance extends Model<OwnerBalance> {
 		this.id = id;
 	}
 
-	public Integer getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public OwnerBalance setUserId(Long userId) {
 		this.userId = userId;
+		return this;
 	}
 
 	public BigDecimal getBalance() {

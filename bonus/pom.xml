@@ -27,7 +27,11 @@
     </properties>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>alliance-core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>crud-log</artifactId>

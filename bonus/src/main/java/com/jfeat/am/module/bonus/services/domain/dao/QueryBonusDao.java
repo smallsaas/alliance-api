@@ -1,11 +1,13 @@
 package com.jfeat.am.module.bonus.services.domain.dao;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
+import com.jfeat.am.module.bonus.services.domain.model.OrderCommissionInfo;
 import com.jfeat.am.module.bonus.services.domain.model.ProductSalesRecord;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -81,6 +83,11 @@ public interface QueryBonusDao {
     Float queryProportion(@Param("userId") Long userId);
 
     BigDecimal queryOrderAmount(@Param("userId") Long userId);
+
+    OrderCommissionInfo queryEveryOrderCommission(@Param("orderId") Long orderId);
+    List<OrderCommissionInfo> queryFormerOrder(@Param("userId") Long userId,@Param("createTime") Date createTime);
+    Integer upOrderSettlementStatus(@Param("status")Integer status,@Param("orderId") Long orderId);
+    Long queryInvitorUserId(@Param("userId") Long userId);
 }
 
 

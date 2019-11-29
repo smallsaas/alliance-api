@@ -511,7 +511,7 @@ public class RPCAllianceEndpoint {
         }
         if (alliance.getAllianceShip()==AllianceShips.ALLIANCE_SHIP_OK) {
             OwnerBalance theownerBalance =  new OwnerBalance();
-            theownerBalance.setUserId(id.intValue());
+            theownerBalance.setUserId(id);
             OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(theownerBalance);
             if (ownerBalance == null) {
                 ownerBalance = new OwnerBalance();

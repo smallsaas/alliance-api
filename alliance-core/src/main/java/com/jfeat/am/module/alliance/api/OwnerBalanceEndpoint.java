@@ -120,7 +120,7 @@ public class OwnerBalanceEndpoint {
                                   @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                   @RequestParam(name = "search", required = false) String search,
                                   @RequestParam(name = "id", required = false) Integer id,
-                                  @RequestParam(name = "userId", required = false) Integer userId,
+                                  @RequestParam(name = "userId", required = false) Long userId,
                                   @RequestParam(name = "balance", required = false) BigDecimal balance,
                                   @RequestParam(name = "version", required = false) Integer version,
                                   @RequestParam(name = "orderBy", required = false) String orderBy,
