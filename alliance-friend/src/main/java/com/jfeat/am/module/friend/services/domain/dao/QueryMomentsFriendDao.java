@@ -52,4 +52,6 @@ public interface QueryMomentsFriendDao extends BaseMapper<MomentsFriend> {
 
     @Select("select * from t_product where id=#{productId}")
     AllianceProduct queryProductById(Long productId);
+
+    Integer closeProduct(@Param("id")Long id);
 }

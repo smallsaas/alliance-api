@@ -199,4 +199,13 @@ public class MomentsFriendEndpoint {
         return SuccessTip.create(momentsFriendService.createOrder(requestOrder));
 
     }
+
+    @PutMapping("/order/status/closeConfirmed/{id}")
+    @ApiOperation(value = "修改订单为已确认收货 并进行结算")
+    public Tip closeConfirmedOrder(@PathVariable Long id) throws ServerException {
+
+        return SuccessTip.create(momentsFriendService.closeConfirmedOrder(id));
+
+    }
+
 }
