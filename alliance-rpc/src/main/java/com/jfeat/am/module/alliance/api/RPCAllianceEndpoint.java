@@ -523,20 +523,20 @@ public class RPCAllianceEndpoint {
             ownerBalanceRecord.setExpected_bonus(add);
             Date allianceShipTime = alliance.getAllianceShipTime();
             int monthDiff = getMonthDiff(allianceShipTime, new Date());
-            if (monthDiff < 2) {
-                BigDecimal bonus_balance = ownerBalanceRecord.getBalance();
-                if(bonus_balance==null){
-                    bonus_balance=new BigDecimal(0.00);
-                }
-
-                BigDecimal expected_bonus = ownerBalanceRecord.getExpected_bonus();
-                if(expected_bonus==null){
-                    expected_bonus=new BigDecimal(0.00);
-                }
-                expected_bonus = expected_bonus.add(bonus_balance);
-                ownerBalanceRecord.setExpected_bonus(expected_bonus);
-                ownerBalanceRecord.setBalance(new BigDecimal(0.00));
-            }
+//            if (monthDiff < 2) {
+//                BigDecimal bonus_balance = ownerBalanceRecord.getBalance();
+//                if(bonus_balance==null){
+//                    bonus_balance=new BigDecimal(0.00);
+//                }
+//
+//                BigDecimal expected_bonus = ownerBalanceRecord.getExpected_bonus();
+//                if(expected_bonus==null){
+//                    expected_bonus=new BigDecimal(0.00);
+//                }
+//                expected_bonus = expected_bonus.add(bonus_balance);
+//                ownerBalanceRecord.setExpected_bonus(expected_bonus);
+//                ownerBalanceRecord.setBalance(new BigDecimal(0.00));
+//            }
             return ownerBalanceRecord;
         } else {
             OwnerBalanceRecord ownerBalanceRecord = new OwnerBalanceRecord();

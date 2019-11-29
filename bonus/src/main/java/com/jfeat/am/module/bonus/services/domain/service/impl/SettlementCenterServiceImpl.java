@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service("settlementCenterService")
@@ -31,6 +33,14 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
     public boolean settlementOrder(Long orderId) {
         OrderCommissionInfo orderCommissionInfo = queryBonusDao.queryEveryOrderCommission(orderId);
         if (orderCommissionInfo != null) {
+            Calendar c1 = Calendar.getInstance();
+            Calendar c2 = Calendar.getInstance();
+            c1.setTime(new Date());
+            c2.setTime(orderCommissionInfo.getCreateTime());
+            if(c1.get(Calendar.MONTH)==c2.get(Calendar.MONTH)){//判断订单日期是否当前月
+                return true;
+            }
+
             Long invitorUserId = queryBonusDao.queryInvitorUserId(orderCommissionInfo.getUserId());
             if (invitorUserId != null) {
                 BigDecimal bigDecimal = queryBonusDao.queryOrderAmountByMonth(invitorUserId,orderCommissionInfo.getCreateTime());
