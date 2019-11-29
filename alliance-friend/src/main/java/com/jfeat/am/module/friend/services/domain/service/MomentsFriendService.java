@@ -11,4 +11,6 @@ import java.rmi.ServerException;
  */
 public interface MomentsFriendService extends CRUDMomentsFriendService {
     public Integer createOrder(RequestOrder requestOrder) throws ServerException;
+
+    public Integer closeConfirmedOrder(Long id);
 }

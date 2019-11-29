@@ -148,4 +148,10 @@
          (#{orderId},#{barcode},#{productName},#{quantity},#{finalPrice}
          ,#{price},#{costPrice},#{cover},#{id})
     </insert>
+
+    <update id="closeProduct" >
+update t_order SET t_order.`status`='CLOSED_CONFIRMED'
+where  id=#{id}
+    </update>
+
 </mapper>
