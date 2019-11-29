@@ -141,7 +141,11 @@ public class RPCAllianceRegisterEndpoint {
 
         /// 盟友已确定， 直接返回盟友类型
         AllianceShips response = new AllianceShips();
-        response.setAllianceType(registeredAlliance.getAllianceType());
+        //盟友时间已存在则不设置
+        if(registeredAlliance.getAllianceShipTime()==null){
+            response.setAllianceType(registeredAlliance.getAllianceType());
+        }
+
 
         if(registeredAlliance.getAllianceShip()==AllianceShips.ALLIANCE_SHIP_OK){
             // 最后确认是否已绑定用户，程序错误

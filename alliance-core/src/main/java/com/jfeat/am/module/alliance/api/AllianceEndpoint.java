@@ -4,6 +4,7 @@ package com.jfeat.am.module.alliance.api;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.jfeat.am.common.annotation.Permission;
 import com.jfeat.am.core.jwt.JWTKit;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
@@ -17,6 +18,7 @@ import com.jfeat.am.module.alliance.util.RestClient;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import com.jfeat.am.module.log.annotation.BusinessLog;
 import com.jfeat.am.uaas.common.Md5Utils;
+import com.jfeat.crud.base.tips.ErrorTip;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -374,7 +376,7 @@ public class AllianceEndpoint {
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
     public Tip reset(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
-        Long userId=alliance.getUserId();
+        Long userId = alliance.getUserId();
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
@@ -384,14 +386,14 @@ public class AllianceEndpoint {
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
         int res = allianceService.updateMaster(alliance);
         res += queryAllianceDao.resetUserId(id);
-        if(alliance.getUserId()!=null){
+        if (alliance.getUserId() != null) {
             Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
             if (wallet != null) {
                 if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
                     wallet.setBalance(wallet.getBalance().subtract(new BigDecimal(bonusConfig)));
                     BigDecimal accumulativeAmount = wallet.getAccumulativeAmount();
-                    if(accumulativeAmount==null){
-                        accumulativeAmount=new BigDecimal(0.00);
+                    if (accumulativeAmount == null) {
+                        accumulativeAmount = new BigDecimal(0.00);
                     }
                     wallet.setAccumulativeAmount(accumulativeAmount.subtract(new BigDecimal(bonusConfig)));
                     res += queryWalletDao.updateById(wallet);
@@ -405,8 +407,8 @@ public class AllianceEndpoint {
                 } else if (allianceType.equals(Alliance.ALLIANCE_TYPE_COMMON)) {
                     wallet.setBalance(wallet.getBalance().subtract(new BigDecimal(commonConfig)));
                     BigDecimal accumulativeAmount = wallet.getAccumulativeAmount();
-                    if(accumulativeAmount==null){
-                        accumulativeAmount=new BigDecimal(0.00);
+                    if (accumulativeAmount == null) {
+                        accumulativeAmount = new BigDecimal(0.00);
                     }
                     wallet.setAccumulativeAmount(accumulativeAmount.subtract(new BigDecimal(commonConfig)));
                     res += queryWalletDao.updateById(wallet);
@@ -454,7 +456,7 @@ public class AllianceEndpoint {
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
     public Tip upgrade(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
-        Long userId=alliance.getUserId();
+        Long userId = alliance.getUserId();
         Integer allianceType = alliance.getAllianceType();
         Float bonus = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
         if (alliance == null) {
@@ -585,7 +587,7 @@ public class AllianceEndpoint {
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
     public Tip downgrade(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
-        Long userId=alliance.getUserId();
+        Long userId = alliance.getUserId();
         Integer allianceType = alliance.getAllianceType();
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
@@ -634,9 +636,9 @@ public class AllianceEndpoint {
     @PostMapping("/{id}/action/upshiptime")
     @ApiOperation("修改成为盟友的时间")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
-    public Tip upShipTime(@PathVariable Long id,@RequestBody AllianceRequestShipTime allianceRequestShipTime) {
+    public Tip upShipTime(@PathVariable Long id, @RequestBody AllianceRequestShipTime allianceRequestShipTime) {
         Alliance alliance = allianceService.retrieveMaster(id);
-        Long userId=alliance.getUserId();
+        Long userId = alliance.getUserId();
         Integer allianceType = alliance.getAllianceType();
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
@@ -645,31 +647,32 @@ public class AllianceEndpoint {
         Integer res = queryAllianceDao.updateById(alliance);
         return SuccessTip.create(res);
     }
+
     @PostMapping("/{id}/action/logOff")
     @ApiOperation("盟友注销")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
     public Tip logOff(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
-        Integer res=0;
-        if(alliance==null){
-            throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
+        Integer res = 0;
+        if (alliance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_LOG_OFF);
         String alliancePhone = alliance.getAlliancePhone();
-        if(alliancePhone!=null&&alliancePhone.length()>0){
+        if (alliancePhone != null && alliancePhone.length() > 0) {
             Long userId = queryAllianceDao.queryUserIdByPhone(alliancePhone);
-            if(userId!=null){
+            if (userId != null) {
                 Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
-                if(wallet!=null){
+                if (wallet != null) {
                     BigDecimal balance = wallet.getBalance();
-                    if(balance==null){
-                        balance=new BigDecimal(0.00);
+                    if (balance == null) {
+                        balance = new BigDecimal(0.00);
                     }
                     alliance.setHistoricalBalance(balance);
                     alliance.setAllianceInventoryAmount(new BigDecimal(0.00));
-                    res+=queryAllianceDao.updateById(alliance);
-                    res+=queryWalletHistoryDao.delete(new Condition().eq(WalletHistory.WALLET_ID,wallet.getId()));
-                    res+=queryWalletDao.delete(new Condition().eq(Wallet.USER_ID,userId));
+                    res += queryAllianceDao.updateById(alliance);
+                    res += queryWalletHistoryDao.delete(new Condition().eq(WalletHistory.WALLET_ID, wallet.getId()));
+                    res += queryWalletDao.delete(new Condition().eq(Wallet.USER_ID, userId));
                 }
             }
 
@@ -677,4 +680,24 @@ public class AllianceEndpoint {
         return SuccessTip.create(res);
     }
 
+    @GetMapping("/withdrawalsRecord/{id}")
+    @ApiOperation(value = "提现记录", response = Tip.class)
+    public Tip withdrawalsRecord(@PathVariable Long id) {
+        Alliance alliance = allianceService.retrieveMaster(id);
+        if (alliance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "盟友不存在");
+        }
+        String alliancePhone = alliance.getAlliancePhone();
+        Long userId = queryAllianceDao.queryUserIdByPhone(alliancePhone);
+
+        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+        if (wallet != null) {
+            List list = queryWalletHistoryDao.selectList(new EntityWrapper().eq(WalletHistory.TYPE,RechargeType.RECHARGE).or().eq(WalletHistory.TYPE,RechargeType.CASH_OUT).and().eq(WalletHistory.WALLET_ID, wallet.getId()).orderBy(WalletHistory.CREATED_TIME, false));
+            return SuccessTip.create(list);
+        } else {
+            throw new BusinessException(BusinessCode.BadRequest, "钱包未初始化");
+        }
+
+
+    }
 }

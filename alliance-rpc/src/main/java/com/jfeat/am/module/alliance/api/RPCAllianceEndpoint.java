@@ -409,9 +409,9 @@ public class RPCAllianceEndpoint {
                 commissionOrderMonth=zero;
             }
             alliance.setCommissionBalance(commissionOrderMonth);
-            alliance.setOrderAmount(queryBonusDao.queryBonusOrder(id));//当前月订单入货额度
+            alliance.setOrderAmount(queryBonusDao.queryOrderAmount(id));//当前月订单入货额度
             alliance.setEffectiveCommission(queryBonusDao.getCommissionTotalMonth(id));//当前月的提成
-            alliance.setConditionOrderAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)).subtract(queryBonusDao.queryBonusOrder(id)));
+            alliance.setConditionOrderAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)).subtract(queryBonusDao.queryOrderAmount(id)));
         } else {
             alliance.setSelfBonus(new BigDecimal(0.00));
             alliance.setTeamSelfBonus(new BigDecimal(0.00));
@@ -504,19 +504,7 @@ public class RPCAllianceEndpoint {
         return SuccessCip.create(allianceService.createAlliance(requestAlliance, userId));
     }
 
-    @GetMapping("/withdrawalsRecord")
-    @ApiOperation(value = "提现记录", response = Cip.class)
-    public Cip withdrawalsRecord(@RequestHeader("X-USER-ID") Long id) {
-        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(id));
-        if (wallet != null) {
-            List list = queryWalletHistoryDao.selectList(new EntityWrapper().eq(WalletHistory.WALLET_ID, wallet.getId()).orderBy(WalletHistory.CREATED_TIME, false));
-            return SuccessCip.create(list);
-        } else {
-            throw new BusinessException(BusinessCode.BadRequest, "钱包未初始化");
-        }
 
-
-    }
 
     private OwnerBalanceRecord queryOwnerBalance(Long id) {
         Alliance alliance = queryAllianceDao.selectOne(new Alliance().setUserId(id));

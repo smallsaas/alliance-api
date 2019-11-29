@@ -80,7 +80,7 @@ public interface QueryBonusDao {
 
     Float queryProportion(@Param("userId") Long userId);
 
-    Float queryOrderAmount(@Param("userId") Long userId);
+    BigDecimal queryOrderAmount(@Param("userId") Long userId);
 }
 
 
