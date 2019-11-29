@@ -583,7 +583,7 @@ public class AllianceEndpoint {
         return SuccessTip.create(parse);
     }
 
-    @PutMapping("/{id}/action/downgrade")
+    @PostMapping("/{id}/action/downgrade")
     @ApiOperation("盟友降级")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
     public Tip downgrade(@PathVariable Long id) {
