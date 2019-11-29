@@ -7,17 +7,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
-import com.jfeat.am.module.alliance.services.domain.dao.mapping.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.domain.model.OwnerBalanceRecord;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.*;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
-import com.jfeat.am.module.bonus.services.domain.filter.AllianceField;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
-import com.jfeat.crud.base.tips.Tip;
 import com.jfeat.util.Cip;
 import com.jfeat.util.SuccessCip;
 import io.swagger.annotations.Api;
@@ -524,7 +522,9 @@ public class RPCAllianceEndpoint {
             throw new BusinessException(BusinessCode.BadRequest, "当前盟友不存在");
         }
         if (alliance.getAllianceShip()==AllianceShips.ALLIANCE_SHIP_OK) {
-            OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(id));
+            OwnerBalance theownerBalance =  new OwnerBalance();
+            theownerBalance.setUserId(id.intValue());
+            OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(theownerBalance);
             if (ownerBalance == null) {
                 ownerBalance = new OwnerBalance();
             }

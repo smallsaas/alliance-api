@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao">
+        <sql id="Base_Column_List">
+            t_owner_balance.*
+    </sql>
+
+    <sql id="QueryOwnedOrgIds">
+            SELECT children.id FROM t_sys_org, t_sys_org as children WHERE t_sys_org.left_num &lt;= children.left_num AND
+            t_sys_org.right_num >= children.left_num and t_sys_org.id=#{ownerOrgId} order by t_sys_org.node_level ASC
+        </sql>
+
+
+                
+    <select id="findOwnerBalancePage" resultType="OwnerBalanceRecord" parameterType="OwnerBalanceRecord">
+            SELECT t_owner_balance.*
+        FROM t_owner_balance
+                WHERE 1=1
+                                                                            <if test="record.id != null and record.id>0 ">
+                AND t_owner_balance.id LIKE CONCAT('%',#{record.id},'%')
+            </if>
+                                                                    
+                                                                                        <if test="record.userId != null and record.userId>0 ">
+                AND t_owner_balance.user_id LIKE CONCAT('%',#{record.userId},'%')
+            </if>
+                                                                    <if test="record.balance != null and record.balance>0 ">
+                AND t_owner_balance.balance LIKE CONCAT('%',#{record.balance},'%')
+            </if>
+                                                                    <if test="record.version != null and record.version>0 ">
+                AND t_owner_balance.version LIKE CONCAT('%',#{record.version},'%')
+            </if>
+                <if test="startTime != null">
+            <![CDATA[AND t_owner_balance.start_time >= DATE(#{startTime})]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[AND t_owner_balance.end_time <= DATE(#{endTime)]]>
+        </if>
+            <!--
+        <if test="search != null and search != ''">
+            OR t_owner_balance.name LIKE CONCAT('%',#{search},'%')
+        </if>
+        -->
+                                    </select>
+</mapper>
