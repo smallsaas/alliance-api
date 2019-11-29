@@ -33,7 +33,11 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
         if (orderCommissionInfo != null) {
             Long invitorUserId = queryBonusDao.queryInvitorUserId(orderCommissionInfo.getUserId());
             if (invitorUserId != null) {
-                BigDecimal condition = queryBonusDao.queryOrderAmount(invitorUserId).subtract(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)));
+                BigDecimal bigDecimal = queryBonusDao.queryOrderAmount(invitorUserId);
+                if(bigDecimal==null){
+                    bigDecimal=new BigDecimal(0.00);
+                }
+                BigDecimal condition = bigDecimal.subtract(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)));
                 if (condition.compareTo(new BigDecimal(0.00)) >= 0) {
                     OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(invitorUserId));
                     if (ownerBalance != null) {

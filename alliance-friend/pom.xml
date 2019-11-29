@@ -36,6 +36,12 @@
             <artifactId>crud-core</artifactId>
             <version>${crud-core.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>bonus</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 <!--
         <dependency>
             <groupId>com.jfeat</groupId>

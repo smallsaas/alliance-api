@@ -1,6 +1,7 @@
 package com.jfeat.am.module.friend.services.domain.service.impl;
 
 import com.baomidou.mybatisplus.toolkit.IdWorker;
+import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
 import com.jfeat.am.module.friend.api.AllianceProduct;
 import com.jfeat.am.module.friend.api.OrderStatus;
 import com.jfeat.am.module.friend.api.RequestOrder;
@@ -38,7 +39,8 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     QueryMomentsFriendDao queryMomentsFriendDao;
     @Resource
     QueryMomentsFriendOverOrderDao queryMomentsFriendOverOrderDao;
-
+    @Resource
+    SettlementCenterService SettlementCenterService;
     @Override
     @Transactional
     public Integer createOrder(RequestOrder requestOrder) throws ServerException {
@@ -171,9 +173,10 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     public Integer closeConfirmedOrder(Long id) {
      /*   AllianceProduct allianceProduct = queryMomentsFriendDao.queryProductById(id);
         allianceProduct.setStatus(OrderStatus.CLOSED_CONFIRMED);*/
-     //todo 结算
 
         Integer i=queryMomentsFriendDao.closeProduct(id);
+        SettlementCenterService.settlementOrder(id);
+
 
         return i;
     }
