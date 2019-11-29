@@ -89,9 +89,8 @@ public class OwnerBalanceEndpoint {
         walletHistory.setAmount(ownerBalanceRecord.getMoney());
         //库存金额
         walletHistory.setBalance(ownerBalance.getBalance().subtract(ownerBalanceRecord.getMoney()));
-
         walletHistory.setWalletId(ownerBalance.getId().longValue());
-        walletHistory.setType("REFUND");
+        walletHistory.setType("WITHDRAW");
         walletHistory.setCreatedTime(new Date());
         queryWalletHistoryDao.insert(walletHistory);
 
