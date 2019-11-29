@@ -13,4 +13,5 @@ public interface MomentsFriendService extends CRUDMomentsFriendService {
     public Integer createOrder(RequestOrder requestOrder) throws ServerException;
 
     public Integer closeConfirmedOrder(Long id);
+    public Integer cancelOrder(Long id)throws ServerException;
 }

@@ -149,9 +149,17 @@
          ,#{price},#{costPrice},#{cover},#{id})
     </insert>
 
+    <select id="selectOrderItem"  resultType="com.jfeat.am.module.friend.api.FriendOrderItem">
+       select * from t_order_item where order_id=#{orderId}
+    </select>
+
     <update id="closeProduct" >
 update t_order SET t_order.`status`='CLOSED_CONFIRMED'
 where  id=#{id}
+    </update>
+
+    <update id="upStockBalance" >
+        update t_product set stock_balance=stock_balance+#{num} where id=#{productId}
     </update>
 
 </mapper>
