@@ -314,7 +314,7 @@
     <update id="upOrderSettlementStatus" parameterType="map">
         update t_order set settlement_status=#{status} where id=#{orderId}
     </update>
-    <select id="queryInvitorUserId" resultType="java.lang.Long" parameterType="java.math.BigDecimal">
+    <select id="queryInvitorUserId" resultType="java.lang.Long">
         select a.user_id from t_alliance a
         inner join t_alliance kid on a.id=kid.invitor_alliance_id and kid.user_id=#{userId}
     </select>
