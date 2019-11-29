@@ -1,6 +1,7 @@
 package com.jfeat.am.module.friend.api;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 public class RequestOrder {
@@ -28,9 +29,60 @@ public class RequestOrder {
     private Long productId;
     //支付类型
     private String paymentType;
+    //下单时间
+    private Date createDate;
+
+    //省
+    private String province;
+    //市
+    private String city;
+    //区
+    private String district;
 
     //产品 用于接收前端返回的数据 用于存入放入orderItem中
     private List<RequestProduct> items;
+
+    private List<friendImage> imges;
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public List<friendImage> getImges() {
+        return imges;
+    }
+
+    public void setImges(List<friendImage> imges) {
+        this.imges = imges;
+    }
 
     public String getPaymentType() {
         return paymentType;
