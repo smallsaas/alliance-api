@@ -666,6 +666,7 @@ public class AllianceEndpoint {
                         balance=new BigDecimal(0.00);
                     }
                     alliance.setHistoricalBalance(balance);
+                    alliance.setAllianceInventoryAmount(new BigDecimal(0.00));
                     res+=queryAllianceDao.updateById(alliance);
                     res+=queryWalletHistoryDao.delete(new Condition().eq(WalletHistory.WALLET_ID,wallet.getId()));
                     res+=queryWalletDao.delete(new Condition().eq(Wallet.USER_ID,userId));
