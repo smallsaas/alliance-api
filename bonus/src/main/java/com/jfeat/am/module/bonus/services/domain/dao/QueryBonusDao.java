@@ -79,6 +79,8 @@ public interface QueryBonusDao {
     Integer stockholderCount();
 
     Float queryProportion(@Param("userId") Long userId);
+
+    Float queryOrderAmount(@Param("userId") Long userId);
 }
 
 

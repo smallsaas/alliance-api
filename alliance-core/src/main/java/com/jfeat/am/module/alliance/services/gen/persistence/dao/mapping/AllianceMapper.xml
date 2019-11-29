@@ -10,6 +10,7 @@
 		<result column="age" property="age" />
 		<result column="alliance_ship" property="allianceShip" />
 		<result column="stockholder_ship" property="stockholderShip" />
+		<result column="historical_balance" property="historicalBalance" />
 		<result column="creation_time" property="creationTime" />
 		<result column="alliance_rank" property="allianceRank" />
 		<result column="alliance_type" property="allianceType" />
@@ -36,7 +37,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id,role,user_id AS userId,avator,starting_cycle,age,alliance_type,balance, alliance_rank AS allianceRank,invitor_alliance_id AS invitorAllianceId, alliance_ship AS allianceShip, stockholder_ship AS stockholderShip, creation_time AS creationTime, alliance_ship_time AS allianceShipTime, stockholder_ship_time AS stockholderShipTime, temp_alliance_expiry_time AS tempAllianceExpiryTime, alliance_status AS allianceStatus, alliance_inventory_amount AS allianceInventoryAmount, alliance_point AS alliancePoint, alliance_name AS allianceName, alliance_sex AS allianceSex, alliance_occupation AS allianceOccupation, alliance_industry AS allianceIndustry, alliance_address AS allianceAddress, alliance_business AS allianceBusiness, alliance_hobby AS allianceHobby, alliance_phone AS alliancePhone, alliance_dob AS allianceDob
+        id,role,historical_balance historicalBalance,user_id AS userId,avator,starting_cycle,age,alliance_type,balance, alliance_rank AS allianceRank,invitor_alliance_id AS invitorAllianceId, alliance_ship AS allianceShip, stockholder_ship AS stockholderShip, creation_time AS creationTime, alliance_ship_time AS allianceShipTime, stockholder_ship_time AS stockholderShipTime, temp_alliance_expiry_time AS tempAllianceExpiryTime, alliance_status AS allianceStatus, alliance_inventory_amount AS allianceInventoryAmount, alliance_point AS alliancePoint, alliance_name AS allianceName, alliance_sex AS allianceSex, alliance_occupation AS allianceOccupation, alliance_industry AS allianceIndustry, alliance_address AS allianceAddress, alliance_business AS allianceBusiness, alliance_hobby AS allianceHobby, alliance_phone AS alliancePhone, alliance_dob AS allianceDob
     </sql>
 
 </mapper>

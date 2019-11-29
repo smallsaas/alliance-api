@@ -12,6 +12,7 @@ public class AllianceShips {
     public static final int ALLIANCE_SHIP_EXPIRED = 4;   // 支付过期 （支付过期）可改为已支付
     public static final int ALLIANCE_SHIP_ERROR = 5;     // 盟友状态错误
     public static final int ALLIANCE_SHIP_EXISTPAID = 6; //盟友已支付
+    public static final int ALLIANCE_SHIP_LOG_OFF = 7; //盟友已注销
     public static final String PHONE_EXITS_ERROR = "该手机号以被注册盟友，不能重复";     // 盟友状态错误
     public static final String ALLIANCE_NOT_EXIST ="该手机号码的盟友不存在";     // 盟友状态错误
 

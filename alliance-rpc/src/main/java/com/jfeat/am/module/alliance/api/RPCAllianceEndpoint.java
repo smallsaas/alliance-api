@@ -409,6 +409,9 @@ public class RPCAllianceEndpoint {
                 commissionOrderMonth=zero;
             }
             alliance.setCommissionBalance(commissionOrderMonth);
+            alliance.setOrderAmount(queryBonusDao.queryBonusOrder(id));//当前月订单入货额度
+            alliance.setEffectiveCommission(queryBonusDao.getCommissionTotalMonth(id));//当前月的提成
+            alliance.setConditionOrderAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)).subtract(queryBonusDao.queryBonusOrder(id)));
         } else {
             alliance.setSelfBonus(new BigDecimal(0.00));
             alliance.setTeamSelfBonus(new BigDecimal(0.00));

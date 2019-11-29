@@ -57,6 +57,18 @@ public class Alliance extends Model<Alliance> {
     @TableField("alliance_rank")
     private Integer allianceRank;
 
+    @TableField("historical_balance")
+    private BigDecimal historicalBalance;
+
+    public BigDecimal getHistoricalBalance() {
+        return historicalBalance;
+    }
+
+    public void setHistoricalBalance(BigDecimal historicalBalance) {
+        this.historicalBalance = historicalBalance;
+    }
+
+
     /**
      *
      */
