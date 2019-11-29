@@ -4,9 +4,13 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class OrderCommissionInfo {
+
     private Long userId;
+
     private BigDecimal commission;
+
     private Long id;
+
     private Date createTime;
 
     public Long getUserId() {

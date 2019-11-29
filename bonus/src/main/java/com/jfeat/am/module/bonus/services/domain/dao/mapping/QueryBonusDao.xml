@@ -240,10 +240,26 @@ select FORMAT(((
 inner join t_order o on item.order_id=o.id and o.status='CLOSED_CONFIRMED' and month(o.created_date) = month(curdate()) and year(o.created_date) = year(curdate()) and o.user_id=#{userId}
 LEFT JOIN t_user u on u.id=o.user_id
     </select>
-    
+<!--查询一条订单的提成-->
     <select id="queryEveryOrderCommission" parameterType="java.lang.Long" resultType="OrderCommissionInfo">
 select o.id,o.user_id as userId,FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as commission,o.created_date as createTime from t_order_item item
-INNER JOIN t_order o on item.order_id=o.id and o.id=#{orderId} and o.`status`='CLOSED_CONFIRMED'
+INNER JOIN t_order o on item.order_id=o.id and o.id=#{orderId} and o.`status`='CLOSED_CONFIRMED' and o.settlement_status!=1
 LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+    </select>
+<!--查询之前结算过的订单-->
+    <select id="queryFormerOrder" parameterType="map" resultType="OrderCommissionInfo">
+select o.id,o.user_id as userId,FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as commission,o.created_date as createTime from t_order_item item
+LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
+LEFT JOIN t_alliance a on a.user_id = #{userId}
+LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id  where o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id and month(o.created_date) = month(#{createTime}) and year(o.created_date) = year(#{createTime}) and o.settlement_status=2 group  by o.id
+    </select>
+
+    <update id="upOrderSettlementStatus" parameterType="map">
+        update t_order set settlement_status=#{status} where id=#{orderId}
+    </update>
+    <select id="queryInvitorUserId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        select a.user_id from t_alliance a
+        inner join t_alliance kid on a.id=kid.invitor_alliance_id and kid.user_id=#{userId}
     </select>
 </mapper>
