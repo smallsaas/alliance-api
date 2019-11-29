@@ -171,6 +171,8 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     public Integer closeConfirmedOrder(Long id) {
      /*   AllianceProduct allianceProduct = queryMomentsFriendDao.queryProductById(id);
         allianceProduct.setStatus(OrderStatus.CLOSED_CONFIRMED);*/
+     //todo 结算
+
         Integer i=queryMomentsFriendDao.closeProduct(id);
 
         return i;

@@ -34,30 +34,30 @@ public class OwnerBalance extends Model<OwnerBalance> {
     private static final long serialVersionUID = 1L;
 
 	@TableId(value="id", type= IdType.AUTO)
-	private Long id;
+	private Integer id;
 	@TableField("user_id")
-	private Long userId;
+	private Integer userId;
 	@TableField("balance")
 	private BigDecimal bonus_balance;
+
+
 	private Integer version;
 
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public OwnerBalance setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
-		return this;
 	}
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public OwnerBalance setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
-		return this;
 	}
 
 	public BigDecimal getBonus_balance() {
