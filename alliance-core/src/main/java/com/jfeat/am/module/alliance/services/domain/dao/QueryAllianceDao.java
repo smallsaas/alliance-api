@@ -86,5 +86,6 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     @Select("select id from t_user where phone=${phone}")
     Long queryUserIdByPhone(@Param("phone") String phone);
 
-
+    @Update("update t_user set real_name=#{name} where phone=#{alliancePhone}")
+    Integer upUserRealNameByPhone(@Param("alliancePhone") String alliancePhone,@Param("name") String name);
 }

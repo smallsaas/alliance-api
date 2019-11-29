@@ -89,9 +89,11 @@
     </select>
 
     <select id="queryBonusOrder" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
-        select sum(p.price*oi.quantity) from t_alliance a,t_order o,t_order_item oi,t_product p where a.user_id=#{userId} and o.user_id=a.user_id
-AND
-oi.order_id=o.id and p.id=oi.product_id and a.alliance_ship=0 and  date_format(o.created_date, '%Y%m' ) = date_format( curdate() , '%Y%m' )
+        select sum(p.price*oi.quantity) from t_alliance a,t_order o,t_order_item oi,t_product p where
+        a.user_id=#{userId} and o.user_id=a.user_id
+        AND
+        oi.order_id=o.id and p.id=oi.product_id and a.alliance_ship=0 and date_format(o.created_date, '%Y%m' ) =
+        date_format( curdate() , '%Y%m' )
     </select>
 
     <select id="queryAllianceName" resultType="string" parameterType="java.lang.Long">
@@ -107,158 +109,212 @@ oi.order_id=o.id and p.id=oi.product_id and a.alliance_ship=0 and  date_format(o
     </select>
 
     <select id="getCommissionOrder" parameterType="java.lang.Long" resultType="com.alibaba.fastjson.JSONObject">
-select u.name as invitorName,sum(FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2)) as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as orderNumber,1 as status from t_order_item item
-LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
-LEFT JOIN t_alliance a on a.user_id = #{userId}
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
-LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id  where o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id group by o.id
+        select u.name as
+        invitorName,sum(FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
+        as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as
+        orderNumber,1 as status from t_order_item item
+        LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
+        LEFT JOIN t_alliance a on a.user_id = #{userId}
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
+        o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id group by o.id
     </select>
 
     <select id="getCommissionOrderMonth" parameterType="java.lang.Long" resultType="com.alibaba.fastjson.JSONObject">
-select u.name as invitorName,sum(FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2)) as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as orderNumber,1 as status from t_order_item item
-LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
-LEFT JOIN t_alliance a on a.user_id = #{userId}
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
-LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id  where o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id and month(o.created_date) = month(curdate()) and year(o.created_date) = year(curdate()) group by o.id
+        select u.name as
+        invitorName,sum(FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
+        as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as
+        orderNumber,1 as status from t_order_item item
+        LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
+        LEFT JOIN t_alliance a on a.user_id = #{userId}
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
+        o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id and month(o.created_date) = month(curdate()) and
+        year(o.created_date) = year(curdate()) group by o.id
     </select>
     <select id="getCommissionOrderLastMonth" parameterType="java.lang.Long"
             resultType="com.alibaba.fastjson.JSONObject">
-select u.name as invitorName,sum(FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2)) as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as orderNumber,1 as status from t_order_item item
-LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
-LEFT JOIN t_alliance a on a.user_id = #{userId}
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
-LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id  where o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
-and month(o.created_date) =
-month(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) and year(o.created_date) = year(curdate()) group by o.id
+        select u.name as
+        invitorName,sum(FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
+        as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as
+        orderNumber,1 as status from t_order_item item
+        LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
+        LEFT JOIN t_alliance a on a.user_id = #{userId}
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
+        o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
+        and month(o.created_date) =
+        month(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) and year(o.created_date) = year(curdate()) group by o.id
     </select>
     <select id="getCommissionTotal" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
-select FORMAT(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price orderMoney from t_order_item item
-LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
-LEFT JOIN t_alliance a on a.user_id = #{userId}
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
-LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id  where o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
+        select
+        FORMAT(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
+        orderMoney from t_order_item item
+        LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
+        LEFT JOIN t_alliance a on a.user_id = #{userId}
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
+        o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
     </select>
     <select id="getCommissionTotalMonth" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
-select FORMAT(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price orderMoney from t_order_item item
-LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
-LEFT JOIN t_alliance a on a.user_id = #{userId}
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
-LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id  where o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
-    and month(o.created_date) = month(curdate()) and year(o.created_date) = year(curdate())
+        select
+        FORMAT(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
+        orderMoney from t_order_item item
+        LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
+        LEFT JOIN t_alliance a on a.user_id = #{userId}
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
+        o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
+        and month(o.created_date) = month(curdate()) and year(o.created_date) = year(curdate())
     </select>
 
     <select id="getCommissionOrderTotalLastMonth" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
-select FORMAT(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price orderMoney from t_order_item item
-LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
-LEFT JOIN t_alliance a on a.user_id = #{userId}
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
-LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id  where o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
-    and month(o.created_date) =
-month(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) and year(o.created_date) = year(curdate())
+        select
+        FORMAT(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
+        orderMoney from t_order_item item
+        LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
+        LEFT JOIN t_alliance a on a.user_id = #{userId}
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
+        o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
+        and month(o.created_date) =
+        month(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) and year(o.created_date) = year(curdate())
     </select>
 
     <select id="getAllBonusReal" resultType="java.math.BigDecimal">
-        select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0),2) from t_order_item item
-inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
+        select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0),2)
+        from t_order_item item
+        inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field
+        where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
 
     <select id="getAllBonusRatio" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
-select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select value/100.0 from t_config_field where field='ratio_proportion')*((
-			(
-				SELECT
-					ifnull(sum(
-						a1.alliance_inventory_amount
-					),0)
-				FROM
-					t_alliance a1,
-					t_alliance a2
-				WHERE
-					a1.invitor_alliance_id = a2.id
-				AND a2.user_id = #{userId}
-				AND a1.alliance_ship = 0
-			) 
-		)/(select sum(alliance_inventory_amount) from t_alliance where alliance_ship=0)),2) from t_order_item item
-inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
+        select
+        FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
+        value/100.0 from t_config_field where field='ratio_proportion')*((
+        (
+        SELECT
+        ifnull(sum(
+        a1.alliance_inventory_amount
+        ),0)
+        FROM
+        t_alliance a1,
+        t_alliance a2
+        WHERE
+        a1.invitor_alliance_id = a2.id
+        AND a2.user_id = #{userId}
+        AND a1.alliance_ship = 0
+        )
+        )/(select sum(alliance_inventory_amount) from t_alliance where alliance_ship=0)),2) from t_order_item item
+        inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field
+        where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
 
     <select id="getAverageBonus" resultType="java.math.BigDecimal">
-select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select value/100.0 from t_config_field where field='fixed_proportion')/(select count(id) from t_alliance where alliance_type=1 and alliance_ship=0),2) from t_order_item item
-inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
+        select
+        FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
+        value/100.0 from t_config_field where field='fixed_proportion')/(select count(id) from t_alliance where
+        alliance_type=1 and alliance_ship=0),2) from t_order_item item
+        inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field
+        where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
     <select id="getAllBonusRatioMonth" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
-select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select value/100.0 from t_config_field where field='ratio_proportion')*((
-			(
-				SELECT
-					ifnull(sum(
-						a1.alliance_inventory_amount
-					),0)
-				FROM
-					t_alliance a1,
-					t_alliance a2
-				WHERE
-					a1.invitor_alliance_id = a2.id
-				AND a2.user_id = #{userId}
-				AND a1.alliance_ship = 0
-			)
-		)/(select sum(alliance_inventory_amount) from t_alliance where alliance_ship=0)),2) from t_order_item item
-inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED' and month(o.created_date) = month(curdate()) and year(o.created_date) = year(curdate())
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
+        select
+        FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
+        value/100.0 from t_config_field where field='ratio_proportion')*((
+        (
+        SELECT
+        ifnull(sum(
+        a1.alliance_inventory_amount
+        ),0)
+        FROM
+        t_alliance a1,
+        t_alliance a2
+        WHERE
+        a1.invitor_alliance_id = a2.id
+        AND a2.user_id = #{userId}
+        AND a1.alliance_ship = 0
+        )
+        )/(select sum(alliance_inventory_amount) from t_alliance where alliance_ship=0)),2) from t_order_item item
+        inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field
+        where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED' and month(o.created_date) =
+        month(curdate()) and year(o.created_date) = year(curdate())
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
     <select id="getAverageBonusMonth" resultType="java.math.BigDecimal">
-select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select value/100.0 from t_config_field where field='fixed_proportion')/(select count(id) from t_alliance where alliance_type=1 and alliance_ship=0),2) from t_order_item item
-inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED' and month(o.created_date) = month(curdate()) and year(o.created_date) = year(curdate())
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
+        select
+        FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
+        value/100.0 from t_config_field where field='fixed_proportion')/(select count(id) from t_alliance where
+        alliance_type=1 and alliance_ship=0),2) from t_order_item item
+        inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field
+        where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED' and month(o.created_date) =
+        month(curdate()) and year(o.created_date) = year(curdate())
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
     <select id="stockholderCount" resultType="Integer">
         select count(id) from t_alliance where alliance_ship=0 and alliance_type=1
     </select>
 
     <select id="queryProportion" resultType="FLOAT" parameterType="java.lang.Long">
-select FORMAT(((
-			(
-				SELECT
-					ifnull(sum(
-						a1.alliance_inventory_amount
-					),0)
-				FROM
-					t_alliance a1,
-					t_alliance a2
-				WHERE
-					a1.invitor_alliance_id = a2.id
-				AND a2.user_id = #{userId}
-				AND a1.alliance_ship = 0
-			)
-		)/(select sum(alliance_inventory_amount) from t_alliance where alliance_ship=0)),2)
+        select FORMAT(((
+        (
+        SELECT
+        ifnull(sum(
+        a1.alliance_inventory_amount
+        ),0)
+        FROM
+        t_alliance a1,
+        t_alliance a2
+        WHERE
+        a1.invitor_alliance_id = a2.id
+        AND a2.user_id = #{userId}
+        AND a1.alliance_ship = 0
+        )
+        )/(select sum(alliance_inventory_amount) from t_alliance where alliance_ship=0)),2)
 
     </select>
 
     <select id="queryOrderAmount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
-        select sum(ROUND(ifnull(item.price*item.quantity,0),2)) from t_order_item item
-inner join t_order o on item.order_id=o.id and o.status='CLOSED_CONFIRMED' and month(o.created_date) = month(curdate()) and year(o.created_date) = year(curdate()) and o.user_id=#{userId}
-LEFT JOIN t_user u on u.id=o.user_id
+        select ifnull(sum(ROUND(item.price*item.quantity,2)),0) from t_order_item item
+        inner join t_order o on item.order_id=o.id and o.status='CLOSED_CONFIRMED' and month(o.created_date) =
+        month(curdate()) and year(o.created_date) = year(curdate()) and o.user_id=#{userId}
+        LEFT JOIN t_user u on u.id=o.user_id
     </select>
-<!--查询一条订单的提成-->
+    <select id="queryOrderAmountMonth" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+        select ifnull(sum(ROUND(item.price*item.quantity,2)),0) from t_order_item item
+        inner join t_order o on item.order_id=o.id and o.status='CLOSED_CONFIRMED' and month(o.created_date) =
+        month(#{createTime}) and year(o.created_date) = year(#{createTime}) and o.user_id=#{userId}
+        LEFT JOIN t_user u on u.id=o.user_id
+    </select>
+    <!--查询一条订单的提成-->
     <select id="queryEveryOrderCommission" parameterType="java.lang.Long" resultType="OrderCommissionInfo">
-select o.id,o.user_id as userId,FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as commission,o.created_date as createTime from t_order_item item
-INNER JOIN t_order o on item.order_id=o.id and o.id=#{orderId} and o.`status`='CLOSED_CONFIRMED' and o.settlement_status!=1
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+        select o.id,o.user_id as
+        userId,FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as
+        commission,o.created_date as createTime from t_order_item item
+        INNER JOIN t_order o on item.order_id=o.id and o.id=#{orderId} and o.`status`='CLOSED_CONFIRMED' and
+        o.settlement_status!=1
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
     </select>
-<!--查询之前结算过的订单-->
+    <!--查询之前结算过的订单-->
     <select id="queryFormerOrder" parameterType="map" resultType="OrderCommissionInfo">
-select o.id,o.user_id as userId,FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as commission,o.created_date as createTime from t_order_item item
-LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
-LEFT JOIN t_alliance a on a.user_id = #{userId}
-LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
-LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id  where o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id and month(o.created_date) = month(#{createTime}) and year(o.created_date) = year(#{createTime}) and o.settlement_status=2 group  by o.id
+        select o.id,o.user_id as
+        userId,FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as
+        commission,o.created_date as createTime from t_order_item item
+        LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
+        LEFT JOIN t_alliance a on a.user_id = #{userId}
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
+        o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id and month(o.created_date) = month(#{createTime}) and
+        year(o.created_date) = year(#{createTime}) and o.settlement_status=2 group by o.id
     </select>
 
     <update id="upOrderSettlementStatus" parameterType="map">
         update t_order set settlement_status=#{status} where id=#{orderId}
     </update>
-    <select id="queryInvitorUserId" resultType="java.lang.Long" parameterType="java.lang.Long">
+    <select id="queryInvitorUserId" resultType="java.lang.Long" parameterType="java.math.BigDecimal">
         select a.user_id from t_alliance a
         inner join t_alliance kid on a.id=kid.invitor_alliance_id and kid.user_id=#{userId}
     </select>

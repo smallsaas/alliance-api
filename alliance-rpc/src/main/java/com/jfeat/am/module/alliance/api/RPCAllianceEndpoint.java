@@ -503,7 +503,6 @@ public class RPCAllianceEndpoint {
     }
 
 
-
     private OwnerBalanceRecord queryOwnerBalance(Long id) {
         Alliance alliance = queryAllianceDao.selectOne(new Alliance().setUserId(id));
         if (alliance == null) {
@@ -517,7 +516,7 @@ public class RPCAllianceEndpoint {
                 ownerBalance = new OwnerBalance();
             }
             OwnerBalanceRecord ownerBalanceRecord = JSON.parseObject(JSON.toJSONString(ownerBalance), OwnerBalanceRecord.class);
-            BigDecimal add = queryBonusDao.getCommissionOrderTotalLastMonth(id);
+            BigDecimal add = queryBonusDao.getCommissionTotalMonth(id);//查询当月的订单提成Expected_bonus
             if (add == null) {
                 add = new BigDecimal(0.00);
             }
@@ -535,6 +534,7 @@ public class RPCAllianceEndpoint {
                     expected_bonus=new BigDecimal(0.00);
                 }
                 expected_bonus = expected_bonus.add(bonus_balance);
+                ownerBalanceRecord.setExpected_bonus(expected_bonus);
                 ownerBalanceRecord.setBalance(new BigDecimal(0.00));
             }
             return ownerBalanceRecord;

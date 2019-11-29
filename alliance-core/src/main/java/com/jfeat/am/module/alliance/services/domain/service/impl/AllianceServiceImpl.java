@@ -131,6 +131,8 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
 
         //临时盟友
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
+        alliance.setAllianceType(Alliance.ALLIANCE_TYPE_COMMON);
+        alliance.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
         //成为盟友时间
         //alliance.setAllianceShipTime(new Date());
         //获取过期天数配置
@@ -148,9 +150,11 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
             entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
         String alliance_phone = queryAllianceDao.queryPhone(entity.getAlliancePhone());
+        queryAllianceDao.upUserRealNameByPhone(alliance_phone,entity.getAllianceName());
         if (alliance_phone != null && alliance_phone.length() > 0) {
             throw new BusinessException(BusinessCode.BadRequest, AllianceShips.PHONE_EXITS_ERROR);
         }
+        queryAllianceDao.upUserRealNameByPhone(alliance_phone,entity.getAllianceName());
         String invitorPhoneNumber = entity.getInvitorPhoneNumber();
         if (invitorPhoneNumber != null && invitorPhoneNumber.length() > 0) {
             Alliance invitor = queryAllianceDao.selectOne(new Alliance().setAlliancePhone(entity.getInvitorPhoneNumber()));

@@ -33,7 +33,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
         if (orderCommissionInfo != null) {
             Long invitorUserId = queryBonusDao.queryInvitorUserId(orderCommissionInfo.getUserId());
             if (invitorUserId != null) {
-                BigDecimal bigDecimal = queryBonusDao.queryOrderAmount(invitorUserId);
+                BigDecimal bigDecimal = queryBonusDao.queryOrderAmountByMonth(invitorUserId,orderCommissionInfo.getCreateTime());
                 if(bigDecimal==null){
                     bigDecimal=new BigDecimal(0.00);
                 }
