@@ -45,14 +45,19 @@ public class BonusHandle {
                 OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(theownerBalance);
                 if(ownerBalance==null){
                     ownerBalance=new OwnerBalance();
+<<<<<<< HEAD
                     ownerBalance.setUserId(r.getUserId());
                     ownerBalance.setBonus_balance(add);
+=======
+                    ownerBalance.setUserId(r.getUserId().intValue());
+                    ownerBalance.setBalance(add);
+>>>>>>> 09d0a36d8a34dddb102d73444bf7f8156560dcd9
                     queryOwnerBalanceDao.insert(ownerBalance);
                 }else {
-                    BigDecimal bonus_balance = ownerBalance.getBonus_balance();
+                    BigDecimal bonus_balance = ownerBalance.getBalance();
                     if(bonus_balance!=null){
                         BigDecimal add1 = bonus_balance.add(add);
-                        ownerBalance.setBonus_balance(add1);
+                        ownerBalance.setBalance(add1);
                     }
                     queryOwnerBalanceDao.updateById(ownerBalance);
                 }

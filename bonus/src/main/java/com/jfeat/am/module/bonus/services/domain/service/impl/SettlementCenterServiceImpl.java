@@ -2,7 +2,6 @@ package com.jfeat.am.module.bonus.services.domain.service.impl;
 
 import com.jfeat.am.module.alliance.api.AllianceFields;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
-import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.model.OrderCommissionInfo;
@@ -38,7 +37,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                 if (condition.compareTo(new BigDecimal(0.00)) >= 0) {
                     OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(invitorUserId));
                     if (ownerBalance != null) {
-                        BigDecimal bonus_balance = ownerBalance.getBonus_balance();
+                        BigDecimal bonus_balance = ownerBalance.getBalance();
                         if (bonus_balance == null) {
                             bonus_balance = new BigDecimal(0.00);
                         }
@@ -50,7 +49,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                             }
                             queryBonusDao.upOrderSettlementStatus(OK, orderCommissionInfo.getId());
                         }
-                        ownerBalance.setBonus_balance(bonus_balance.add(orderCommissionInfo.getCommission()));
+                        ownerBalance.setBalance(bonus_balance.add(orderCommissionInfo.getCommission()));
                         queryBonusDao.upOrderSettlementStatus(OK, orderCommissionInfo.getId());
                         queryOwnerBalanceDao.updateById(ownerBalance);
                     } else {
@@ -65,7 +64,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                             }
                             queryBonusDao.upOrderSettlementStatus(OK, orderCommissionInfo.getId());
                         }
-                        ownerBalance.setBonus_balance(bonus_balance.add(orderCommissionInfo.getCommission()));
+                        ownerBalance.setBalance(bonus_balance.add(orderCommissionInfo.getCommission()));
                         queryBonusDao.upOrderSettlementStatus(OK, orderCommissionInfo.getId());
                         queryOwnerBalanceDao.insert(ownerBalance);
                     }

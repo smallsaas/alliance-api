@@ -38,8 +38,7 @@ public class OwnerBalance extends Model<OwnerBalance> {
 	@TableField("user_id")
 	private Long userId;
 	@TableField("balance")
-	private BigDecimal bonus_balance;
-
+	private BigDecimal balance;
 
 	private Integer version;
 
@@ -61,13 +60,12 @@ public class OwnerBalance extends Model<OwnerBalance> {
 		return this;
 	}
 
-	public BigDecimal getBonus_balance() {
-		return bonus_balance;
+	public BigDecimal getBalance() {
+		return balance;
 	}
 
-	public OwnerBalance setBonus_balance(BigDecimal bonus_balance) {
-		this.bonus_balance = bonus_balance;
-		return this;
+	public void setBalance(BigDecimal balance) {
+		this.balance = balance;
 	}
 
 	public Integer getVersion() {
@@ -97,7 +95,7 @@ public class OwnerBalance extends Model<OwnerBalance> {
 		return "OwnerBalance{" +
 			"id=" + id +
 			", userId=" + userId +
-			", balance=" + bonus_balance +
+			", balance=" + balance +
 			", version=" + version +
 			"}";
 	}
