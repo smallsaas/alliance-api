@@ -1,6 +1,8 @@
 package com.jfeat.am.module.alliance.api;
 
 
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -57,6 +59,8 @@ public class OwnerBalanceEndpoint {
     @Resource
     QueryOwnerBalanceDao queryOwnerBalanceDao;
 
+    @Resource
+    QueryWalletHistoryDao queryWalletHistoryDao;
 
 
 
@@ -68,7 +72,7 @@ public class OwnerBalanceEndpoint {
 
     @BusinessLog(name = "线下提现", value = "提现")
     @PostMapping("/{id}")
-    @ApiOperation(value = "查看 OwnerBalance", response = OwnerBalance.class)
+    @ApiOperation(value = "提现", response = OwnerBalance.class)
     public Tip withdrawal(@PathVariable Integer id,@RequestBody OwnerBalanceRecord ownerBalanceRecord) {
 
         if(ownerBalanceRecord.getMoney().longValue()<0){
@@ -79,6 +83,17 @@ public class OwnerBalanceEndpoint {
             throw new BusinessException(BusinessCode.BadRequest, "可提款金额不足");
         }
 
+        WalletHistory walletHistory=new WalletHistory();
+        walletHistory.setNote("线下提现");
+        //提现金额
+        walletHistory.setAmount(ownerBalanceRecord.getMoney());
+        //库存金额
+        walletHistory.setBalance(ownerBalance.getBalance().subtract(ownerBalanceRecord.getMoney()));
+
+        walletHistory.setWalletId(ownerBalance.getId().longValue());
+        walletHistory.setType("REFUND");
+        walletHistory.setCreatedTime(new Date());
+        queryWalletHistoryDao.insert(walletHistory);
 
         return SuccessTip.create(queryOwnerBalanceDao.withdrawal(id,ownerBalanceRecord.getMoney()));
     }
