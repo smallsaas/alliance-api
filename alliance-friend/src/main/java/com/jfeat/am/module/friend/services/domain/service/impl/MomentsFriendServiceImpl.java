@@ -19,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.rmi.ServerException;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -44,6 +46,7 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         Integer res=0;
         //之前是获取名字 现在更改为获取id
         MomentsFriendUser user = queryMomentsFriendDao.selectByUserId(requestOrder.getUserId());
+
        //订单项不为空 处理订单项
        if(requestOrder.getItems()!=null&&requestOrder.getItems().size()>0){
 
@@ -54,10 +57,6 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
            }
            //订单处理
            FriendOrder order = new FriendOrder();
-           //封面处理
-           if( requestOrder.getImges()!=null&& requestOrder.getImges().size()>0){
-               order.setCover(requestOrder.getImges().get(0).getUrl()) ;
-           }
 
 
            order.setUserId(user.getId());
@@ -71,11 +70,23 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
            order.setContactUser(requestOrder.getName());
            //支付类型 默认线下支付
            order.setPaymentType("STORE");
-           //默认状态
-           order.setStatus(OrderStatus.CLOSED_CONFIRMED);
+           //默认状态 已发货
+           order.setStatus(OrderStatus.DELIVERED_CONFIRM_PENDING);
            //订单类型 线下订单
            order.setType("STORE_ORDER");
-           order.setCreatedDate(new Date());
+
+           order.setCreatedDate(requestOrder.getCreateDate());
+           //计算日期
+
+           if (order.getCreatedDate()!=null ) {
+               Long time=order.getCreatedDate().getTime() - new Date().getTime();
+               if(time>0){
+                   throw new BusinessException(BusinessCode.BadRequest, "请选择今天或之前的日期");
+               }
+
+           }
+
+           order.setCreatedDate(requestOrder.getCreateDate());
            String oderNumber = IdWorker.getIdStr();
            order.setOrderNumber(oderNumber);
 
@@ -84,6 +95,12 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
            //总价
            BigDecimal finalPrice=new BigDecimal(0);
            for (RequestProduct product:productList) {
+
+               AllianceProduct allianceProduct = queryMomentsFriendDao.queryProductById(product.getId());
+               product.setPrice(allianceProduct.getPrice());
+               product.setCover(allianceProduct.getCover());
+               product.setCostPrice(allianceProduct.getCostPrice());
+
                Long productId = product.getId();
                //根据产品id查找barcode
                String barcode=queryMomentsFriendDao.selectBarcodeByProductId(productId);
@@ -117,13 +134,20 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
                queryMomentsFriendDao.upProduct(productId, stockBalance);
 
            }
+
+           //封面处理
+          /* if( requestOrder.getImges()!=null&& requestOrder.getImges().size()>0){
+               order.setCover(requestOrder.getImges().get(0).getUrl()) ;
+           }*/
+           order.setCover(requestOrder.getItems().get(0).getCover());
+
            //插入订单
            order.setTotalPrice(finalPrice);
            queryMomentsFriendOverOrderDao.insert(order);
 
            for (RequestProduct product:productList) {
 
-               AllianceProduct allianceProduct = queryMomentsFriendDao.queryProductById(product.getId());
+
 
                //插入订单项数据
                res = queryMomentsFriendDao.insertOrderItem
@@ -131,10 +155,10 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
                                product.getName(),
                                product.getQuantity(),
                                product.getTotalPrice(),
-                               allianceProduct.getPrice(),
-                               allianceProduct.getCostPrice(),
-                               allianceProduct.getCover(),
-                               allianceProduct.getId()
+                               product.getPrice(),
+                               product.getCostPrice(),
+                               product.getCover(),
+                               product.getId()
                               );
            }
        }

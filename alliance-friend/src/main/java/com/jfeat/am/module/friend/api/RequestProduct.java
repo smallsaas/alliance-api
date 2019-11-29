@@ -12,10 +12,30 @@ public class RequestProduct {
     Long id;
     //单价
     BigDecimal price;
+    //成本价
+    BigDecimal costPrice;
+    //封面
+    String cover;
     //数量
     Integer quantity;
     //总价
     BigDecimal totalPrice;
+
+    public BigDecimal getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(BigDecimal costPrice) {
+        this.costPrice = costPrice;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
 
     public BigDecimal getTotalPrice() {
         return totalPrice;

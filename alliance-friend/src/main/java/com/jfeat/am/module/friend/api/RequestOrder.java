@@ -1,6 +1,7 @@
 package com.jfeat.am.module.friend.api;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 public class RequestOrder {
@@ -28,6 +29,8 @@ public class RequestOrder {
     private Long productId;
     //支付类型
     private String paymentType;
+    //下单时间
+    private Date createDate;
 
     //省
     private String province;
@@ -40,6 +43,14 @@ public class RequestOrder {
     private List<RequestProduct> items;
 
     private List<friendImage> imges;
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
 
     public String getProvince() {
         return province;
