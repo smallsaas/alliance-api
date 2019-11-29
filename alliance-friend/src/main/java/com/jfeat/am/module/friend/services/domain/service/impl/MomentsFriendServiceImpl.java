@@ -2,10 +2,7 @@ package com.jfeat.am.module.friend.services.domain.service.impl;
 
 import com.baomidou.mybatisplus.toolkit.IdWorker;
 import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
-import com.jfeat.am.module.friend.api.AllianceProduct;
-import com.jfeat.am.module.friend.api.OrderStatus;
-import com.jfeat.am.module.friend.api.RequestOrder;
-import com.jfeat.am.module.friend.api.RequestProduct;
+import com.jfeat.am.module.friend.api.*;
 import com.jfeat.am.module.friend.services.domain.dao.QueryMomentsFriendDao;
 import com.jfeat.am.module.friend.services.domain.dao.mapping.QueryMomentsFriendOverOrderDao;
 import com.jfeat.am.module.friend.services.domain.model.MomentsFriendUser;
@@ -14,6 +11,7 @@ import com.jfeat.am.module.friend.services.gen.crud.service.impl.CRUDMomentsFrie
 import com.jfeat.am.module.friend.services.gen.persistence.model.FriendOrder;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -181,29 +179,40 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         return i;
     }
 
-}
 
-/**
- * 生成订单编号
- *
- * @return
- */
-/*
-class OrderNumber extends Thread{
 
-    private static long orderNum = 0l;
-    private static String date ;
+    @Override
+    @Transactional
+    public Integer cancelOrder(Long id) throws ServerException {
 
-    public static synchronized String getOrderNo() {
-        String str = new SimpleDateFormat("yyMMddHHmm").format(new Date());
-        if(date==null||!date.equals(str)){
-            date = str;
-            orderNum  = 0l;
-        }
-        orderNum ++;
-        long orderNo = Long.parseLong((date)) * 10000;
-        orderNo += orderNum;;
-        return orderNo+"";
+        FriendOrder order = queryMomentsFriendOverOrderDao.selectById(id);
+
+        Integer res=0;
+            //状态 已取消
+            order.setStatus(OrderStatus.CLOSED_CANCELED);
+            //获取订单数据//循环遍历
+            List<FriendOrderItem> friendOrderItemList= queryMomentsFriendDao.selectOrderItem(order.getId());
+            //总价
+            BigDecimal finalPrice=new BigDecimal(0);
+            for (FriendOrderItem product:friendOrderItemList) {
+
+                BigDecimal TotalPrice = product.getPrice().multiply(new BigDecimal(product.getQuantity()));
+                finalPrice=TotalPrice.add(finalPrice);
+                //还原库存
+                Integer stockBalance = queryMomentsFriendDao.upStockBalance(product.getProductId(),product.getQuantity());
+
+            }
+        BigDecimal balance = queryMomentsFriendDao.queryWalletBalance(order.getUserId());
+            //更新用户余额
+           queryMomentsFriendDao.upWallet(order.getUserId(), order.getTotalPrice().add(balance));
+           //更新订单
+           queryMomentsFriendOverOrderDao.updateById(order);
+        return res;
     }
+
+
+
 }
-*/
+
+
+

@@ -1,7 +1,9 @@
 package com.jfeat.am.module.alliance.api;
 
 
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -62,7 +64,8 @@ public class OwnerBalanceEndpoint {
     @Resource
     QueryWalletHistoryDao queryWalletHistoryDao;
 
-
+    @Resource
+    QueryWalletDao queryWalletDao;
 
     @GetMapping("/{id}")
     @ApiOperation(value = "查看 OwnerBalance", response = OwnerBalance.class)
@@ -89,7 +92,10 @@ public class OwnerBalanceEndpoint {
         walletHistory.setAmount(ownerBalanceRecord.getMoney());
         //库存金额
         walletHistory.setBalance(ownerBalance.getBalance().subtract(ownerBalanceRecord.getMoney()));
-        walletHistory.setWalletId(ownerBalance.getId().longValue());
+        Wallet wallet=new Wallet();
+        wallet.setUserId(ownerBalance.getUserId());
+        wallet=queryWalletDao.selectOne(wallet);
+        walletHistory.setWalletId(wallet.getId());
         walletHistory.setType("WITHDRAW");
         walletHistory.setCreatedTime(new Date());
         queryWalletHistoryDao.insert(walletHistory);
