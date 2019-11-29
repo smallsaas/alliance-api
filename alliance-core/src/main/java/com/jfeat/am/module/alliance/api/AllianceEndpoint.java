@@ -631,7 +631,7 @@ public class AllianceEndpoint {
         return SuccessTip.create(res);
     }
 
-    @PutMapping("/{id}/action/upshiptime")
+    @PostMapping("/{id}/action/upshiptime")
     @ApiOperation("修改成为盟友的时间")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
     public Tip upShipTime(@PathVariable Long id,@RequestBody AllianceRequestShipTime allianceRequestShipTime) {
@@ -643,6 +643,36 @@ public class AllianceEndpoint {
         }
         alliance.setAllianceShipTime(allianceRequestShipTime.getAllianceShipTime());
         Integer res = queryAllianceDao.updateById(alliance);
+        return SuccessTip.create(res);
+    }
+    @PostMapping("/{id}/action/logOff")
+    @ApiOperation("盟友注销")
+    @Permission(AlliancePermission.ALLIANCE_EDIT_STATE_UP)
+    public Tip logOff(@PathVariable Long id) {
+        Alliance alliance = allianceService.retrieveMaster(id);
+        Integer res=0;
+        if(alliance==null){
+            throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
+        }
+        alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_LOG_OFF);
+        String alliancePhone = alliance.getAlliancePhone();
+        if(alliancePhone!=null&&alliancePhone.length()>0){
+            Long userId = queryAllianceDao.queryUserIdByPhone(alliancePhone);
+            if(userId!=null){
+                Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+                if(wallet!=null){
+                    BigDecimal balance = wallet.getBalance();
+                    if(balance==null){
+                        balance=new BigDecimal(0.00);
+                    }
+                    alliance.setHistoricalBalance(balance);
+                    res+=queryAllianceDao.updateById(alliance);
+                    res+=queryWalletHistoryDao.delete(new Condition().eq(WalletHistory.WALLET_ID,wallet.getId()));
+                    res+=queryWalletDao.delete(new Condition().eq(Wallet.USER_ID,userId));
+                }
+            }
+
+        }
         return SuccessTip.create(res);
     }
 
