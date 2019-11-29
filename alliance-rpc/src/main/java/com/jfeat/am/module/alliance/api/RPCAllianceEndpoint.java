@@ -463,7 +463,7 @@ public class RPCAllianceEndpoint {
             alliance.setDeliverMessage(new JSONArray());
         }
         OwnerBalanceRecord ownerBalanceRecord = queryOwnerBalance(id);
-        alliance.setBonus_balance(ownerBalanceRecord.getBonus_balance());
+        alliance.setBonus_balance(ownerBalanceRecord.getBalance());
         alliance.setExpected_bonus(ownerBalanceRecord.getExpected_bonus());
         String starting_time = configFieldService.getFieldString(AllianceFields.ALLIANCE_FIELD_STARTING_TIME);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -525,7 +525,7 @@ public class RPCAllianceEndpoint {
             Date allianceShipTime = alliance.getAllianceShipTime();
             int monthDiff = getMonthDiff(allianceShipTime, new Date());
             if (monthDiff < 2) {
-                BigDecimal bonus_balance = ownerBalanceRecord.getBonus_balance();
+                BigDecimal bonus_balance = ownerBalanceRecord.getBalance();
                 if(bonus_balance==null){
                     bonus_balance=new BigDecimal(0.00);
                 }
@@ -535,12 +535,12 @@ public class RPCAllianceEndpoint {
                     expected_bonus=new BigDecimal(0.00);
                 }
                 expected_bonus = expected_bonus.add(bonus_balance);
-                ownerBalanceRecord.setBonus_balance(new BigDecimal(0.00));
+                ownerBalanceRecord.setBalance(new BigDecimal(0.00));
             }
             return ownerBalanceRecord;
         } else {
             OwnerBalanceRecord ownerBalanceRecord = new OwnerBalanceRecord();
-            ownerBalanceRecord.setBonus_balance(new BigDecimal(0.00));
+            ownerBalanceRecord.setBalance(new BigDecimal(0.00));
             ownerBalanceRecord.setExpected_bonus(new BigDecimal(0.00));
             return ownerBalanceRecord;
         }

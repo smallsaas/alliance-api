@@ -47,7 +47,7 @@ import java.util.Date;
 @RestController
 
 @Api("OwnerBalance")
-@RequestMapping("/api/crud/alliance/ownerBalances")
+@RequestMapping("/api/alliance/ownerBalances")
 public class OwnerBalanceEndpoint {
 
 
@@ -57,37 +57,35 @@ public class OwnerBalanceEndpoint {
     @Resource
     QueryOwnerBalanceDao queryOwnerBalanceDao;
 
-    @BusinessLog(name = "OwnerBalance", value = "create OwnerBalance")
-    @PostMapping
-    @ApiOperation(value = "新建 OwnerBalance", response = OwnerBalance.class)
-    public Tip createOwnerBalance(@RequestBody OwnerBalance entity) {
 
-        Integer affected = 0;
-        try {
-            affected = ownerBalanceService.createMaster(entity);
 
-        } catch (DuplicateKeyException e) {
-            throw new BusinessException(BusinessCode.DuplicateKey);
-        }
 
-        return SuccessTip.create(affected);
-    }
-
-    @BusinessLog(name = "OwnerBalance", value = "查看 OwnerBalance")
     @GetMapping("/{id}")
     @ApiOperation(value = "查看 OwnerBalance", response = OwnerBalance.class)
-    public Tip getOwnerBalance(@PathVariable Long id) {
-        return SuccessTip.create(ownerBalanceService.retrieveMaster(id));
+    public Tip getOwnerBalance(@PathVariable Integer id) {
+        return SuccessTip.create(queryOwnerBalanceDao.findOneOwnerBalance(id));
+    }
+
+    @BusinessLog(name = "线下提现", value = "提现")
+    @PostMapping("/{id}")
+    @ApiOperation(value = "查看 OwnerBalance", response = OwnerBalance.class)
+    public Tip withdrawal(@PathVariable Integer id,@RequestBody OwnerBalanceRecord ownerBalanceRecord) {
+
+        if(ownerBalanceRecord.getMoney().longValue()<0){
+            throw new BusinessException(BusinessCode.BadRequest, "提款金额不能小于0");
+        }
+        OwnerBalanceRecord ownerBalance= queryOwnerBalanceDao.findOneOwnerBalance(id);
+        if(ownerBalance.getBalance().subtract(ownerBalanceRecord.getMoney()).longValue()<0){
+            throw new BusinessException(BusinessCode.BadRequest, "可提款金额不足");
+        }
+
+
+        return SuccessTip.create(queryOwnerBalanceDao.withdrawal(id,ownerBalanceRecord.getMoney()));
     }
 
 
 
-    @BusinessLog(name = "OwnerBalance", value = "delete OwnerBalance")
-    @DeleteMapping("/{id}")
-    @ApiOperation("删除 OwnerBalance")
-    public Tip deleteOwnerBalance(@PathVariable Long id) {
-        return SuccessTip.create(ownerBalanceService.deleteMaster(id));
-    }
+
 
     @BusinessLog(name = "OwnerBalance", value = "查询列表 OwnerBalance")
     @ApiOperation(value = "OwnerBalance 列表信息", response = OwnerBalanceRecord.class)
@@ -130,7 +128,7 @@ public class OwnerBalanceEndpoint {
         OwnerBalanceRecord record = new OwnerBalanceRecord();
         record.setId(id);
         record.setUserId(userId);
-        record.setBonus_balance(balance);
+        record.setBalance(balance);
         record.setVersion(version);
         page.setRecords(queryOwnerBalanceDao.findOwnerBalancePage(page, record, search, orderBy, null, null));
 

@@ -46,13 +46,13 @@ public class BonusHandle {
                 if(ownerBalance==null){
                     ownerBalance=new OwnerBalance();
                     ownerBalance.setUserId(r.getUserId().intValue());
-                    ownerBalance.setBonus_balance(add);
+                    ownerBalance.setBalance(add);
                     queryOwnerBalanceDao.insert(ownerBalance);
                 }else {
-                    BigDecimal bonus_balance = ownerBalance.getBonus_balance();
+                    BigDecimal bonus_balance = ownerBalance.getBalance();
                     if(bonus_balance!=null){
                         BigDecimal add1 = bonus_balance.add(add);
-                        ownerBalance.setBonus_balance(add1);
+                        ownerBalance.setBalance(add1);
                     }
                     queryOwnerBalanceDao.updateById(ownerBalance);
                 }
