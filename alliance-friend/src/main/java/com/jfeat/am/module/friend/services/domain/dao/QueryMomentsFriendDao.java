@@ -2,6 +2,8 @@ package com.jfeat.am.module.friend.services.domain.dao;
 
 import com.jfeat.am.module.friend.api.AllianceProduct;
 import com.jfeat.am.module.friend.api.FriendOrderItem;
+import com.jfeat.am.module.friend.api.OrderProductRequest;
+import com.jfeat.am.module.friend.api.OrderUserRequest;
 import com.jfeat.am.module.friend.services.domain.model.MomentsFriendOverOrdersRecord;
 import com.jfeat.am.module.friend.services.domain.model.MomentsFriendRecord;
 
@@ -59,4 +61,7 @@ public interface QueryMomentsFriendDao extends BaseMapper<MomentsFriend> {
     List<FriendOrderItem> selectOrderItem(@Param("orderId")Long orderId);
 
     Integer upStockBalance(@Param("productId")Integer productId,@Param("num")Integer num);
+
+    List<OrderUserRequest> getUsers();
+    List<OrderProductRequest> getProducts();
 }

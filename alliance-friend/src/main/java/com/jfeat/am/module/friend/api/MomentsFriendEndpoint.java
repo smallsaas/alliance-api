@@ -215,6 +215,23 @@ public class MomentsFriendEndpoint {
 
     }
 
+    @GetMapping("/order/getUsers")
+    @ApiOperation(value = "获取所有订单用户")
+    public Tip getUsers()  {
+
+        return SuccessTip.create(momentsFriendService.getUsers());
+
+    }
+
+    @GetMapping("/order/getProducts")
+    @ApiOperation(value = "获取所有订单用户")
+    public Tip getProducts()  {
+
+        return SuccessTip.create(momentsFriendService.getProducts());
+
+    }
+
+
 
 
 

@@ -51,10 +51,10 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
        if(requestOrder.getItems()!=null&&requestOrder.getItems().size()>0){
 
            //查询该用户是否为盟友
-           String allianceName = queryMomentsFriendDao.queryAllianceName(user.getId());
+         /*  String allianceName = queryMomentsFriendDao.queryAllianceName(user.getId());
            if (allianceName == null || allianceName.length() == 0) {
                throw new BusinessException(BusinessCode.BadRequest, "该下单人不是正式盟友");
-           }
+           }*/
            //订单处理
            FriendOrder order = new FriendOrder();
 
@@ -210,6 +210,16 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         return res;
     }
 
+    @Override
+    public List<OrderUserRequest> getUsers() {
+
+        return queryMomentsFriendDao.getUsers();
+    }
+
+    @Override
+    public List<OrderProductRequest> getProducts() {
+        return queryMomentsFriendDao.getProducts();
+    }
 
 
 }
