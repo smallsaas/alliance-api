@@ -200,7 +200,7 @@ public class MomentsFriendEndpoint {
 
     }
 
-    @PostMapping("/order/status/closeConfirmed/{id}")
+    @PutMapping("/order/status/closeConfirmed/{id}")
     @ApiOperation(value = "修改订单为已确认收货 并进行结算")
     public Tip closeConfirmedOrder(@PathVariable Long id) throws ServerException {
 
