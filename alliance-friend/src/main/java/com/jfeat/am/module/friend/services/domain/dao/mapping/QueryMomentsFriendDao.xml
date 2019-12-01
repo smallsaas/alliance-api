@@ -170,7 +170,7 @@ where  id=#{id}
 
     <select id="getProducts"  resultType="com.jfeat.am.module.friend.api.OrderProductRequest">
       select id,`name`,t_product.barcode,t_product.price from t_product
-
+      where t_product.`status`= 'ONSELL'
     </select>
 
 </mapper>

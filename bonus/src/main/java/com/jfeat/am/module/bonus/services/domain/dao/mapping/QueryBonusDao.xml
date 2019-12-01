@@ -283,7 +283,7 @@
         month(curdate()) and year(o.created_date) = year(curdate()) and o.user_id=#{userId}
         LEFT JOIN t_user u on u.id=o.user_id
     </select>
-    <select id="queryOrderAmountMonth" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+    <select id="queryOrderAmountMonth"  resultType="java.math.BigDecimal">
         select ifnull(sum(ROUND(item.price*item.quantity,2)),0) from t_order_item item
         inner join t_order o on item.order_id=o.id and o.status='CLOSED_CONFIRMED' and month(o.created_date) =
         month(#{createTime}) and year(o.created_date) = year(#{createTime}) and o.user_id=#{userId}

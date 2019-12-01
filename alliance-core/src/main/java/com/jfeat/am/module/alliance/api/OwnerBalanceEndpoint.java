@@ -107,7 +107,7 @@ public class OwnerBalanceEndpoint {
 
 
 
-    @BusinessLog(name = "OwnerBalance", value = "查询列表 OwnerBalance")
+    //@BusinessLog(name = "OwnerBalance", value = "查询列表 OwnerBalance")
     @ApiOperation(value = "OwnerBalance 列表信息", response = OwnerBalanceRecord.class)
     @GetMapping
     @ApiImplicitParams({

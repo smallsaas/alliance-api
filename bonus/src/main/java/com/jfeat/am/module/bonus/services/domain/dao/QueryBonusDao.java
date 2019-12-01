@@ -88,7 +88,8 @@ public interface QueryBonusDao {
     List<OrderCommissionInfo> queryFormerOrder(@Param("userId") Long userId,@Param("createTime") Date createTime);
     Integer upOrderSettlementStatus(@Param("status")Integer status,@Param("orderId") Long orderId);
     Long queryInvitorUserId(@Param("userId") Long userId);
-    BigDecimal queryOrderAmountByMonth(@Param("userId") Long userId,@Param("createTime") Date createTime);
+   // BigDecimal queryOrderAmountByMonth(@Param("userId") Long userId,@Param("createTime") Date createTime);
+    BigDecimal queryOrderAmountMonth(@Param("userId") Long userId,@Param("createTime") Date createTime);
 }
 
 
