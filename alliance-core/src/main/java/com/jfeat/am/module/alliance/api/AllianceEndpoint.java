@@ -382,6 +382,11 @@ public class AllianceEndpoint {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
         Integer allianceType = alliance.getAllianceType();
+        //allianceType为空的话 设置为普通盟友
+        if(allianceType==null){
+            allianceType=AllianceType.ALLIANCE_TYPE_NORMAL;
+            alliance.setAllianceType(allianceType);
+        }
         Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
         Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
