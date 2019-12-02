@@ -110,7 +110,7 @@
 
     <select id="getCommissionOrder" parameterType="java.lang.Long" resultType="com.alibaba.fastjson.JSONObject">
         select u.name as
-        invitorName,sum(FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
+        invitorName,sum(ROUND((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
         as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as
         orderNumber,1 as status from t_order_item item
         LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
@@ -122,7 +122,7 @@
 
     <select id="getCommissionOrderMonth" parameterType="java.lang.Long" resultType="com.alibaba.fastjson.JSONObject">
         select u.name as
-        invitorName,sum(FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
+        invitorName,sum(ROUND((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
         as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as
         orderNumber,1 as status from t_order_item item
         LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
@@ -135,7 +135,7 @@
     <select id="getCommissionOrderLastMonth" parameterType="java.lang.Long"
             resultType="com.alibaba.fastjson.JSONObject">
         select u.name as
-        invitorName,sum(FORMAT((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
+        invitorName,sum(ROUND((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
         as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as
         orderNumber,1 as status from t_order_item item
         LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
@@ -148,7 +148,7 @@
     </select>
     <select id="getCommissionTotal" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
         select
-        FORMAT(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
+        ROUND(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
         orderMoney from t_order_item item
         LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
         LEFT JOIN t_alliance a on a.user_id = #{userId}
@@ -158,7 +158,7 @@
     </select>
     <select id="getCommissionTotalMonth" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
         select
-        FORMAT(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
+        ROUND(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
         orderMoney from t_order_item item
         LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
         LEFT JOIN t_alliance a on a.user_id = #{userId}
@@ -170,7 +170,7 @@
 
     <select id="getCommissionOrderTotalLastMonth" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
         select
-        FORMAT(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
+        ROUND(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
         orderMoney from t_order_item item
         LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
         LEFT JOIN t_alliance a on a.user_id = #{userId}
@@ -182,7 +182,7 @@
     </select>
 
     <select id="getAllBonusReal" resultType="java.math.BigDecimal">
-        select FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0),2)
+        select ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0),2)
         from t_order_item item
         inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field
         where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
@@ -191,7 +191,7 @@
 
     <select id="getAllBonusRatio" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
         select
-        FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
+        ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
         value/100.0 from t_config_field where field='ratio_proportion')*((
         (
         SELECT
@@ -214,7 +214,7 @@
 
     <select id="getAverageBonus" resultType="java.math.BigDecimal">
         select
-        FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
+        ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
         value/100.0 from t_config_field where field='fixed_proportion')/(select count(id) from t_alliance where
         alliance_type=1 and alliance_ship=0),2) from t_order_item item
         inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field
@@ -223,7 +223,7 @@
     </select>
     <select id="getAllBonusRatioMonth" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
         select
-        FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
+        ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
         value/100.0 from t_config_field where field='ratio_proportion')*((
         (
         SELECT
@@ -246,7 +246,7 @@
     </select>
     <select id="getAverageBonusMonth" resultType="java.math.BigDecimal">
         select
-        FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
+        ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
         value/100.0 from t_config_field where field='fixed_proportion')/(select count(id) from t_alliance where
         alliance_type=1 and alliance_ship=0),2) from t_order_item item
         inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field
@@ -259,7 +259,7 @@
     </select>
 
     <select id="queryProportion" resultType="FLOAT" parameterType="java.lang.Long">
-        select FORMAT(((
+        select ROUND(((
         (
         SELECT
         ifnull(sum(
@@ -292,7 +292,7 @@
     <!--查询一条订单的提成-->
     <select id="queryEveryOrderCommission" parameterType="java.lang.Long" resultType="OrderCommissionInfo">
         select o.id,o.user_id as
-        userId,FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as
+        userId,ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as
         commission,o.created_date as createTime from t_order_item item
         INNER JOIN t_order o on item.order_id=o.id and o.id=#{orderId} and o.`status`='CLOSED_CONFIRMED' and
         o.settlement_status!=1
@@ -301,7 +301,7 @@
     <!--查询之前结算过的订单-->
     <select id="queryFormerOrder" parameterType="map" resultType="OrderCommissionInfo">
         select o.id,o.user_id as
-        userId,FORMAT(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as
+        userId,ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as
         commission,o.created_date as createTime from t_order_item item
         LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
         LEFT JOIN t_alliance a on a.user_id = #{userId}

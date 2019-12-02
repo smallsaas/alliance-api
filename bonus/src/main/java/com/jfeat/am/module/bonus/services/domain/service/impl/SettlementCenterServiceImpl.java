@@ -32,6 +32,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
     @Transactional
     public boolean settlementOrder(Long orderId) {
         OrderCommissionInfo orderCommissionInfo = queryBonusDao.queryEveryOrderCommission(orderId);
+        Long userId = orderCommissionInfo.getUserId();
         if (orderCommissionInfo != null) {
             Calendar c1 = Calendar.getInstance();
             Calendar c2 = Calendar.getInstance();
@@ -40,7 +41,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
             if(c1.get(Calendar.MONTH)==c2.get(Calendar.MONTH)){//判断订单日期是否当前月
                 return true;
             }
-
+//推荐人
             Long invitorUserId = queryBonusDao.queryInvitorUserId(orderCommissionInfo.getUserId());
             if (invitorUserId != null) {
                 BigDecimal bigDecimal = queryBonusDao.queryOrderAmountMonth(invitorUserId,orderCommissionInfo.getCreateTime());
@@ -59,9 +60,10 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                         if (orderCommissionInfos != null && orderCommissionInfos.size() > 0) {
                             for (OrderCommissionInfo item : orderCommissionInfos) {
                                 if(!item.getId().equals(orderCommissionInfo.getId()))
-                                bonus_balance.add(item.getCommission());
+                                 bonus_balance=bonus_balance.add(item.getCommission());
+                                queryBonusDao.upOrderSettlementStatus(OK, item.getId());
                             }
-                            queryBonusDao.upOrderSettlementStatus(OK, orderCommissionInfo.getId());
+
                         }
                         ownerBalance.setBalance(bonus_balance.add(orderCommissionInfo.getCommission()));
                         queryBonusDao.upOrderSettlementStatus(OK, orderCommissionInfo.getId());
@@ -74,9 +76,10 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                         if (orderCommissionInfos != null && orderCommissionInfos.size() > 0) {
                             for (OrderCommissionInfo item : orderCommissionInfos) {
                                 if(!item.getId().equals(orderCommissionInfo.getId()))
-                                bonus_balance.add(item.getCommission());
+                                 bonus_balance=bonus_balance.add(item.getCommission());
+                                queryBonusDao.upOrderSettlementStatus(OK, item.getId());
                             }
-                            queryBonusDao.upOrderSettlementStatus(OK, orderCommissionInfo.getId());
+
                         }
                         ownerBalance.setBalance(bonus_balance.add(orderCommissionInfo.getCommission()));
                         queryBonusDao.upOrderSettlementStatus(OK, orderCommissionInfo.getId());
@@ -90,6 +93,53 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
             } else {
                 queryBonusDao.upOrderSettlementStatus(NOT_OK, orderCommissionInfo.getId());
             }
+
+//当前人
+            if(userId!=null){
+                BigDecimal bigDecimal = queryBonusDao.queryOrderAmountMonth(userId,orderCommissionInfo.getCreateTime());
+                if(bigDecimal==null){
+                    bigDecimal=new BigDecimal(0.00);
+                }
+                BigDecimal condition = bigDecimal.subtract(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)));
+                if (condition.compareTo(new BigDecimal(0.00)) >= 0) {
+                    OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(userId));
+                    if (ownerBalance != null) {
+                        BigDecimal bonus_balance = ownerBalance.getBalance();
+                        if (bonus_balance == null) {
+                            bonus_balance = new BigDecimal(0.00);
+                        }
+                        List<OrderCommissionInfo> orderCommissionInfos2 = queryBonusDao.queryFormerOrder(userId, orderCommissionInfo.getCreateTime());
+                        if (orderCommissionInfos2 != null && orderCommissionInfos2.size() > 0) {
+                            for (OrderCommissionInfo item : orderCommissionInfos2) {
+                                if(!item.getId().equals(orderCommissionInfo.getId())){
+                                     bonus_balance=bonus_balance.add(item.getCommission());
+                                }
+                                queryBonusDao.upOrderSettlementStatus(OK, item.getId());
+                            }
+
+                        }
+                        ownerBalance.setBalance(bonus_balance);
+                        queryOwnerBalanceDao.updateById(ownerBalance);
+                    } else {
+                        ownerBalance = new OwnerBalance();
+                        ownerBalance.setUserId(userId);
+                        List<OrderCommissionInfo> orderCommissionInfos2 = queryBonusDao.queryFormerOrder(userId, orderCommissionInfo.getCreateTime());
+                        BigDecimal bonus_balance = new BigDecimal(0.00);
+                        if (orderCommissionInfos2 != null && orderCommissionInfos2.size() > 0) {
+                            for (OrderCommissionInfo item : orderCommissionInfos2) {
+                                if(!item.getId().equals(orderCommissionInfo.getId()))
+                                     bonus_balance=bonus_balance.add(item.getCommission());
+                                queryBonusDao.upOrderSettlementStatus(OK, item.getId());
+                            }
+
+                        }
+                        ownerBalance.setBalance(bonus_balance);
+                        queryOwnerBalanceDao.insert(ownerBalance);
+                    }
+                }
+            }
+
+
         }
         return true;
     }
