@@ -106,22 +106,38 @@ public class RPCAllianceRegisterEndpoint {
             return ErrorCip.create(AllianceRegisterResponse.ALLIANCE_SHIP_NO, "找不到盟友注册信息");
         }*/
 
+        boolean isBindUser=false;
         /// 通过手机号码绑定
         Alliance registeredAlliance = allianceService.findAllianceByPhoneNumber(request.getPhoneNumber());
+
+
         if(registeredAlliance==null){
             // 没有找到手机绑定的盟友， 不是盟友
-
             /// 记录盟友线索
             // TODO
             return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_NO, "找不到盟友信息");
         }
 
-
+        //判断 是否已绑定 微信用户
+        if(registeredAlliance.getUserId()!=null&&registeredAlliance.getUserId()>0){
+            isBindUser=true;
+        }
         /// 状态检查
 
         /// 配置预存额度
         float common_alliance_inventory = configFieldService.getFieldFloat(AllianceShips.COMMON_ALLIANCE_FIELD);
         float bonus_alliance_inventory = configFieldService.getFieldFloat(AllianceShips.BONUS_ALLIANCE_FIELD);
+
+      /*  BigDecimal deafultBonus=new BigDecimal(0);*/
+        // 分红盟友
+       /* if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_BONUS){
+            deafultBonus=new BigDecimal(bonus_alliance_inventory);
+        }else
+        {
+            deafultBonus=new BigDecimal(common_alliance_inventory);
+        }*/
+
+
 
         /// 查查盟友库存额
 //        if(registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_COMMON){
@@ -146,7 +162,6 @@ public class RPCAllianceRegisterEndpoint {
             response.setAllianceType(registeredAlliance.getAllianceType());
         }
 
-
         if(registeredAlliance.getAllianceShip()==AllianceShips.ALLIANCE_SHIP_OK){
             // 最后确认是否已绑定用户，程序错误
             if(registeredAlliance.getUserId()==null || registeredAlliance.getUserId()==0){
@@ -157,6 +172,7 @@ public class RPCAllianceRegisterEndpoint {
         }else if(registeredAlliance.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_INVITED ){
 
             /// 状态正确(ALLIANCE_SHIP_PAID)，进行用户绑定
+
             registeredAlliance.setUserId(userId);
             int affected = allianceService.updateMaster(registeredAlliance);
 
@@ -180,6 +196,7 @@ public class RPCAllianceRegisterEndpoint {
             wallet.setUserId(userId);
             Wallet originWallet = queryWalletDao.selectOne(wallet);
             if(originWallet==null){
+                //普通盟友
                if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_COMMON){
                    BigDecimal bigDecimal = new BigDecimal(common_alliance_inventory);
                    wallet.setBalance(bigDecimal);
@@ -193,29 +210,33 @@ public class RPCAllianceRegisterEndpoint {
                 //return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "没有找到钱包信息，用户：" + userId);
             }else{
                 if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_COMMON){
-                    BigDecimal bigDecimal = new BigDecimal(common_alliance_inventory);
-                    if(originWallet.getBalance()!=null){
-                        originWallet.setBalance(bigDecimal.add(originWallet.getBalance()));
-                    }else {
-                        originWallet.setBalance(bigDecimal);
-                    }
-                    if(originWallet.getAccumulativeAmount()!=null){
-                        originWallet.setAccumulativeAmount(bigDecimal.add(originWallet.getAccumulativeAmount()));
-                    }else {
-                        originWallet.setAccumulativeAmount(bigDecimal);
+                //由于待支付逻辑修改，此处似乎不会进来。
+                    if(!isBindUser){
+                        BigDecimal bigDecimal = new BigDecimal(common_alliance_inventory);
+
+                        if(originWallet.getBalance()==null || !(originWallet.getBalance().floatValue()>0)){
+                            originWallet.setBalance(bigDecimal);
+                        }
+                        if(originWallet.getAccumulativeAmount()!=null){
+                            originWallet.setAccumulativeAmount(bigDecimal.add(originWallet.getAccumulativeAmount()));
+                        }else {
+                            originWallet.setAccumulativeAmount(bigDecimal);
+                        }
                     }
 
-                }else if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_BONUS){
-                    BigDecimal bigDecimal = new BigDecimal(bonus_alliance_inventory);
-                    if(originWallet.getBalance()!=null){
-                        originWallet.setBalance(bigDecimal.add(originWallet.getBalance()));
-                    }else {
-                        originWallet.setBalance(bigDecimal);
-                    }
-                    if(originWallet.getAccumulativeAmount()!=null){
-                        originWallet.setAccumulativeAmount(bigDecimal.add(originWallet.getAccumulativeAmount()));
-                    }else {
-                        originWallet.setAccumulativeAmount(bigDecimal);
+                }else if(registeredAlliance.getAllianceType()==Alliance.ALLIANCE_TYPE_BONUS) {
+                    if (!isBindUser) {
+                        BigDecimal bigDecimal = new BigDecimal(bonus_alliance_inventory);
+                        if (originWallet.getBalance() != null) {
+                            originWallet.setBalance(bigDecimal.add(originWallet.getBalance()));
+                        } else {
+                            originWallet.setBalance(bigDecimal);
+                        }
+                        if (originWallet.getAccumulativeAmount() != null) {
+                            originWallet.setAccumulativeAmount(bigDecimal.add(originWallet.getAccumulativeAmount()));
+                        } else {
+                            originWallet.setAccumulativeAmount(bigDecimal);
+                        }
                     }
                 }
                 queryWalletDao.updateById(originWallet);

@@ -368,24 +368,23 @@ public class AllianceEndpoint {
         //普通盟友 "common_alliance";
         Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
         BigDecimal defaultBonus=new BigDecimal(0);
+        //判断分红盟友 普通盟友 分配基本金额
         if(alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)){
             defaultBonus=new BigDecimal(bonusConfig);
-
         }else{
             defaultBonus =new BigDecimal(commonConfig);
         }
+        //设置 盟友表 金额
         alliance.setAllianceInventoryAmount(defaultBonus);
         int res=0;
-        //此处检测状态为
+        //此处检测状态
         if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_EXISTPAID);
             if (alliance.getUserId() != null) {
-                Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(alliance.getUserId()));
+                /*Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(alliance.getUserId()));
                 if (wallet != null) {
-
                     wallet.setBalance(defaultBonus);
                     wallet.setAccumulativeAmount(defaultBonus);
-
                     res += queryWalletDao.updateById(wallet);
                     WalletHistory walletHistory = new WalletHistory();
                     //walletHistory.setAmount(new BigDecimal(bonusConfig));
@@ -396,9 +395,8 @@ public class AllianceEndpoint {
                     walletHistory.setType(RechargeType.RECHARGE);
                     walletHistory.setCreatedTime(new Date());
                     res += queryWalletHistoryDao.insert(walletHistory);
-
-                } else {
-                    wallet = new Wallet().setUserId(alliance.getUserId());
+                } else {*/
+                Wallet  wallet = new Wallet().setUserId(alliance.getUserId());
                     wallet.setBalance(defaultBonus);
                     wallet.setAccumulativeAmount(defaultBonus);
                     res += queryWalletDao.insert(wallet);
@@ -410,7 +408,6 @@ public class AllianceEndpoint {
                     walletHistory.setType(RechargeType.RECHARGE);
                     walletHistory.setCreatedTime(new Date());
                     res += queryWalletHistoryDao.insert(walletHistory);
-                }
             }
             //alliance.setAllianceShipTime(new Date());
         } else {
@@ -450,100 +447,18 @@ public class AllianceEndpoint {
         if (alliance.getUserId() != null) {
             Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
             if (wallet != null) {
-
-                wallet.setBalance(new BigDecimal(0));
-                wallet.setAccumulativeAmount((new BigDecimal(0)));
-
-                res += queryWalletDao.updateById(wallet);
-                WalletHistory walletHistory = new WalletHistory();
-               //walletHistory.setAmount(new BigDecimal(bonusConfig));
-                walletHistory.setAmount(new BigDecimal(0));
-                walletHistory.setBalance(new BigDecimal(0));
-                walletHistory.setWalletId(wallet.getId());
-                walletHistory.setNote("初始化盟友");
-                walletHistory.setType(RechargeType.RECHARGE);
-                walletHistory.setCreatedTime(new Date());
-                res += queryWalletHistoryDao.insert(walletHistory);
-
-
-
-                //如果为分红盟友
-             /*   if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
-                    wallet.setBalance(wallet.getBalance().subtract(new BigDecimal(bonusConfig)));
-                    BigDecimal accumulativeAmount = wallet.getAccumulativeAmount();
-                    if (accumulativeAmount == null) {
-                        accumulativeAmount = new BigDecimal(0.00);
-                    }
-                    wallet.setAccumulativeAmount(accumulativeAmount.subtract(new BigDecimal(bonusConfig)));
-                    res += queryWalletDao.updateById(wallet);
-                    WalletHistory walletHistory = new WalletHistory();
-                    walletHistory.setAmount(new BigDecimal(bonusConfig));
-                    walletHistory.setWalletId(wallet.getId());
-                    walletHistory.setNote("初始化盟友");
-                    walletHistory.setType(RechargeType.RECHARGE);
-                    walletHistory.setCreatedTime(new Date());
-                    res += queryWalletHistoryDao.insert(walletHistory);
-                } else if (allianceType.equals(Alliance.ALLIANCE_TYPE_COMMON)) {
-                    wallet.setBalance(wallet.getBalance().subtract(new BigDecimal(commonConfig)));
-                    BigDecimal accumulativeAmount = wallet.getAccumulativeAmount();
-                    if (accumulativeAmount == null) {
-                        accumulativeAmount = new BigDecimal(0.00);
-                    }
-                    wallet.setAccumulativeAmount(accumulativeAmount.subtract(new BigDecimal(commonConfig)));
-                    res += queryWalletDao.updateById(wallet);
-                    WalletHistory walletHistory = new WalletHistory();
-                    walletHistory.setAmount(new BigDecimal(commonConfig));
-                    walletHistory.setWalletId(wallet.getId());
-                    walletHistory.setNote("初始化盟友");
-                    walletHistory.setType(RechargeType.RECHARGE);
-                    walletHistory.setCreatedTime(new Date());
-                    res += queryWalletHistoryDao.insert(walletHistory);
-                }*/
-            } else {
-                wallet = new Wallet().setUserId(userId);
-                wallet.setBalance(new BigDecimal(0));
-                wallet.setAccumulativeAmount(new BigDecimal(0));
-                res += queryWalletDao.insert(wallet);
-                WalletHistory walletHistory = new WalletHistory();
-                walletHistory.setAmount(new BigDecimal(0));
-                walletHistory.setBalance(new BigDecimal(0));
-                walletHistory.setWalletId(wallet.getId());
-                walletHistory.setNote("初始化盟友");
-                walletHistory.setType(RechargeType.RECHARGE);
-                walletHistory.setCreatedTime(new Date());
-                res += queryWalletHistoryDao.insert(walletHistory);
-
-                /*if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
-                    wallet.setBalance(new BigDecimal(bonusConfig));
-                    wallet.setAccumulativeAmount(new BigDecimal(bonusConfig));
-                    res += queryWalletDao.insert(wallet);
-                    WalletHistory walletHistory = new WalletHistory();
-                    walletHistory.setAmount(new BigDecimal(bonusConfig));
-                    walletHistory.setWalletId(wallet.getId());
-                    walletHistory.setNote("初始化盟友");
-                    walletHistory.setType(RechargeType.RECHARGE);
-                    walletHistory.setCreatedTime(new Date());
-                    res += queryWalletHistoryDao.insert(walletHistory);
-                } else if (allianceType.equals(Alliance.ALLIANCE_TYPE_COMMON)) {
-                    wallet.setBalance(new BigDecimal(commonConfig));
-                    wallet.setAccumulativeAmount(new BigDecimal(bonusConfig));
-                    res += queryWalletDao.insert(wallet);
-                    WalletHistory walletHistory = new WalletHistory();
-                    walletHistory.setAmount(new BigDecimal(commonConfig));
-                    walletHistory.setWalletId(wallet.getId());
-                    walletHistory.setNote("初始化盟友");
-                    walletHistory.setType(RechargeType.RECHARGE);
-                    walletHistory.setCreatedTime(new Date());
-                    res += queryWalletHistoryDao.insert(walletHistory);
-                }*/
+                //删提成记录
+                res += queryOwnerBalanceDao.delete(new EntityWrapper<OwnerBalance>().eq("user_id", alliance.getUserId()));
+                //删历史记录
+                res += queryWalletHistoryDao.delete(new EntityWrapper<WalletHistory>().eq("wallet_id", wallet.getId()));
+                //删钱包
+                res += queryWalletDao.deleteById(wallet.getId());
             }
-
-            queryOwnerBalanceDao.delete(new EntityWrapper<OwnerBalance>().eq("user_id",alliance.getUserId()));
         }
 
         return SuccessTip.create(res);
     }
-
+    @Deprecated
     @BusinessLog(name = "盟友", value = "重置盟友钱包")
     @PostMapping("/{id}/action/resetbalance")
     @ApiOperation("重置盟友钱包")
@@ -566,7 +481,6 @@ public class AllianceEndpoint {
                     .setBalance(defaultBalance)
                     .setAccumulativeAmount(defaultBalance);
             queryWalletDao.insert(insertWallet);
-
             wallet=queryWalletDao.selectOne(insertWallet);
         }else
         {
@@ -576,8 +490,6 @@ public class AllianceEndpoint {
             queryWalletDao.updateById(wallet);
             queryWalletHistoryDao.delete(new EntityWrapper<WalletHistory>().eq("wallet_id",wallet.getId()));
         }
-
-
         queryWalletHistoryDao.insert(new WalletHistory()
                 .setWalletId(wallet.getId())
                 .setNote("重置钱包")
@@ -585,7 +497,6 @@ public class AllianceEndpoint {
                 .setType("CHARGE")
                 .setBalance(defaultBalance)
                 .setCreatedTime(new Date()));
-
         return SuccessTip.create(res);
     }
 
