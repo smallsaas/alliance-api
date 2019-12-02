@@ -80,8 +80,8 @@
         select a.alliance_type as allianceType,a.id,a.alliance_name as allianceName,a.user_id as userId ,
         count(children.id)+1 as teamCount from
         t_alliance a
-        left JOIN t_alliance children on a.id=children.invitor_alliance_id where a.alliance_ship=0
-
+        left JOIN t_alliance children on a.id=children.invitor_alliance_id and children.alliance_ship=0
+        where a.alliance_ship=0
         <if test="search != null and search != ''">
             and a.alliance_name LIKE CONCAT('%',#{search},'%')
         </if>
