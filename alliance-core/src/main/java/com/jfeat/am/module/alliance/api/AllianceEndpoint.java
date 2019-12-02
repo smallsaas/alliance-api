@@ -363,14 +363,60 @@ public class AllianceEndpoint {
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
+        //分红盟友 "bonus_alliance";
+        Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
+        //普通盟友 "common_alliance";
+        Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
+        BigDecimal defaultBonus=new BigDecimal(0);
+        if(alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)){
+            defaultBonus=new BigDecimal(bonusConfig);
 
+        }else{
+            defaultBonus =new BigDecimal(commonConfig);
+        }
+        alliance.setAllianceInventoryAmount(defaultBonus);
+        int res=0;
+        //此处检测状态为
         if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_EXISTPAID);
+            if (alliance.getUserId() != null) {
+                Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(alliance.getUserId()));
+                if (wallet != null) {
+
+                    wallet.setBalance(defaultBonus);
+                    wallet.setAccumulativeAmount(defaultBonus);
+
+                    res += queryWalletDao.updateById(wallet);
+                    WalletHistory walletHistory = new WalletHistory();
+                    //walletHistory.setAmount(new BigDecimal(bonusConfig));
+                    walletHistory.setAmount(defaultBonus);
+                    walletHistory.setBalance(defaultBonus);
+                    walletHistory.setWalletId(wallet.getId());
+                    walletHistory.setNote("设为已支付");
+                    walletHistory.setType(RechargeType.RECHARGE);
+                    walletHistory.setCreatedTime(new Date());
+                    res += queryWalletHistoryDao.insert(walletHistory);
+
+                } else {
+                    wallet = new Wallet().setUserId(alliance.getUserId());
+                    wallet.setBalance(defaultBonus);
+                    wallet.setAccumulativeAmount(defaultBonus);
+                    res += queryWalletDao.insert(wallet);
+                    WalletHistory walletHistory = new WalletHistory();
+                    walletHistory.setAmount(defaultBonus);
+                    walletHistory.setBalance(defaultBonus);
+                    walletHistory.setWalletId(wallet.getId());
+                    walletHistory.setNote("设为已支付");
+                    walletHistory.setType(RechargeType.RECHARGE);
+                    walletHistory.setCreatedTime(new Date());
+                    res += queryWalletHistoryDao.insert(walletHistory);
+                }
+            }
             //alliance.setAllianceShipTime(new Date());
         } else {
             throw new BusinessException(BusinessCode.CodeBase, "状态错误");
         }
-        int res = allianceService.updateMaster(alliance);
+        res = allianceService.updateMaster(alliance);
         return SuccessTip.create(res);
     }
 
