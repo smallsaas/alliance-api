@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.jfeat.am.common.annotation.Permission;
 import com.jfeat.am.core.jwt.JWTKit;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
@@ -12,6 +13,7 @@ import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 
 import com.jfeat.am.module.alliance.services.domain.definition.AlliancePermission;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
@@ -373,7 +375,7 @@ public class AllianceEndpoint {
     }
 
     @PostMapping("/{id}/action/reset")
-    @ApiOperation("修改盟友支付状态-支付过期-->待支付  ship 4--->2")
+    @ApiOperation("重置状态 修改盟友支付状态-支付过期-->待支付  ship 4--->2")
     @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
     public Tip reset(@PathVariable Long id) {
         Alliance alliance = allianceService.retrieveMaster(id);
@@ -387,15 +389,40 @@ public class AllianceEndpoint {
             allianceType=AllianceType.ALLIANCE_TYPE_NORMAL;
             alliance.setAllianceType(allianceType);
         }
+
+       //分红盟友 "bonus_alliance";
         Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
+        //普通盟友 "common_alliance";
         Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
+        //更改状态 盟友申请中  待支付
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
+        //设置0
+        alliance.setAllianceInventoryAmount(new BigDecimal(0));
         int res = allianceService.updateMaster(alliance);
-        res += queryAllianceDao.resetUserId(id);
+        //  重置状态  userId--》null
+        /*res += queryAllianceDao.resetUserId(id);*/
         if (alliance.getUserId() != null) {
             Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
             if (wallet != null) {
-                if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
+
+                wallet.setBalance(new BigDecimal(0));
+                wallet.setAccumulativeAmount((new BigDecimal(0)));
+
+                res += queryWalletDao.updateById(wallet);
+                WalletHistory walletHistory = new WalletHistory();
+               //walletHistory.setAmount(new BigDecimal(bonusConfig));
+                walletHistory.setAmount(new BigDecimal(0));
+                walletHistory.setBalance(new BigDecimal(0));
+                walletHistory.setWalletId(wallet.getId());
+                walletHistory.setNote("初始化盟友");
+                walletHistory.setType(RechargeType.RECHARGE);
+                walletHistory.setCreatedTime(new Date());
+                res += queryWalletHistoryDao.insert(walletHistory);
+
+
+
+                //如果为分红盟友
+             /*   if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
                     wallet.setBalance(wallet.getBalance().subtract(new BigDecimal(bonusConfig)));
                     BigDecimal accumulativeAmount = wallet.getAccumulativeAmount();
                     if (accumulativeAmount == null) {
@@ -425,10 +452,22 @@ public class AllianceEndpoint {
                     walletHistory.setType(RechargeType.RECHARGE);
                     walletHistory.setCreatedTime(new Date());
                     res += queryWalletHistoryDao.insert(walletHistory);
-                }
+                }*/
             } else {
                 wallet = new Wallet().setUserId(userId);
-                if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
+                wallet.setBalance(new BigDecimal(0));
+                wallet.setAccumulativeAmount(new BigDecimal(0));
+                res += queryWalletDao.insert(wallet);
+                WalletHistory walletHistory = new WalletHistory();
+                walletHistory.setAmount(new BigDecimal(0));
+                walletHistory.setBalance(new BigDecimal(0));
+                walletHistory.setWalletId(wallet.getId());
+                walletHistory.setNote("初始化盟友");
+                walletHistory.setType(RechargeType.RECHARGE);
+                walletHistory.setCreatedTime(new Date());
+                res += queryWalletHistoryDao.insert(walletHistory);
+
+                /*if (allianceType.equals(Alliance.ALLIANCE_TYPE_BONUS)) {
                     wallet.setBalance(new BigDecimal(bonusConfig));
                     wallet.setAccumulativeAmount(new BigDecimal(bonusConfig));
                     res += queryWalletDao.insert(wallet);
@@ -450,12 +489,60 @@ public class AllianceEndpoint {
                     walletHistory.setType(RechargeType.RECHARGE);
                     walletHistory.setCreatedTime(new Date());
                     res += queryWalletHistoryDao.insert(walletHistory);
-                }
+                }*/
             }
+
+            queryOwnerBalanceDao.delete(new EntityWrapper<OwnerBalance>().eq("user_id",alliance.getUserId()));
         }
 
         return SuccessTip.create(res);
     }
+
+    @BusinessLog(name = "盟友", value = "重置盟友钱包")
+    @PostMapping("/{id}/action/resetbalance")
+    @ApiOperation("重置盟友钱包")
+    @Permission(AlliancePermission.ALLIANCE_EDIT_STATE)
+    public Tip reSetAllianceBalance(@PathVariable Long id) {
+        int res=0;
+        //根据盟友id查找盟友
+        Alliance alliance= queryAllianceDao.selectOne(new Alliance().setId(id));
+        //获取初始化的金额
+        if(alliance.getUserId()==null){
+            throw new BusinessException(BusinessCode.BadRequest, "该盟友不是正式盟友");
+        }
+        BigDecimal defaultBalance =alliance.getAllianceInventoryAmount();
+        //根据Userid查找钱包
+        List<Wallet> walletList = queryWalletDao.selectList(new EntityWrapper<Wallet>().eq("user_id",alliance.getUserId()));
+        Wallet wallet=null;
+        if(walletList==null||walletList.size()==0){
+            Wallet insertWallet =new Wallet()
+                    .setUserId(alliance.getUserId())
+                    .setBalance(defaultBalance)
+                    .setAccumulativeAmount(defaultBalance);
+            queryWalletDao.insert(insertWallet);
+
+            wallet=queryWalletDao.selectOne(insertWallet);
+        }else
+        {
+            wallet=walletList.get(0);
+            wallet.setBalance(defaultBalance)
+                    .setAccumulativeAmount(defaultBalance);
+            queryWalletDao.updateById(wallet);
+            queryWalletHistoryDao.delete(new EntityWrapper<WalletHistory>().eq("wallet_id",wallet.getId()));
+        }
+
+
+        queryWalletHistoryDao.insert(new WalletHistory()
+                .setWalletId(wallet.getId())
+                .setNote("重置钱包")
+                .setAmount(defaultBalance)
+                .setType("CHARGE")
+                .setBalance(defaultBalance)
+                .setCreatedTime(new Date()));
+
+        return SuccessTip.create(res);
+    }
+
 
     @PostMapping("/{id}/action/upgraded")
     @ApiOperation("修改盟友支付状态- 升级盟友 --->  普通盟友---> 分红盟友。type  1--->2")
