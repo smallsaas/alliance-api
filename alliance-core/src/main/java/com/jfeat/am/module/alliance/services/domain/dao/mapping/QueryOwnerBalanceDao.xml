@@ -12,7 +12,9 @@
 
 
     <select id="findOwnerBalancePage" resultType="OwnerBalanceRecord" parameterType="OwnerBalanceRecord">
-        select t_owner_balance.*,t_user.name as userName
+        select t_owner_balance.*,
+        (case when t_user.real_name is NULL  then t_user.`name`
+           else t_user.real_name end )as userName
         from t_owner_balance LEFT JOIN t_user on t_user.id=t_owner_balance.user_id
         WHERE 1=1 and t_owner_balance.balance>0
         <if test="record.id != null and record.id>0 ">
