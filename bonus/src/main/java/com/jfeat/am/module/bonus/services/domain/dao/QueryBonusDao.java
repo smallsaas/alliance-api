@@ -93,6 +93,10 @@ public interface QueryBonusDao {
    // BigDecimal queryOrderAmountByMonth(@Param("userId") Long userId,@Param("createTime") Date createTime);
     BigDecimal queryOrderAmountMonth(@Param("userId") Long userId,@Param("createTime") Date createTime);
     BigDecimal getCommissionTotalToMonth(@Param("userId") Long userId,@Param("date") Date date);
+    @Select("select ifnull(ROUND((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0,2),0) from t_order_item item\n" +
+            "LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE' \n" +
+            "where item.id=#{itemId}")
+    BigDecimal getCommissionToOneItem(@Param("itemId") Long itemId);
 }
 
 

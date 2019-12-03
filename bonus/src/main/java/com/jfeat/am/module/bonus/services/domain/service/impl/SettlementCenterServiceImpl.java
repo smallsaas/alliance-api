@@ -84,6 +84,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                                         orderItemReward.setOwnerId(item.getUserId().intValue());
                                         orderItemReward.setOrderTotalPrice(item.getTotalPrice());
                                         orderItemReward.setState("成功");
+                                        orderItemReward.setReward(queryBonusDao.getCommissionToOneItem(orderItem.getId()));
                                         orderItemReward.setWithdrawnTime(new Date());
                                         queryOrderItemRewardDao.insert(orderItemReward);
                                     }
@@ -107,6 +108,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                                 orderItemReward.setOwnerId(orderCommissionInfo.getUserId().intValue());
                                 orderItemReward.setOrderTotalPrice(orderCommissionInfo.getTotalPrice());
                                 orderItemReward.setState("成功");
+                                orderItemReward.setReward(queryBonusDao.getCommissionToOneItem(orderItem.getId()));
                                 orderItemReward.setWithdrawnTime(new Date());
                                 queryOrderItemRewardDao.insert(orderItemReward);
                             }
@@ -133,6 +135,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                                         orderItemReward.setOwnerId(item.getUserId().intValue());
                                         orderItemReward.setOrderTotalPrice(item.getTotalPrice());
                                         orderItemReward.setState("成功");
+                                        orderItemReward.setReward(queryBonusDao.getCommissionToOneItem(orderItem.getId()));
                                         orderItemReward.setWithdrawnTime(new Date());
                                         queryOrderItemRewardDao.insert(orderItemReward);
                                     }
@@ -155,6 +158,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                                 orderItemReward.setOwnerId(orderCommissionInfo.getUserId().intValue());
                                 orderItemReward.setOrderTotalPrice(orderCommissionInfo.getTotalPrice());
                                 orderItemReward.setState("成功");
+                                orderItemReward.setReward(queryBonusDao.getCommissionToOneItem(orderItem.getId()));
                                 orderItemReward.setWithdrawnTime(new Date());
                                 queryOrderItemRewardDao.insert(orderItemReward);
                             }
@@ -202,6 +206,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                                         orderItemReward.setOwnerId(item.getUserId().intValue());
                                         orderItemReward.setOrderTotalPrice(item.getTotalPrice());
                                         orderItemReward.setState("成功");
+                                        orderItemReward.setReward(queryBonusDao.getCommissionToOneItem(orderItem.getId()));
                                         orderItemReward.setWithdrawnTime(new Date());
                                         queryOrderItemRewardDao.insert(orderItemReward);
                                     }
@@ -233,6 +238,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                                         orderItemReward.setOwnerId(item.getUserId().intValue());
                                         orderItemReward.setOrderTotalPrice(item.getTotalPrice());
                                         orderItemReward.setState("成功");
+                                        orderItemReward.setReward(queryBonusDao.getCommissionToOneItem(orderItem.getId()));
                                         orderItemReward.setWithdrawnTime(new Date());
                                         queryOrderItemRewardDao.insert(orderItemReward);
                                     }
