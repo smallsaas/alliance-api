@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao">
+    <sql id="Base_Column_List">
+          t_wallet_history.*
+    </sql>
+
+    <select id="findWalletHistoryPage" resultType="WalletHistoryRecord" >
+        SELECT
+        t_wallet_history.*, (
+            CASE
+                WHEN t_user.real_name IS NULL THEN
+                t_user.`name`
+                ELSE
+                t_user.real_name
+            END
+            ) AS userName
+            FROM
+            t_wallet_history
+        LEFT JOIN t_wallet ON t_wallet.id = t_wallet_history.wallet_id
+        LEFT JOIN t_user ON t_user.id = t_wallet.user_id
+        WHERE 1=1
+        <if test="search!= null and search != ''">
+            AND (t_user.name LIKE CONCAT('%',#{search},'%') or
+                t_user.real_name LIKE CONCAT('%',#{search},'%'))
+        </if>
+        order by t_wallet_history.created_time DESC
+    </select>
+
+</mapper>
