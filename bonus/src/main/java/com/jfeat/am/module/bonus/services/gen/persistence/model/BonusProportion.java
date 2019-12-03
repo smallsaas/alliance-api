@@ -13,8 +13,12 @@ import java.math.BigDecimal;
 @TableName("t_bonus_proportion")
 public class BonusProportion
         extends Model<BonusProportion> {
+
     @TableField(exist = false)
-    private JSONObject extra;
+    private com.alibaba.fastjson.JSONObject extra;
+
+
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;

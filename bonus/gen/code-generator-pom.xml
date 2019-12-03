@@ -8,9 +8,9 @@
     <artifactId>code-generator</artifactId>
     <version>1.0.0</version>
     <properties>
-        <moduleName>cg</moduleName>
+        <moduleName>bonus</moduleName>
         <parentPackage>module</parentPackage>
-        <url>jdbc:mysql://120.79.49.72/test?user=root&amp;password=root&amp;characterEncoding=utf8</url>
+        <url>jdbc:mysql://localhost/test6?user=root&amp;password=root&amp;characterEncoding=utf8</url>
         <init>false</init>
     </properties>
     <build>
@@ -27,7 +27,15 @@
                     <cruds>
                         <crud>
                             <mask>master</mask>
-                            <master>t_alliance</master>
+                            <master>t_offline_withdrawal</master>
+                        </crud>
+                        <crud>
+                            <mask>master</mask>
+                            <master>t_offline_withdrawal</master>
+                        </crud>
+                        <crud>
+                            <mask>master</mask>
+                            <master>t_offline_withdrawal</master>
                         </crud>
                     </cruds>
                 </configuration>

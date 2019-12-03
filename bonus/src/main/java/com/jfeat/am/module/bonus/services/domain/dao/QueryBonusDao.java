@@ -64,6 +64,8 @@ public interface QueryBonusDao {
 
     List<JSONObject> getCommissionOrderMonth(Long id);
 
+    List<JSONObject> getCommissionOrderToMonth(@Param("userId") Long id,@Param("date")Date date);
+
     List<JSONObject> getCommissionOrderLastMonth(Long id);
     BigDecimal getCommissionTotal(Long id);
     BigDecimal getCommissionTotalMonth(Long id);
@@ -90,6 +92,7 @@ public interface QueryBonusDao {
     Long queryInvitorUserId(@Param("userId") Long userId);
    // BigDecimal queryOrderAmountByMonth(@Param("userId") Long userId,@Param("createTime") Date createTime);
     BigDecimal queryOrderAmountMonth(@Param("userId") Long userId,@Param("createTime") Date createTime);
+    BigDecimal getCommissionTotalToMonth(@Param("userId") Long userId,@Param("date") Date date);
 }
 
 

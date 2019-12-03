@@ -24,6 +24,7 @@
         <crud-core.version>0.0.2</crud-core.version>
         <crud-dev.version>0.0.1</crud-dev.version>
         <crud-log.version>0.0.1</crud-log.version>
+        <saas-mall-api.version>1.0.0</saas-mall-api.version>
     </properties>
 
     <dependencies>
@@ -52,7 +53,11 @@
             <artifactId>crud-dev</artifactId>
             <version>${crud-dev.version}</version>
         </dependency>-->
-
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>saas-mall-api</artifactId>
+            <version>${saas-mall-api.version}</version>
+        </dependency>
         <!--springboot test-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

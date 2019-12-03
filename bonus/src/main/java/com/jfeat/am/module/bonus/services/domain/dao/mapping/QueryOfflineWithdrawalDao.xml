@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jfeat.am.module.bonus.services.domain.dao.QueryOfflineWithdrawalDao">
+    <sql id="Base_Column_List">
+            t_offline_withdrawal.*
+    </sql>
+
+    <sql id="QueryOwnedOrgIds">
+            SELECT children.id FROM t_sys_org, t_sys_org as children WHERE t_sys_org.left_num &lt;= children.left_num AND
+            t_sys_org.right_num >= children.left_num and t_sys_org.id=#{ownerOrgId} order by t_sys_org.node_level ASC
+        </sql>
+
+
+    <select id="findOfflineWithdrawalPage" resultType="OfflineWithdrawalRecord" parameterType="OfflineWithdrawalRecord">
+        SELECT t_offline_withdrawal.*,t_alliance.alliance_name as allianceName
+        FROM t_offline_withdrawal
+        left join t_alliance on t_alliance.user_id=t_offline_withdrawal.user_id
+        WHERE 1=1
+        <if test="record.id != null and record.id>0 ">
+            AND t_offline_withdrawal.id LIKE CONCAT('%',#{record.id},'%')
+        </if>
+        <if test="record.balance != null and record.balance>0 ">
+            AND t_offline_withdrawal.balance LIKE CONCAT('%',#{record.balance},'%')
+        </if>
+
+        <if test="record.createTime != null and record.createTime>0 ">
+            AND t_offline_withdrawal.create_time LIKE CONCAT('%',#{record.createTime},'%')
+        </if>
+        <if test="record.status != null and record.status>0 ">
+            AND t_offline_withdrawal.status LIKE CONCAT('%',#{record.status},'%')
+        </if>
+
+        <if test="record.userId != null and record.userId>0 ">
+            AND t_offline_withdrawal.user_id LIKE CONCAT('%',#{record.userId},'%')
+        </if>
+        <if test="record.note != null and record.note!= ''">
+            AND t_offline_withdrawal.note LIKE CONCAT('%',#{record.note},'%')
+        </if>
+        <if test="startTime != null">
+            <![CDATA[AND t_offline_withdrawal.start_time >= DATE(#{startTime})]]>
+        </if>
+        <if test="endTime != null">
+            <![CDATA[AND t_offline_withdrawal.end_time <= DATE(#{endTime)]]>
+        </if>
+        <!--
+    <if test="search != null and search != ''">
+        OR t_offline_withdrawal.name LIKE CONCAT('%',#{search},'%')
+    </if>
+    -->
+    </select>
+</mapper>

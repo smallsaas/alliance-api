@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.mapper.Condition;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
@@ -362,8 +361,8 @@ public class RPCAllianceEndpoint {
         Alliance entity = new Alliance();
         entity.setUserId(id);
         AllianceRecord alliance = queryAllianceDao.selectAllianceOneByUserId(id);
-        if(alliance==null){
-            throw new BusinessException(BusinessCode.BadRequest,"该盟友不存在");
+        if (alliance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
         Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(id));
         if (wallet != null) {
@@ -392,24 +391,24 @@ public class RPCAllianceEndpoint {
         if (alliance.getAllianceType() == Alliance.ALLIANCE_TYPE_BONUS) {
             BigDecimal averageBonus = queryBonusDao.getAverageBonus();
             BigDecimal zero = new BigDecimal(0.00);
-            if(averageBonus==null){
-                averageBonus=zero;
+            if (averageBonus == null) {
+                averageBonus = zero;
             }
             BigDecimal allBonusRatio = queryBonusDao.getAllBonusRatio(id);
-            if(allBonusRatio==null){
-                allBonusRatio=zero;
+            if (allBonusRatio == null) {
+                allBonusRatio = zero;
             }
             alliance.setSelfBonus(averageBonus);
             alliance.setTeamSelfBonus(allBonusRatio);
             alliance.setTotalSelfBonus(averageBonus.add(allBonusRatio));
             BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalMonth(id);
-            if(commissionOrderMonth==null){
-                commissionOrderMonth=zero;
+            if (commissionOrderMonth == null) {
+                commissionOrderMonth = zero;
             }
             alliance.setCommissionBalance(commissionOrderMonth);
-            alliance.setOrderAmount(queryBonusDao.queryOrderAmount(id));//当前月订单入货额度
+            alliance.setOrderAmount(queryBonusDao.queryOrderAmountMonth(id, new Date()));//当前月订单入货额度
             alliance.setEffectiveCommission(queryBonusDao.getCommissionTotalMonth(id));//当前月的提成
-            alliance.setConditionOrderAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)).subtract(queryBonusDao.queryOrderAmount(id)));
+            alliance.setConditionOrderAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)).subtract(queryBonusDao.queryOrderAmountMonth(id, new Date())));
         } else {
             alliance.setSelfBonus(new BigDecimal(0.00));
             alliance.setTeamSelfBonus(new BigDecimal(0.00));
@@ -417,10 +416,10 @@ public class RPCAllianceEndpoint {
         }
         alliance.setStockholderCount(queryBonusDao.stockholderCount());
         Float aFloat = queryBonusDao.queryProportion(id);
-        if(aFloat==null){
-            aFloat=0F;
+        if (aFloat == null) {
+            aFloat = 0F;
         }
-        alliance.setProportion(aFloat*100);
+        alliance.setProportion(aFloat * 100);
 //        JSONArray royalties = new JSONArray();
 //        List<Long> team = queryBonusDao.getTeam(id);
 //        if (team != null && team.size() > 0) {
@@ -472,7 +471,7 @@ public class RPCAllianceEndpoint {
         calendar.setTime(date);
         calendar.add(Calendar.MONTH, configFieldService.getFieldInteger(AllianceFields.ALLIANCE_FIELD_STARTING_CYCLE));
         Date endTime = calendar.getTime();
-        alliance.setDividedTime(starting_time+"至"+formatter.format(endTime));
+        alliance.setDividedTime(starting_time + "至" + formatter.format(endTime));
         return SuccessCip.create(alliance);
     }
 
@@ -508,8 +507,8 @@ public class RPCAllianceEndpoint {
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "当前盟友不存在");
         }
-        if (alliance.getAllianceShip()==AllianceShips.ALLIANCE_SHIP_OK) {
-            OwnerBalance theownerBalance =  new OwnerBalance();
+        if (alliance.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_OK) {
+            OwnerBalance theownerBalance = new OwnerBalance();
             theownerBalance.setUserId(id);
             OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(theownerBalance);
             if (ownerBalance == null) {
@@ -572,6 +571,23 @@ public class RPCAllianceEndpoint {
         monthInterval %= 12;
         int monthsDiff = Math.abs(yearInterval * 12 + monthInterval);
         return monthsDiff;
+    }
+
+    @ApiOperation(value = "根据每个月查询提成", response = Cip.class)
+    @PostMapping("/cashQuery")
+    public Cip cashQuery(@RequestHeader("X-USER-ID") Long id, @RequestBody RequestBonus date) {
+        BigDecimal zero = new BigDecimal(0.00);
+        BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalToMonth(id,date.getDate());
+        if (commissionOrderMonth == null) {
+            commissionOrderMonth = zero;
+        }
+        AllianceRecord alliance = new AllianceRecord();
+        alliance.setCommissionOrder(JSONArray.parseArray(JSON.toJSONString(queryBonusDao.getCommissionOrderToMonth(id,date.getDate()))));
+        alliance.setCommissionBalance(commissionOrderMonth);
+        alliance.setOrderAmount(queryBonusDao.queryOrderAmountMonth(id, date.getDate()));//每个月订单入货额度
+        alliance.setEffectiveCommission(queryBonusDao.getCommissionTotalToMonth(id, date.getDate()));//当前月的提成
+        alliance.setConditionOrderAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)).subtract(queryBonusDao.queryOrderAmountMonth(id, date.getDate())));
+        return SuccessCip.create(alliance);
     }
 
 }

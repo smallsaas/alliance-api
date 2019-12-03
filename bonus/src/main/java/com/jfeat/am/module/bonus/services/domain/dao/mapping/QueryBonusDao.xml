@@ -132,6 +132,21 @@
         o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id and month(o.created_date) = month(curdate()) and
         year(o.created_date) = year(curdate()) group by o.id
     </select>
+
+    <select id="getCommissionOrderToMonth" parameterType="map" resultType="com.alibaba.fastjson.JSONObject">
+        select u.name as
+        invitorName,sum(ROUND((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
+        as commission,o.total_price orderMoney,DATE_FORMAT(o.created_date ,'%Y-%m-%d') as createTime,o.order_number as
+        orderNumber,1 as status from t_order_item item
+        LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
+        LEFT JOIN t_alliance a on a.user_id = #{userId}
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
+        o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id and month(o.created_date) = month(#{date}) and
+        year(o.created_date) = year(#{date}) group by o.id
+    </select>
+
+
     <select id="getCommissionOrderLastMonth" parameterType="java.lang.Long"
             resultType="com.alibaba.fastjson.JSONObject">
         select u.name as
@@ -179,6 +194,18 @@
         o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
         and month(o.created_date) =
         month(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) and year(o.created_date) = year(curdate())
+    </select>
+
+    <select id="getCommissionTotalToMonth" parameterType="map" resultType="java.math.BigDecimal">
+        select
+        ROUND(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
+        orderMoney from t_order_item item
+        LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
+        LEFT JOIN t_alliance a on a.user_id = #{userId}
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
+        o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
+        and month(o.created_date) = month(#{date}) and year(o.created_date) = year(#{date})
     </select>
 
     <select id="getAllBonusReal" resultType="java.math.BigDecimal">
@@ -292,7 +319,7 @@
     <!--查询一条订单的提成-->
     <select id="queryEveryOrderCommission" parameterType="java.lang.Long" resultType="OrderCommissionInfo">
         select o.id,o.user_id as
-        userId,ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as
+        userId,o.order_number as orderNumber,o.total_price as totalPrice,ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as
         commission,o.created_date as createTime from t_order_item item
         INNER JOIN t_order o on item.order_id=o.id and o.id=#{orderId} and o.`status`='CLOSED_CONFIRMED' and
         o.settlement_status!=1
@@ -301,7 +328,7 @@
     <!--查询之前结算过的订单-->
     <select id="queryFormerOrder" parameterType="map" resultType="OrderCommissionInfo">
         select o.id,o.user_id as
-        userId,ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as
+        userId,o.order_number as orderNumber,o.total_price as totalPrice,ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as
         commission,o.created_date as createTime from t_order_item item
         LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
         LEFT JOIN t_alliance a on a.user_id = #{userId}

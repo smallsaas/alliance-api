@@ -1,6 +1,7 @@
 package com.jfeat.am.module.alliance.api;
 
 
+import com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.service.AllianceService;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
@@ -44,6 +45,8 @@ public class RPCAllianceRegisterEndpoint {
 
     @Resource
     ConfigFieldService configFieldService;
+    @Resource
+    QueryAllianceDao queryAllianceDao;
 
     @BusinessLog(name = "盟友", value = "改变盟友状态")
     @ApiOperation(value = "改变盟友状太，仅限于测试使用 0-正式盟友 1-不是盟友 2-待支付/申请中 3-已支付 4-支付过期 5-状态错误",response = Cip.class)
@@ -175,6 +178,7 @@ public class RPCAllianceRegisterEndpoint {
 
             registeredAlliance.setUserId(userId);
             int affected = allianceService.updateMaster(registeredAlliance);
+            queryAllianceDao.upUserRealNameByPhone(registeredAlliance.getAlliancePhone(),registeredAlliance.getAllianceName());
 
             if(affected>0) {
                 return ErrorCip.create(registeredAlliance.getAllianceShip(), "盟友申请状态中");

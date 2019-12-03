@@ -3,7 +3,15 @@
 <cruds>
     <crud>
         <mask>master</mask>
-        <master>t_alliance</master>
+        <master>t_offline_withdrawal</master>
+    </crud>
+    <crud>
+        <mask>master</mask>
+        <master>t_offline_withdrawal</master>
+    </crud>
+    <crud>
+        <mask>master</mask>
+        <master>t_offline_withdrawal</master>
     </crud>
 </cruds>
 
