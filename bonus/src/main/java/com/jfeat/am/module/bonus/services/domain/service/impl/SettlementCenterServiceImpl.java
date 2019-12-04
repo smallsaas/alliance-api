@@ -256,4 +256,52 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
         }
         return true;
     }
+
+    @Override
+    public BigDecimal getRatioBonus(Long userId) {
+        List<Long> userIds = queryBonusDao.queryStockholderUserId();
+        BigDecimal allBonusRatio = queryBonusDao.getAllBonusRatio();
+        if(allBonusRatio==null){
+            allBonusRatio=new BigDecimal(0.00);
+        }
+        BigDecimal mySelf = queryBonusDao.queryMyTeamOrderAmount(userId);
+        if(mySelf==null){
+            mySelf=new BigDecimal(0.00);
+        }
+        BigDecimal total=new BigDecimal(0.00);
+        if(userIds!=null&&userIds.size()>0){
+            for(Long id:userIds){
+                BigDecimal bigDecimal = queryBonusDao.queryMyTeamOrderAmount(id);
+                if(bigDecimal==null){
+                    bigDecimal=new BigDecimal(0.00);
+                }
+                total=total.add(bigDecimal);
+            }
+        }
+        return allBonusRatio.multiply((mySelf.divide(total)));
+    }
+
+    @Override
+    public BigDecimal getRatioBonusMonth(Long userId) {
+        List<Long> userIds = queryBonusDao.queryStockholderUserId();
+        BigDecimal allBonusRatio = queryBonusDao.getAllBonusRatioMonth();
+        if(allBonusRatio==null){
+            allBonusRatio=new BigDecimal(0.00);
+        }
+        BigDecimal mySelf = queryBonusDao.queryMyTeamOrderAmountMonth(userId);
+        if(mySelf==null){
+            mySelf=new BigDecimal(0.00);
+        }
+        BigDecimal total=new BigDecimal(0.00);
+        if(userIds!=null&&userIds.size()>0){
+            for(Long id:userIds){
+                BigDecimal bigDecimal = queryBonusDao.queryMyTeamOrderAmountMonth(id);
+                if(bigDecimal==null){
+                    bigDecimal=new BigDecimal(0.00);
+                }
+                total=total.add(bigDecimal);
+            }
+        }
+        return allBonusRatio.multiply((mySelf.divide(total)));
+    }
 }

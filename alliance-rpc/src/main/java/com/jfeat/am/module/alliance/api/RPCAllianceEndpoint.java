@@ -14,6 +14,7 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.*;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
+import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import com.jfeat.util.Cip;
 import com.jfeat.util.SuccessCip;
@@ -66,6 +67,8 @@ public class RPCAllianceEndpoint {
 
     @Resource
     QueryWalletDao queryWalletDao;
+    @Resource
+    SettlementCenterService settlementCenterService;
 
     @Resource
     ConfigFieldService configFieldService;
@@ -394,7 +397,7 @@ public class RPCAllianceEndpoint {
             if (averageBonus == null) {
                 averageBonus = zero;
             }
-            BigDecimal allBonusRatio = queryBonusDao.getAllBonusRatio(id);
+            BigDecimal allBonusRatio = settlementCenterService.getRatioBonus(id);
             if (allBonusRatio == null) {
                 allBonusRatio = zero;
             }

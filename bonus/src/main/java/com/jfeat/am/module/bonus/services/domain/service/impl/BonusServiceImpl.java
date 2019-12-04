@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Resource;
 
+import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,8 @@ public class BonusServiceImpl implements BonusService {
     @Resource
     QueryBonusDao queryBonusDao;
 
-
+    @Resource
+    SettlementCenterService settlementCenterService;
     //获得自己的分红 user_id=4 ---> 15.75 只是订单所得
     @Override
     public BigDecimal getSelfBonus(Long id, Integer dateType) {
@@ -127,7 +129,7 @@ public class BonusServiceImpl implements BonusService {
                 r.setRoyalty(commissionTotal);
                 if (r.getAllianceType() == AllianceField.ALLIANCE_TYPE_BONUS) {
                     BigDecimal averageBonusMonth = queryBonusDao.getAverageBonusMonth();
-                    BigDecimal allBonusRatioMonth = queryBonusDao.getAllBonusRatioMonth(r.getUserId());
+                    BigDecimal allBonusRatioMonth = settlementCenterService.getRatioBonusMonth(r.getUserId());
                     if(averageBonusMonth==null){
                         averageBonusMonth=new BigDecimal(0.00);
                     }
@@ -139,7 +141,7 @@ public class BonusServiceImpl implements BonusService {
                     r.setCurrentMonthBonus(month.setScale(2, BigDecimal.ROUND_HALF_UP));
 
                     BigDecimal averageBonus = queryBonusDao.getAverageBonus();
-                    BigDecimal allBonusRatio = queryBonusDao.getAllBonusRatio(r.getUserId());
+                    BigDecimal allBonusRatio = settlementCenterService.getRatioBonus(r.getUserId());
                     if(averageBonus==null){
                         averageBonus=new BigDecimal(0.00);
                     }

@@ -216,29 +216,42 @@
         LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
 
-    <select id="getAllBonusRatio" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
-        select
-        ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
-        value/100.0 from t_config_field where field='ratio_proportion')*(				 ((select
-        ROUND(sum(((item.price-item.cost_price)*item.quantity)),2)
-        from t_order_item item
-        LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
-        LEFT JOIN t_alliance a on a.user_id = #{userId}
-        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
-        o.`status`='CLOSED_CONFIRMED'  AND o.created_date>STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d')
-        AND o.created_date &lt;  DATE_ADD(STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d') , interval (SELECT value FROM t_config_field WHERE field='settlement_cycle') MONTH))/(
-        (select
-        ROUND(sum(((item.price-item.cost_price)*item.quantity)),2)
-        from t_order_item item
-        LEFT JOIN t_order o on item.order_id=o.id LEFT JOIN t_user u on u.id=o.user_id
-        LEFT JOIN t_alliance a on a.user_id in (select user_id from t_alliance where alliance_ship=0 and alliance_type=1)
-        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
-        o.`status`='CLOSED_CONFIRMED'  AND o.created_date>STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d')
-        AND o.created_date &lt;  DATE_ADD(STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d') , interval (SELECT value FROM t_config_field WHERE field='settlement_cycle') MONTH))
-        ))),2) from t_order_item item
-        inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field
-        where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
-        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
+    <select id="getAllBonusRatio" resultType="java.math.BigDecimal" >
+        SELECT
+	ROUND(
+		sum(
+			(item.price - item.cost_price) * item.quantity * JSON_EXTRACT (psp.proportion, '$.value') / 100.0
+		) * (
+			SELECT
+
+			VALUE
+				/ 100.0
+			FROM
+				t_config_field
+			WHERE
+				field = 'ratio_proportion'
+		),
+		2
+	)
+FROM
+	t_order_item item
+INNER JOIN t_order o ON item.order_id = o.id
+AND o.created_date > STR_TO_DATE(
+	(
+		SELECT
+
+		VALUE
+
+		FROM
+			t_config_field
+		WHERE
+			field = 'starting_time'
+	),
+	'%Y-%m-%d'
+)
+AND o. STATUS = 'CLOSED_CONFIRMED'
+LEFT JOIN t_product_settlement_proportion psp ON psp.product_id = item.product_id
+AND psp.type = 'STOCKHOLDER'
     </select>
 
     <select id="getAverageBonus" resultType="java.math.BigDecimal">
@@ -250,28 +263,43 @@
         where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
         LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
-    <select id="getAllBonusRatioMonth" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
-        select
-        ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
-        value/100.0 from t_config_field where field='ratio_proportion')*((
-        (
+    <select id="getAllBonusRatioMonth" resultType="java.math.BigDecimal">
         SELECT
-        ifnull(sum(
-        a1.alliance_inventory_amount
-        ),0)
-        FROM
-        t_alliance a1,
-        t_alliance a2
-        WHERE
-        a1.invitor_alliance_id = a2.id
-        AND a2.user_id = #{userId}
-        AND a1.alliance_ship = 0
-        )
-        )/(select sum(alliance_inventory_amount) from t_alliance where alliance_ship=0)),2) from t_order_item item
-        inner JOIN t_order o on item.order_id=o.id and o.created_date>STR_TO_DATE((select value from t_config_field
-        where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED' and month(o.created_date) =
+	ROUND(
+		sum(
+			(item.price - item.cost_price) * item.quantity * JSON_EXTRACT (psp.proportion, '$.value') / 100.0
+		) * (
+			SELECT
+
+			VALUE
+				/ 100.0
+			FROM
+				t_config_field
+			WHERE
+				field = 'ratio_proportion'
+		),
+		2
+	)
+FROM
+	t_order_item item
+INNER JOIN t_order o ON item.order_id = o.id
+AND o.created_date > STR_TO_DATE(
+	(
+		SELECT
+
+		VALUE
+
+		FROM
+			t_config_field
+		WHERE
+			field = 'starting_time'
+	),
+	'%Y-%m-%d'
+)
+AND o. STATUS = 'CLOSED_CONFIRMED' and month(o.created_date) =
         month(curdate()) and year(o.created_date) = year(curdate())
-        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
+LEFT JOIN t_product_settlement_proportion psp ON psp.product_id = item.product_id
+AND psp.type = 'STOCKHOLDER'
     </select>
     <select id="getAverageBonusMonth" resultType="java.math.BigDecimal">
         select
@@ -283,8 +311,12 @@
         month(curdate()) and year(o.created_date) = year(curdate())
         LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
+
     <select id="stockholderCount" resultType="Integer">
         select count(id) from t_alliance where alliance_ship=0 and alliance_type=1
+    </select>
+    <select id="queryStockholderUserId" resultType="Long">
+        select user_id from t_alliance where alliance_ship=0 and alliance_type=1
     </select>
 
     <select id="queryProportion" resultType="FLOAT" parameterType="java.lang.Long">
@@ -312,7 +344,7 @@
         month(curdate()) and year(o.created_date) = year(curdate()) and o.user_id=#{userId}
         LEFT JOIN t_user u on u.id=o.user_id
     </select>
-    <select id="queryOrderAmountMonth"  resultType="java.math.BigDecimal">
+    <select id="queryOrderAmountMonth" resultType="java.math.BigDecimal">
         select ifnull(sum(ROUND(item.price*item.quantity,2)),0) from t_order_item item
         inner join t_order o on item.order_id=o.id and o.status='CLOSED_CONFIRMED' and month(o.created_date) =
         month(#{createTime}) and year(o.created_date) = year(#{createTime}) and o.user_id=#{userId}
@@ -347,5 +379,250 @@
     <select id="queryInvitorUserId" resultType="java.lang.Long">
         select a.user_id from t_alliance a
         inner join t_alliance kid on a.id=kid.invitor_alliance_id and kid.user_id=#{userId}
+    </select>
+
+
+    <!--    查询团队以及自己的订单总额-->
+    <select id="queryMyTeamOrderAmount" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+       SELECT
+	ROUND(
+		sum(
+			((item.price) * item.quantity) + (
+				SELECT
+					IFNULL(
+						ROUND(
+							sum(
+								(
+									(item.price - item.cost_price) * item.quantity
+								)
+							),
+							2
+						),
+						0
+					)
+				FROM
+					t_order_item item
+				LEFT JOIN t_order o ON item.order_id = o.id
+				LEFT JOIN t_user u ON u.id = o.user_id
+				LEFT JOIN t_alliance a ON a.user_id = #{userId}
+				LEFT JOIN t_alliance kid ON kid.invitor_alliance_id = a.id
+				AND kid.user_id = u.id
+				WHERE
+					o.`status` = 'CLOSED_CONFIRMED'
+				AND kid.user_id != a.user_id
+				AND o.created_date > STR_TO_DATE(
+					(
+						SELECT
+
+						VALUE
+
+						FROM
+							t_config_field
+						WHERE
+							field = 'starting_time'
+					),
+					'%Y-%m-%d'
+				)
+				AND o.created_date &lt;
+
+DATE_ADD(
+	STR_TO_DATE(
+		(
+			SELECT
+
+			VALUE
+
+			FROM
+				t_config_field
+			WHERE
+				field = 'starting_time'
+		),
+		'%Y-%m-%d'
+	),
+	INTERVAL (
+		SELECT
+
+		VALUE
+
+		FROM
+			t_config_field
+		WHERE
+			field = 'settlement_cycle'
+	) MONTH
+)
+)
+),
+ 2
+)
+FROM
+	t_order_item item
+INNER JOIN t_order o ON item.order_id = o.id
+INNER JOIN t_user u ON u.id = o.user_id
+INNER JOIN t_alliance a ON (
+	a.user_id = #{userId} and u.id=a.user_id)
+	WHERE
+		o.`status` = 'CLOSED_CONFIRMED'
+	AND o.created_date > STR_TO_DATE(
+		(
+			SELECT
+
+			VALUE
+
+			FROM
+				t_config_field
+			WHERE
+				field = 'starting_time'
+		),
+		'%Y-%m-%d'
+	)
+	AND o.created_date &lt;
+
+DATE_ADD(
+	STR_TO_DATE(
+		(
+			SELECT
+
+			VALUE
+
+			FROM
+				t_config_field
+			WHERE
+				field = 'starting_time'
+		),
+		'%Y-%m-%d'
+	),
+	INTERVAL (
+		SELECT
+
+		VALUE
+
+		FROM
+			t_config_field
+		WHERE
+			field = 'settlement_cycle'
+	) MONTH
+)
+    </select>
+    <select id="queryMyTeamOrderAmountMonth" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+       SELECT
+	ROUND(
+		sum(
+			((item.price) * item.quantity) + (
+				SELECT
+					IFNULL(
+						ROUND(
+							sum(
+								(
+									(item.price - item.cost_price) * item.quantity
+								)
+							),
+							2
+						),
+						0
+					)
+				FROM
+					t_order_item item
+				LEFT JOIN t_order o ON item.order_id = o.id
+				LEFT JOIN t_user u ON u.id = o.user_id
+				LEFT JOIN t_alliance a ON a.user_id = #{userId}
+				LEFT JOIN t_alliance kid ON kid.invitor_alliance_id = a.id
+				AND kid.user_id = u.id
+				WHERE
+					o.`status` = 'CLOSED_CONFIRMED'
+				AND kid.user_id != a.user_id
+				AND o.created_date > STR_TO_DATE(
+					(
+						SELECT
+
+						VALUE
+
+						FROM
+							t_config_field
+						WHERE
+							field = 'starting_time'
+					),
+					'%Y-%m-%d'
+				)
+				AND o.created_date &lt;
+
+DATE_ADD(
+	STR_TO_DATE(
+		(
+			SELECT
+
+			VALUE
+
+			FROM
+				t_config_field
+			WHERE
+				field = 'starting_time'
+		),
+		'%Y-%m-%d'
+	),
+	INTERVAL (
+		SELECT
+
+		VALUE
+
+		FROM
+			t_config_field
+		WHERE
+			field = 'settlement_cycle'
+	) MONTH
+) and month(o.created_date) =
+        month(curdate()) and year(o.created_date) = year(curdate())
+)
+),
+ 2
+)
+FROM
+	t_order_item item
+INNER JOIN t_order o ON item.order_id = o.id
+INNER JOIN t_user u ON u.id = o.user_id
+INNER JOIN t_alliance a ON (
+	a.user_id = #{userId} and u.id=a.user_id)
+	WHERE
+		o.`status` = 'CLOSED_CONFIRMED'
+	AND o.created_date > STR_TO_DATE(
+		(
+			SELECT
+
+			VALUE
+
+			FROM
+				t_config_field
+			WHERE
+				field = 'starting_time'
+		),
+		'%Y-%m-%d'
+	)
+	AND o.created_date &lt;
+
+DATE_ADD(
+	STR_TO_DATE(
+		(
+			SELECT
+
+			VALUE
+
+			FROM
+				t_config_field
+			WHERE
+				field = 'starting_time'
+		),
+		'%Y-%m-%d'
+	),
+	INTERVAL (
+		SELECT
+
+		VALUE
+
+		FROM
+			t_config_field
+		WHERE
+			field = 'settlement_cycle'
+	) MONTH
+) and month(o.created_date) =
+        month(curdate()) and year(o.created_date) = year(curdate())
     </select>
 </mapper>

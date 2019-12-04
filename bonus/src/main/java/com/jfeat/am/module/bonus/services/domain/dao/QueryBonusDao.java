@@ -75,10 +75,10 @@ public interface QueryBonusDao {
 
     BigDecimal getAverageBonus();
 
-    BigDecimal getAllBonusRatio(@Param("userId")Long userId);
+    BigDecimal getAllBonusRatio();
     BigDecimal getAverageBonusMonth();
 
-    BigDecimal getAllBonusRatioMonth(@Param("userId")Long userId);
+    BigDecimal getAllBonusRatioMonth();
 
     Integer stockholderCount();
 
@@ -97,6 +97,9 @@ public interface QueryBonusDao {
             "LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE' \n" +
             "where item.id=#{itemId}")
     BigDecimal getCommissionToOneItem(@Param("itemId") Long itemId);
+    BigDecimal queryMyTeamOrderAmount(@Param("userId") Long userId);
+    BigDecimal queryMyTeamOrderAmountMonth(@Param("userId") Long userId);
+    List<Long> queryStockholderUserId();
 }
 
 

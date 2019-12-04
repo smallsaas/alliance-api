@@ -219,7 +219,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
 //            }
             entity.setInvitorAllianceId(alliance.getId());
         }else {
-            throw new BusinessException(BusinessCode.BadRequest,"邀请人不存在");
+//            throw new BusinessException(BusinessCode.BadRequest,"邀请人不存在");
         }
         if (entity.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));

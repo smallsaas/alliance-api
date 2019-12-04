@@ -7,6 +7,7 @@ import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
 import com.jfeat.am.module.bonus.services.domain.model.ProductSalesRecord;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
+import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
 import com.jfeat.crud.base.tips.SuccessTip;
 import com.jfeat.crud.base.tips.Tip;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ public class AllianceReconciliationEndpoint {
     QueryBonusDao queryBonusDao;
     @Resource
     BonusService bonusService;
+
 
     //产品销量
     @GetMapping("/sales")
