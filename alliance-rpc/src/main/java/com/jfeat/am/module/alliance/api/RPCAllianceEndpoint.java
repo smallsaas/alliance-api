@@ -577,15 +577,15 @@ public class RPCAllianceEndpoint {
     }
 
     @ApiOperation(value = "根据每个月查询提成", response = Cip.class)
-    @PostMapping("/cashQuery")
+    @GetMapping("/cashQuery")
     public Cip cashQuery(@RequestHeader("X-USER-ID") Long id, @RequestBody RequestBonus date) {
         BigDecimal zero = new BigDecimal(0.00);
-        BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalToMonth(id,date.getDate());
+        BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalToMonth(id, date.getDate());
         if (commissionOrderMonth == null) {
             commissionOrderMonth = zero;
         }
         AllianceRecord alliance = new AllianceRecord();
-        alliance.setCommissionOrder(JSONArray.parseArray(JSON.toJSONString(queryBonusDao.getCommissionOrderToMonth(id,date.getDate()))));
+        alliance.setCommissionOrder(JSONArray.parseArray(JSON.toJSONString(queryBonusDao.getCommissionOrderToMonth(id, date.getDate()))));
         alliance.setCommissionBalance(commissionOrderMonth);
         alliance.setOrderAmount(queryBonusDao.queryOrderAmountMonth(id, date.getDate()));//每个月订单入货额度
         alliance.setEffectiveCommission(queryBonusDao.getCommissionTotalToMonth(id, date.getDate()));//当前月的提成

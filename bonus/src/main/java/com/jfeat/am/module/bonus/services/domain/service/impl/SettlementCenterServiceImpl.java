@@ -302,6 +302,9 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                 total=total.add(bigDecimal);
             }
         }
+        if(total.intValue()==0){
+            return new BigDecimal(0.00);
+        }
         return allBonusRatio.multiply((mySelf.divide(total)));
     }
 }
