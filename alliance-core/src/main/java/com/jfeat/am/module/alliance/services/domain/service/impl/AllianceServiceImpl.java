@@ -272,12 +272,19 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         Wallet wallet = null;
         if (wallets != null && wallets.size() > 0) {
             wallet = wallets.get(0);
+            for(int i=0;i<wallets.size();i++){
+                if(i>0){
+                    queryWalletDao.deleteById(wallets.get(i).getId());
+                }
+
+            }
         } else {
             wallet = new Wallet();
             if (userId != null) {
                 wallet.setUserId(userId);
             }
         }
+
 
         String tmp = null;
         if (alliance.getAllianceType().equals(Alliance.ALLIANCE_TYPE_BONUS)) {

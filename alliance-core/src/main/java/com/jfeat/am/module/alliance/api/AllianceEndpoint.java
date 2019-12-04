@@ -363,6 +363,7 @@ public class AllianceEndpoint {
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
+        Long userId = queryAllianceDao.queryUserIdByPhone(alliance.getAlliancePhone());
         //分红盟友 "bonus_alliance";
         Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
         //普通盟友 "common_alliance";
@@ -380,7 +381,7 @@ public class AllianceEndpoint {
         //此处检测状态
         if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
             alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_EXISTPAID);
-            if (alliance.getUserId() != null) {
+            if (userId!= null) {
                 /*Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(alliance.getUserId()));
                 if (wallet != null) {
                     wallet.setBalance(defaultBonus);
@@ -396,7 +397,36 @@ public class AllianceEndpoint {
                     walletHistory.setCreatedTime(new Date());
                     res += queryWalletHistoryDao.insert(walletHistory);
                 } else {*/
-                Wallet  wallet = new Wallet().setUserId(alliance.getUserId());
+                List<Wallet> list = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID, userId));
+                if(list!=null&&list.size()>1){
+                    for(int i=0;i>list.size();i++){
+                        if(i>0){
+                            queryWalletDao.deleteById(list.get(i).getId());
+                        }
+                    }
+                }else if(list.size()==1){
+                    Wallet wallet=list.get(0);
+                    BigDecimal balance = wallet.getBalance();
+                    if(balance==null){
+                        balance=new BigDecimal(0.00);
+                    }
+                    wallet.setBalance(balance.add(defaultBonus));
+                    BigDecimal accumulativeAmount = wallet.getAccumulativeAmount();
+                    if(accumulativeAmount==null){
+                        accumulativeAmount=new BigDecimal(0.00);
+                    }
+                    wallet.setAccumulativeGiftAmount(accumulativeAmount.add(defaultBonus));
+                    queryWalletDao.updateById(wallet);
+                    WalletHistory walletHistory = new WalletHistory();
+                    walletHistory.setAmount(defaultBonus);
+                    walletHistory.setBalance(defaultBonus);
+                    walletHistory.setWalletId(wallet.getId());
+                    walletHistory.setNote("设为已支付");
+                    walletHistory.setType(RechargeType.RECHARGE);
+                    walletHistory.setCreatedTime(new Date());
+                    res += queryWalletHistoryDao.insert(walletHistory);
+                }else{
+                    Wallet  wallet = new Wallet().setUserId(userId);
                     wallet.setBalance(defaultBonus);
                     wallet.setAccumulativeAmount(defaultBonus);
                     res += queryWalletDao.insert(wallet);
@@ -408,6 +438,8 @@ public class AllianceEndpoint {
                     walletHistory.setType(RechargeType.RECHARGE);
                     walletHistory.setCreatedTime(new Date());
                     res += queryWalletHistoryDao.insert(walletHistory);
+                }
+
             }
             //alliance.setAllianceShipTime(new Date());
         } else {

@@ -1,6 +1,7 @@
 package com.jfeat.am.module.alliance.api;
 
 
+import com.baomidou.mybatisplus.mapper.Condition;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -200,6 +202,7 @@ public class RPCAllianceRegisterEndpoint {
             //设置钱包库存额
             Wallet wallet = new Wallet();
             wallet.setUserId(userId);
+            List<Wallet> condition = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID, userId));
             Wallet originWallet = queryWalletDao.selectOne(wallet);
             if (originWallet == null) {
                 //普通盟友
