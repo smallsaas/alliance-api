@@ -104,9 +104,9 @@
             <![CDATA[AND t_alliance.end_time <= DATE(#{record.age)]]>
         </if>
         <if test="search != null and search != ''">
-            AND （t_alliance.alliance_name LIKE CONCAT('%',#{search},'%')
+            AND (t_alliance.alliance_name LIKE CONCAT('%',#{search},'%')
             OR t_alliance.alliance_phone LIKE CONCAT('%',#{search},'%')
-            OR t_user.name LIKE CONCAT('%',#{search},'%')）
+            OR t_user.name LIKE CONCAT('%',#{search},'%'))
         </if>
         GROUP BY t_alliance.id
         order by t_alliance.creation_time desc
