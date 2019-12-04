@@ -22,6 +22,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.dao.DuplicateKeyException;
@@ -578,7 +579,7 @@ public class RPCAllianceEndpoint {
 
     @ApiOperation(value = "根据每个月查询提成", response = Cip.class)
     @GetMapping("/cashQuery")
-    public Cip cashQuery(@RequestHeader("X-USER-ID") Long id, @RequestParam Date date) {
+    public Cip cashQuery(@RequestHeader("X-USER-ID") Long id, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
         BigDecimal zero = new BigDecimal(0.00);
         BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalToMonth(id,date);
         if (commissionOrderMonth == null) {
