@@ -53,4 +53,10 @@
           where t_owner_balance.id=#{id}
     </update>
 
+    <update id="withdrawalByUserId">
+          update t_owner_balance
+          set t_owner_balance.balance=balance-#{money}
+          where t_owner_balance.user_id=#{id}
+    </update>
+
 </mapper>

@@ -57,6 +57,7 @@ public interface QueryMomentsFriendDao extends BaseMapper<MomentsFriend> {
     AllianceProduct queryProductById(Long productId);
 
     Integer closeProduct(@Param("id")Long id);
+    Integer cancelcloseProduct(@Param("id")Long id);
 
     List<FriendOrderItem> selectOrderItem(@Param("orderId")Long orderId);
 

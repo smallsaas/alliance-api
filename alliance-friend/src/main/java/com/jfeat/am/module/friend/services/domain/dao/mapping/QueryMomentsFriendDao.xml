@@ -154,9 +154,16 @@
     </select>
 
     <update id="closeProduct" >
-update t_order SET t_order.`status`='CLOSED_CONFIRMED'
-where  id=#{id}
+    update t_order SET t_order.`status`='CLOSED_CONFIRMED'
+    where  id=#{id}
     </update>
+
+    <update id="cancelcloseProduct" >
+    update t_order SET t_order.`status`='DELIVERED_CONFIRM_PENDING'
+    where  id=#{id}
+    </update>
+
+
 
     <update id="upStockBalance" >
         update t_product set stock_balance=stock_balance+#{num} where id=#{productId}

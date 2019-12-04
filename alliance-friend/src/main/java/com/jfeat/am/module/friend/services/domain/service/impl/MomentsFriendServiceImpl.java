@@ -179,6 +179,15 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         return i;
     }
 
+    @Override
+    public Integer cancelCloseConfirmedOrder(Long id) {
+
+        //改状态 已发货 DELIVERED_CONFIRM_PENDING
+        Integer i=queryMomentsFriendDao.cancelcloseProduct(id);
+        //回退钱
+        SettlementCenterService.cancelSettlementOrder(id);
+        return i;
+    }
 
 
     @Override

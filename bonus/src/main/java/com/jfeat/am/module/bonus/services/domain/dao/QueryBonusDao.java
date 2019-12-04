@@ -100,6 +100,9 @@ public interface QueryBonusDao {
     BigDecimal queryMyTeamOrderAmount(@Param("userId") Long userId);
     BigDecimal queryMyTeamOrderAmountMonth(@Param("userId") Long userId);
     List<Long> queryStockholderUserId();
+
+
+
 }
 
 
