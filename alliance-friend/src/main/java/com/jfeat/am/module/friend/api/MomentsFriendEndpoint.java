@@ -217,17 +217,17 @@ public class MomentsFriendEndpoint {
 
     @GetMapping("/order/getUsers")
     @ApiOperation(value = "获取所有订单用户")
-    public Tip getUsers()  {
+    public Tip getUsers( @RequestParam(name = "search", required = false) String search)  {
 
-        return SuccessTip.create(momentsFriendService.getUsers());
+        return SuccessTip.create(momentsFriendService.getUsers(search));
 
     }
 
     @GetMapping("/order/getProducts")
     @ApiOperation(value = "获取所有产品")
-    public Tip getProducts()  {
+    public Tip getProducts(@RequestParam(name = "search", required = false) String search)  {
 
-        return SuccessTip.create(momentsFriendService.getProducts());
+        return SuccessTip.create(momentsFriendService.getProducts(search));
 
     }
 

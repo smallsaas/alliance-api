@@ -165,12 +165,20 @@ where  id=#{id}
 
     <select id="getUsers"  resultType="com.jfeat.am.module.friend.api.OrderUserRequest">
       select id,`name`,real_name as realName from t_user
+        <if test="search != null and search != ''">
+            where (t_user.name LIKE CONCAT('%',#{search},'%')
+            or t_user.real_name LIKE CONCAT('%',#{search},'%')
+            )
+        </if>
     </select>
 
 
     <select id="getProducts"  resultType="com.jfeat.am.module.friend.api.OrderProductRequest">
       select id,`name`,t_product.barcode,t_product.price from t_product
       where t_product.`status`= 'ONSELL'
+        <if test="search != null and search != ''">
+            AND t_product.name LIKE CONCAT('%',#{search},'%')
+        </if>
     </select>
 
 </mapper>

@@ -211,14 +211,14 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     }
 
     @Override
-    public List<OrderUserRequest> getUsers() {
+    public List<OrderUserRequest> getUsers(String search) {
 
-        return queryMomentsFriendDao.getUsers();
+        return queryMomentsFriendDao.getUsers(search);
     }
 
     @Override
-    public List<OrderProductRequest> getProducts() {
-        return queryMomentsFriendDao.getProducts();
+    public List<OrderProductRequest> getProducts(String search) {
+        return queryMomentsFriendDao.getProducts(search);
     }
 
 

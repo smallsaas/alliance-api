@@ -14,7 +14,8 @@ import java.util.List;
 public interface QueryWalletHistoryDao extends BaseMapper<WalletHistory> {
 
     List<WalletHistoryRecord> findWalletHistoryPage(Page<WalletHistoryRecord> page,
-                                             @Param("search") String search);
+                                             @Param("search") String search,
+                                                    @Param("type") String type);
 
 
 }

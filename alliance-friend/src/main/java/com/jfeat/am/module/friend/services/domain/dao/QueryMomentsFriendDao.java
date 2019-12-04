@@ -62,6 +62,6 @@ public interface QueryMomentsFriendDao extends BaseMapper<MomentsFriend> {
 
     Integer upStockBalance(@Param("productId")Integer productId,@Param("num")Integer num);
 
-    List<OrderUserRequest> getUsers();
-    List<OrderProductRequest> getProducts();
+    List<OrderUserRequest> getUsers(@Param("search") String search);
+    List<OrderProductRequest> getProducts(@Param("search") String search);
 }
