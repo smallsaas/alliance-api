@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/walletHistory")
@@ -32,8 +33,14 @@ public class walletHistoryEndpoint {
                             ) {
         page.setCurrent(pageNum);
         page.setSize(pageSize);
-
-        page.setRecords(queryWalletHistoryDao.findWalletHistoryPage(page,search,type));
+        List<WalletHistoryRecord> walletHistoryRecord=queryWalletHistoryDao.findWalletHistoryPage(page,search,type);
+        for (WalletHistoryRecord walletHistory:walletHistoryRecord) {
+            if(walletHistory.getType()!=null && walletHistory.getType().equals("WITHDRAW")){
+                walletHistory.setOwnBlance(walletHistory.getBalance());
+                walletHistory.setBalance(null);
+            }
+        }
+        page.setRecords(walletHistoryRecord);
         return SuccessTip.create(page);
     }
 
