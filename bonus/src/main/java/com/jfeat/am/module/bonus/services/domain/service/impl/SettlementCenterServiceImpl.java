@@ -278,7 +278,10 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                 total=total.add(bigDecimal);
             }
         }
-        return allBonusRatio.multiply((mySelf.divide(total)));
+        if(total.intValue()==0){
+            return new BigDecimal(0.00);
+        }
+        return allBonusRatio.multiply((mySelf.divide(total,2)));
     }
 
     @Override
@@ -305,6 +308,6 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
         if(total.intValue()==0){
             return new BigDecimal(0.00);
         }
-        return allBonusRatio.multiply((mySelf.divide(total,2, BigDecimal.ROUND_HALF_UP)));
+        return allBonusRatio.multiply((mySelf.divide(total,2)));
     }
 }
