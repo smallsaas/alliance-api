@@ -241,6 +241,8 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         //阻止用户修改电话
         entity.setAlliancePhone(null);
         Integer integer = this.updateMaster(entity,false);
+        Alliance alliance2 = queryAllianceDao.selectOne(new Alliance().setId(id));
+        queryAllianceDao.upUserRealNameByPhone(alliance2.getAlliancePhone(),alliance2.getAllianceName());
         return integer;
     }
 
