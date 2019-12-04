@@ -578,18 +578,18 @@ public class RPCAllianceEndpoint {
 
     @ApiOperation(value = "根据每个月查询提成", response = Cip.class)
     @GetMapping("/cashQuery")
-    public Cip cashQuery(@RequestHeader("X-USER-ID") Long id, @RequestBody RequestBonus date) {
+    public Cip cashQuery(@RequestHeader("X-USER-ID") Long id, @RequestParam Date date) {
         BigDecimal zero = new BigDecimal(0.00);
-        BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalToMonth(id, date.getDate());
+        BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalToMonth(id,date);
         if (commissionOrderMonth == null) {
             commissionOrderMonth = zero;
         }
         AllianceRecord alliance = new AllianceRecord();
-        alliance.setCommissionOrder(JSONArray.parseArray(JSON.toJSONString(queryBonusDao.getCommissionOrderToMonth(id, date.getDate()))));
+        alliance.setCommissionOrder(JSONArray.parseArray(JSON.toJSONString(queryBonusDao.getCommissionOrderToMonth(id, date))));
         alliance.setCommissionBalance(commissionOrderMonth);
-        alliance.setOrderAmount(queryBonusDao.queryOrderAmountMonth(id, date.getDate()));//每个月订单入货额度
-        alliance.setEffectiveCommission(queryBonusDao.getCommissionTotalToMonth(id, date.getDate()));//当前月的提成
-        alliance.setConditionOrderAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)).subtract(queryBonusDao.queryOrderAmountMonth(id, date.getDate())));
+        alliance.setOrderAmount(queryBonusDao.queryOrderAmountMonth(id, date));//每个月订单入货额度
+        alliance.setEffectiveCommission(queryBonusDao.getCommissionTotalToMonth(id, date));//当前月的提成
+        alliance.setConditionOrderAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)).subtract(queryBonusDao.queryOrderAmountMonth(id, date)));
         return SuccessCip.create(alliance);
     }
 
