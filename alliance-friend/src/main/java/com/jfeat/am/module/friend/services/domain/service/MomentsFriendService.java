@@ -18,8 +18,8 @@ public interface MomentsFriendService extends CRUDMomentsFriendService {
     public Integer closeConfirmedOrder(Long id);
     public Integer cancelOrder(Long id)throws ServerException;
 
-    public List<OrderUserRequest> getUsers();
+    public List<OrderUserRequest> getUsers(String search);
 
-    public List<OrderProductRequest> getProducts();
+    public List<OrderProductRequest> getProducts(String search);
 
 }
