@@ -24,6 +24,11 @@
             AND (t_user.name LIKE CONCAT('%',#{search},'%') or
                 t_user.real_name LIKE CONCAT('%',#{search},'%'))
         </if>
+        <if test="type!= null and type != ''">
+            AND t_wallet_history.type LIKE CONCAT('%',#{type},'%')
+        </if>
+
+
         order by t_wallet_history.created_time DESC
     </select>
 

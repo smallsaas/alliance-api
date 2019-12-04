@@ -27,12 +27,13 @@ public class walletHistoryEndpoint {
     public Tip getAlliance(Page<WalletHistoryRecord> page,
                            @RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                            @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                           @RequestParam(name = "search", required = false) String search
+                           @RequestParam(name = "search", required = false) String search,
+                           @RequestParam(name = "type", required = false) String type
                             ) {
         page.setCurrent(pageNum);
         page.setSize(pageSize);
 
-        page.setRecords(queryWalletHistoryDao.findWalletHistoryPage(page,search));
+        page.setRecords(queryWalletHistoryDao.findWalletHistoryPage(page,search,type));
         return SuccessTip.create(page);
     }
 
