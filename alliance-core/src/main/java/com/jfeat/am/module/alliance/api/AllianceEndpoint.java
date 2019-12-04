@@ -453,6 +453,8 @@ public class AllianceEndpoint {
                 res += queryWalletHistoryDao.delete(new EntityWrapper<WalletHistory>().eq("wallet_id", wallet.getId()));
                 //删钱包
                 res += queryWalletDao.deleteById(wallet.getId());
+
+
             }
         }
 
@@ -595,6 +597,8 @@ public class AllianceEndpoint {
         walletHistory.setWalletId(wallet.getId());
         walletHistory.setType(RechargeType.RECHARGE);
         walletHistory.setAmount(balance);
+        walletHistory.setNote("线下充值");
+        walletHistory.setBalance(wallet.getBalance());
         walletHistory.setCreatedTime(new Date());
         res += queryWalletHistoryDao.insert(walletHistory);
         return SuccessTip.create(res);
