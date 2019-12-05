@@ -28,6 +28,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -189,7 +190,7 @@ public class AllianceEndpoint {
                               @RequestParam(name = "stockholderShip", required = false) Integer stockholderShip,
                               @RequestParam(name = "creationTime", required = false) Date creationTime,
                               @RequestParam(name = "allianceRank", required = false) Integer allianceRank,
-                              @RequestParam(name = "allianceShipTime", required = false) Date allianceShipTime,
+
                               @RequestParam(name = "stockholderShipTime", required = false) Date stockholderShipTime,
                               @RequestParam(name = "balance", required = false) BigDecimal balance,
                               @RequestParam(name = "tempAllianceExpiryTime", required = false) Date tempAllianceExpiryTime,
@@ -206,8 +207,9 @@ public class AllianceEndpoint {
                               @RequestParam(name = "alliancePhone", required = false) String alliancePhone,
                               @RequestParam(name = "allianceDob", required = false) Date allianceDob,
                               @RequestParam(name = "orderBy", required = false) String orderBy,
-                              @RequestParam(name = "startingCycle", required = false) Date startingCycle[],
-                              @RequestParam(name = "startingCycle", required = false) Date cutOffTime[],
+                              @DateTimeFormat(pattern = "yyyy-MM-dd")
+                              @RequestParam(name = "allianceShipTime", required = false) Date allianceShipTime[],
+
                               @RequestParam(name = "sort", required = false) String sort) {
         if (orderBy != null && orderBy.length() > 0) {
             if (sort != null && sort.length() > 0) {
@@ -234,7 +236,7 @@ public class AllianceEndpoint {
         record.setAllianceShip(allianceShip);
         record.setStockholderShip(stockholderShip);
         record.setCreationTime(creationTime);
-        record.setAllianceShipTime(allianceShipTime);
+
         record.setStockholderShipTime(stockholderShipTime);
         record.setTempAllianceExpiryTime(tempAllianceExpiryTime);
         record.setAllianceStatus(allianceStatus);
@@ -250,8 +252,13 @@ public class AllianceEndpoint {
         record.setAlliancePhone(alliancePhone);
         record.setAllianceDob(allianceDob);
         List<AllianceRecord> alliancePage = null;
+        Date allianceShipTimeStartTime = allianceShipTime!=null? (allianceShipTime.length > 0?allianceShipTime[0]:null) : null;
+        Date allianceShipTimeEndTime = allianceShipTime!=null ? (allianceShipTime.length==2?allianceShipTime[1]:(allianceShipTime.length==1?allianceShipTime[0]:null)) : null;
+
+
+
         try {
-            alliancePage = queryAllianceDao.findAlliancePage(page, record, search, orderBy, null, null);
+            alliancePage = queryAllianceDao.findAlliancePage(page, record, search, orderBy, allianceShipTimeStartTime, allianceShipTimeEndTime);
         } catch (Exception e) {
 //            System.out.println(e.getMessage());
         }

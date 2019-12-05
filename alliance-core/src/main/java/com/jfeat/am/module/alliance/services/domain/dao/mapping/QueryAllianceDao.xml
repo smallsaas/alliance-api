@@ -88,12 +88,17 @@
         <if test="record.allianceDob != null and record.allianceDob>0 ">
             AND t_alliance.alliance_dob LIKE CONCAT('%',#{record.allianceDob},'%')
         </if>
-        <if test="startTime != null">
-            <![CDATA[AND t_alliance.start_time >= DATE(#{startTime})]]>
+
+
+
+        <if test="startingCycleStartTime != null and startingCycleEndTime != null">
+            <![CDATA[
+         AND t_alliance.alliance_ship_time >= date(#{startingCycleStartTime}) AND
+           t_alliance.alliance_ship_time < DATE_ADD(date(#{startingCycleEndTime}),INTERVAL 1 DAY)
+             ]]>
         </if>
-        <if test="endTime != null">
-            <![CDATA[AND t_alliance.end_time <= DATE(#{endTime)]]>
-        </if>
+
+
         <if test="record.startingCycle != null and record.startingCycle>0">
             <![CDATA[AND t_alliance.end_time <= DATE(#{record.startingCycle)]]>
         </if>
@@ -184,15 +189,19 @@
         <if test="record.allianceDob != null and record.allianceDob>0 ">
             AND t_alliance.alliance_dob LIKE CONCAT('%',#{record.allianceDob},'%')
         </if>
-        <if test="startTime != null">
-            <![CDATA[AND t_alliance.start_time >= DATE(#{startTime})]]>
+
+        <if test="startingCycleStartTime != null and startingCycleEndTime != null">
+            <![CDATA[
+         AND t_alliance.alliance_ship_time >= date(#{startingCycleStartTime}) AND
+           t_alliance.alliance_ship_time < DATE_ADD(date(#{startingCycleEndTime}),INTERVAL 1 DAY)
+             ]]>
         </if>
-        <if test="endTime != null">
-            <![CDATA[AND t_alliance.end_time <= DATE(#{endTime)]]>
-        </if>
+
+
         <if test="record.startingCycle != null and record.startingCycle>0">
             <![CDATA[AND t_alliance.end_time <= DATE(#{record.startingCycle)]]>
         </if>
+
         <if test="record.balance != null and record.balance>0">
             <![CDATA[AND t_alliance.end_time <= DATE(#{record.balance)]]>
         </if>
