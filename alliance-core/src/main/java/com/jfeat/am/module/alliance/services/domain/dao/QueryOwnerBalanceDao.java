@@ -21,4 +21,7 @@ public interface QueryOwnerBalanceDao extends BaseMapper<OwnerBalance> {
 
     OwnerBalanceRecord findOneOwnerBalance (@Param("id") Integer id);
     Integer withdrawal(@Param("id") Integer id,@Param("money") BigDecimal money);
+    Integer withdrawalByUserId(@Param("id") Long id,@Param("money") BigDecimal money);
+
+    Long getInvitorUserIdByUserId(@Param("userId") Long userId);
 }

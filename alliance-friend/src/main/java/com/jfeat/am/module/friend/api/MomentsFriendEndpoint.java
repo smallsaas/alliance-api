@@ -208,6 +208,15 @@ public class MomentsFriendEndpoint {
 
     }
 
+    @PostMapping("/order/status/cancelCloseConfirmedOrder/{id}")
+    @ApiOperation(value = "取消订单确认 已确认收货--》已发货")
+    public Tip cancelCloseConfirmedOrder(@PathVariable Long id) throws ServerException {
+        return SuccessTip.create(momentsFriendService.cancelCloseConfirmedOrder(id));
+
+    }
+
+
+
     @PostMapping("/order/status/cancelOrder/{id}")
     @ApiOperation(value = "取消订单")
     public Tip cancelOrder(@PathVariable Long id) throws ServerException {

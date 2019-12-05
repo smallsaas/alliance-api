@@ -191,7 +191,6 @@ public class AllianceEndpoint {
                               @RequestParam(name = "allianceRank", required = false) Integer allianceRank,
                               @RequestParam(name = "allianceShipTime", required = false) Date allianceShipTime,
                               @RequestParam(name = "stockholderShipTime", required = false) Date stockholderShipTime,
-                              @RequestParam(name = "startingCycle", required = false) Date startingCycle,
                               @RequestParam(name = "balance", required = false) BigDecimal balance,
                               @RequestParam(name = "tempAllianceExpiryTime", required = false) Date tempAllianceExpiryTime,
                               @RequestParam(name = "allianceStatus", required = false) Integer allianceStatus,
@@ -207,6 +206,8 @@ public class AllianceEndpoint {
                               @RequestParam(name = "alliancePhone", required = false) String alliancePhone,
                               @RequestParam(name = "allianceDob", required = false) Date allianceDob,
                               @RequestParam(name = "orderBy", required = false) String orderBy,
+                              @RequestParam(name = "startingCycle", required = false) Date startingCycle[],
+                              @RequestParam(name = "startingCycle", required = false) Date cutOffTime[],
                               @RequestParam(name = "sort", required = false) String sort) {
         if (orderBy != null && orderBy.length() > 0) {
             if (sort != null && sort.length() > 0) {
@@ -225,7 +226,7 @@ public class AllianceEndpoint {
         AllianceRecord record = new AllianceRecord();
         record.setId(id);
         record.setUserId(userId);
-        record.setStartingCycle(startingCycle);
+        /*record.setStartingCycle(startingCycle);*/
         record.setBalance(balance);
         record.setAllianceRank(allianceRank);
         record.setInvitorAllianceId(invitorAllianceId);

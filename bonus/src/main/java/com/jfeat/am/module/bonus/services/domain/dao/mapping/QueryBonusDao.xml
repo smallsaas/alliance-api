@@ -625,4 +625,16 @@ DATE_ADD(
 ) and month(o.created_date) =
         month(curdate()) and year(o.created_date) = year(curdate())
     </select>
+
+    <!--查询一条订单的提成-->
+    <select id="cancelQueryEveryOrderCommission" parameterType="java.lang.Long" resultType="OrderCommissionInfo">
+        select o.id,o.user_id as
+        userId,o.order_number as orderNumber,o.total_price as totalPrice,ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100),2) as
+        commission,o.created_date as createTime from t_order_item item
+        INNER JOIN t_order o on item.order_id=o.id and o.id=#{orderId} and o.`status`='CLOSED_CONFIRMED' and
+        o.settlement_status=1
+        LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='ALLIANCE'
+    </select>
+
+
 </mapper>

@@ -1,6 +1,7 @@
 package com.jfeat.am.module.bonus.services.domain.service.impl;
 
 import com.baomidou.mybatisplus.mapper.Condition;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.jfeat.am.module.alliance.api.AllianceFields;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
@@ -42,8 +43,9 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
     @Transactional
     public boolean settlementOrder(Long orderId) {
         OrderCommissionInfo orderCommissionInfo = queryBonusDao.queryEveryOrderCommission(orderId);
-        Long userId = orderCommissionInfo.getUserId();
+
         if (orderCommissionInfo != null) {
+            Long userId = orderCommissionInfo.getUserId();
             Calendar c1 = Calendar.getInstance();
             Calendar c2 = Calendar.getInstance();
             c1.setTime(new Date());
@@ -254,6 +256,27 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
 
 
         }
+        return true;
+    }
+
+    //取消订单确认
+    @Override
+    public boolean cancelSettlementOrder(Long orderId) {
+        //查出订单
+        OrderCommissionInfo orderCommissionInfo = queryBonusDao.cancelQueryEveryOrderCommission(orderId);
+
+        //查到数据 不然不处理
+        if (orderCommissionInfo != null) {
+            Long userId = orderCommissionInfo.getUserId();
+
+            userId=queryOwnerBalanceDao.getInvitorUserIdByUserId(userId);
+            //去掉提成金额
+            queryOwnerBalanceDao.withdrawalByUserId(userId,orderCommissionInfo.getCommission());
+            //删除结算记录
+            queryOrderItemRewardDao.delete(new EntityWrapper<OrderItemReward>().eq("order_number",orderCommissionInfo.getOrderNumber()));
+
+        }
+
         return true;
     }
 

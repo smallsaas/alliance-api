@@ -53,4 +53,15 @@
           where t_owner_balance.id=#{id}
     </update>
 
+    <update id="withdrawalByUserId">
+          update t_owner_balance
+          set t_owner_balance.balance=balance-#{money}
+          where t_owner_balance.user_id=#{id}
+    </update>
+
+    <select id="getInvitorUserIdByUserId" resultType="java.lang.Long" >
+    select chi.user_id as userId
+    from t_alliance fa left join t_alliance chi on fa.invitor_alliance_id=chi.id
+    where fa.user_id=#{userId}
+    </select>
 </mapper>
