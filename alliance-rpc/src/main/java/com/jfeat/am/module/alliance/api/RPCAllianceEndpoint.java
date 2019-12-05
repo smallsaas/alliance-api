@@ -595,7 +595,7 @@ public class RPCAllianceEndpoint {
     }
 
     @ApiOperation(value = "更换绑定手机号码")
-    @GetMapping("/changePhone")
+    @PostMapping("/changePhone")
     public Cip changePhone(@RequestHeader("X-USER-ID") Long userId, @RequestBody RequestAlliance requestAlliance) {
         String alliancePhone = requestAlliance.getAlliancePhone();
         Alliance alliance = queryAllianceDao.selectOne(new Alliance().setUserId(userId));

@@ -30,3 +30,14 @@ CREATE TABLE `t_alliance` (
   `role` varchar(50) DEFAULT NULL COMMENT '角色',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `t_offline_withdrawal`;
+CREATE TABLE `t_offline_withdrawal` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `balance` decimal(10,2) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `status` int(11) DEFAULT '0',
+  `user_id` int(11) DEFAULT NULL,
+  `note` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
