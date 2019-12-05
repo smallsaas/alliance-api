@@ -1,6 +1,8 @@
 package com.jfeat.am.module.bonus.api;
 
 
+import com.jfeat.am.module.bonus.util.Cip;
+import com.jfeat.am.module.bonus.util.SuccessCip;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -51,7 +53,7 @@ public class RPCOfflineWithdrawalEndpoint {
     @BusinessLog(name = "OfflineWithdrawal", value = "create OfflineWithdrawal")
     @PostMapping
     @ApiOperation(value = "新建OfflineWithdrawal", response = OfflineWithdrawal.class)
-    public Tip createOfflineWithdrawal(@RequestHeader("X-USER-ID") Long userId, @RequestBody OfflineWithdrawal entity) {
+    public Cip createOfflineWithdrawal(@RequestHeader("X-USER-ID") Long userId, @RequestBody OfflineWithdrawal entity) {
         entity.setUserId(userId);
         Integer affected = 0;
         try {
@@ -61,7 +63,7 @@ public class RPCOfflineWithdrawalEndpoint {
             throw new BusinessException(BusinessCode.DuplicateKey);
         }
 
-        return SuccessTip.create(affected);
+        return SuccessCip.create(affected);
     }
 
     @BusinessLog(name = "OfflineWithdrawal", value = "查看 OfflineWithdrawal")
