@@ -43,8 +43,9 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
     @Transactional
     public boolean settlementOrder(Long orderId) {
         OrderCommissionInfo orderCommissionInfo = queryBonusDao.queryEveryOrderCommission(orderId);
-        Long userId = orderCommissionInfo.getUserId();
+
         if (orderCommissionInfo != null) {
+            Long userId = orderCommissionInfo.getUserId();
             Calendar c1 = Calendar.getInstance();
             Calendar c2 = Calendar.getInstance();
             c1.setTime(new Date());
@@ -262,12 +263,13 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
     @Override
     public boolean cancelSettlementOrder(Long orderId) {
         //查出订单
-        OrderCommissionInfo orderCommissionInfo = queryBonusDao.queryEveryOrderCommission(orderId);
+        OrderCommissionInfo orderCommissionInfo = queryBonusDao.cancelQueryEveryOrderCommission(orderId);
 
         //查到数据 不然不处理
         if (orderCommissionInfo != null) {
             Long userId = orderCommissionInfo.getUserId();
 
+            userId=queryOwnerBalanceDao.getInvitorUserIdByUserId(userId);
             //去掉提成金额
             queryOwnerBalanceDao.withdrawalByUserId(userId,orderCommissionInfo.getCommission());
             //删除结算记录

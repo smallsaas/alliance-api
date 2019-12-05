@@ -87,6 +87,8 @@ public interface QueryBonusDao {
     BigDecimal queryOrderAmount(@Param("userId") Long userId);
 
     OrderCommissionInfo queryEveryOrderCommission(@Param("orderId") Long orderId);
+    OrderCommissionInfo cancelQueryEveryOrderCommission(@Param("orderId") Long orderId);
+
     List<OrderCommissionInfo> queryFormerOrder(@Param("userId") Long userId,@Param("createTime") Date createTime);
     Integer upOrderSettlementStatus(@Param("status")Integer status,@Param("orderId") Long orderId);
     Long queryInvitorUserId(@Param("userId") Long userId);

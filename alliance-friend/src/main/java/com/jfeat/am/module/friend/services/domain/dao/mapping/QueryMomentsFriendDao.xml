@@ -159,7 +159,7 @@
     </update>
 
     <update id="cancelcloseProduct" >
-    update t_order SET t_order.`status`='DELIVERED_CONFIRM_PENDING'
+    update t_order SET t_order.`status`='DELIVERED_CONFIRM_PENDING',t_order.settlement_status=0
     where  id=#{id}
     </update>
 
