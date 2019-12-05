@@ -581,7 +581,7 @@ public class RPCAllianceEndpoint {
     @GetMapping("/cashQuery")
     public Cip cashQuery(@RequestHeader("X-USER-ID") Long id, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
         BigDecimal zero = new BigDecimal(0.00);
-        BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalToMonth(id,date);
+        BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalToMonth(id, date);
         if (commissionOrderMonth == null) {
             commissionOrderMonth = zero;
         }
@@ -592,6 +592,25 @@ public class RPCAllianceEndpoint {
         alliance.setEffectiveCommission(queryBonusDao.getCommissionTotalToMonth(id, date));//当前月的提成
         alliance.setConditionOrderAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)).subtract(queryBonusDao.queryOrderAmountMonth(id, date)));
         return SuccessCip.create(alliance);
+    }
+
+    @ApiOperation(value = "更换绑定手机号码")
+    @GetMapping("/changePhone")
+    public Cip changePhone(@RequestHeader("X-USER-ID") Long userId, @RequestBody RequestAlliance requestAlliance) {
+        String alliancePhone = requestAlliance.getAlliancePhone();
+        Alliance alliance = queryAllianceDao.selectOne(new Alliance().setUserId(userId));
+        if (alliancePhone != null && alliancePhone.length() > 0) {
+            if (alliance != null) {
+                alliance.setAlliancePhone(alliancePhone);
+                queryAllianceDao.updateById(alliance);
+            } else {
+                throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
+            }
+        } else {
+            throw new BusinessException(BusinessCode.BadRequest, "手机号码不能为空");
+        }
+
+        return SuccessCip.create();
     }
 
 }
