@@ -173,7 +173,7 @@ public class OfflineWithdrawalEndpoint {
                     }
                     ownerBalance.setBalance(subtract);
                     offlineWithdrawal.setStatus(OfflineWithdrawalStatus.OK);
-                    queryOfflineWithdrawalDao.updateById(new OfflineWithdrawal());
+                    queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
                     queryOwnerBalanceDao.updateById(ownerBalance);
                 }
 
