@@ -209,7 +209,7 @@ public class AllianceEndpoint {
                               @RequestParam(name = "orderBy", required = false) String orderBy,
                               @DateTimeFormat(pattern = "yyyy-MM-dd")
                               @RequestParam(name = "allianceShipTime", required = false) Date allianceShipTime[],
-
+                              @RequestParam(name = "searchNumber", required = false) Integer searchNumber[],
                               @RequestParam(name = "sort", required = false) String sort) {
         if (orderBy != null && orderBy.length() > 0) {
             if (sort != null && sort.length() > 0) {
@@ -255,10 +255,16 @@ public class AllianceEndpoint {
         Date allianceShipTimeStartTime = allianceShipTime!=null? (allianceShipTime.length > 0?allianceShipTime[0]:null) : null;
         Date allianceShipTimeEndTime = allianceShipTime!=null ? (allianceShipTime.length==2?allianceShipTime[1]:(allianceShipTime.length==1?allianceShipTime[0]:null)) : null;
 
+        Integer leftNumber = searchNumber!=null? (searchNumber.length > 0?searchNumber[0]:null) : null;
+        Integer rightNumber = searchNumber!=null ? (searchNumber.length==2?searchNumber[1]:(searchNumber.length==1?searchNumber[0]:null)) : null;
+
 
 
         try {
-            alliancePage = queryAllianceDao.findAlliancePage(page, record, search, orderBy, allianceShipTimeStartTime, allianceShipTimeEndTime);
+            alliancePage = queryAllianceDao
+                    .findAlliancePage
+                            (page, record, search, orderBy,
+                                    allianceShipTimeStartTime, allianceShipTimeEndTime,leftNumber,rightNumber);
         } catch (Exception e) {
 //            System.out.println(e.getMessage());
         }

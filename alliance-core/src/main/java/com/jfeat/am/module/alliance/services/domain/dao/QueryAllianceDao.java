@@ -23,7 +23,8 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     List<AllianceRecord> findAlliancePage(Page<AllianceRecord> page, @Param("record") AllianceRecord record,
                                           @Param("search") String search, @Param("orderBy") String orderBy,
                                           @Param("startingCycleStartTime") Date startingCycleStartTime,
-                                          @Param("startingCycleEndTime") Date startingCycleEndTime);
+                                          @Param("startingCycleEndTime") Date startingCycleEndTime,
+                                          @Param("leftNumber") Integer leftNumber, @Param("rightNumber") Integer rightNumber);
 
     List<AllianceRecord> findAlliancePageShip(Page<AllianceRecord> page, @Param("record") AllianceRecord record,
                                               @Param("search") String search, @Param("orderBy") String orderBy,

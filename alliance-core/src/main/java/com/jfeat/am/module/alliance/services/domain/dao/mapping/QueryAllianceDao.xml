@@ -114,6 +114,14 @@
             OR t_user.name LIKE CONCAT('%',#{search},'%'))
         </if>
         GROUP BY t_alliance.id
+        HAVING  1=1
+        <if test="leftNumber != null ">
+            AND team_count  >= #{leftNumber}
+        </if>
+        <if test="rightNumber!= null">
+            AND team_count  &lt;= #{rightNumber}
+        </if>
+
         order by t_alliance.creation_time desc
     </select>
 
