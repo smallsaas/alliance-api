@@ -48,9 +48,9 @@ public class OfflineWithdrawalEndpoint {
     QueryOwnerBalanceDao queryOwnerBalanceDao;
 
 
-    @BusinessLog(name = "OfflineWithdrawal", value = "create OfflineWithdrawal")
+    @BusinessLog(name = "线下提现", value = "新建 线下提现")
     @PostMapping
-    @ApiOperation(value = "新建OfflineWithdrawal", response = OfflineWithdrawal.class)
+    @ApiOperation(value = "新建线下提现", response = OfflineWithdrawal.class)
     public Tip createOfflineWithdrawal(@RequestHeader("X-USER-ID") Long userId, @RequestBody OfflineWithdrawal entity) {
         entity.setUserId(userId);
         entity.setCreateTime(new Date());
@@ -62,7 +62,7 @@ public class OfflineWithdrawalEndpoint {
         }
         return SuccessTip.create(affected);
     }
-    @BusinessLog(name = "OfflineWithdrawal", value = "查看 OfflineWithdrawal")
+
     @GetMapping("/{id}")
     @ApiOperation(value = "查看 OfflineWithdrawal", response = OfflineWithdrawal.class)
     public Tip getOfflineWithdrawal(@PathVariable Long id) {
@@ -79,21 +79,21 @@ public class OfflineWithdrawalEndpoint {
         }
         return SuccessTip.create(offlineWithdrawal);
     }
-    @BusinessLog(name = "OfflineWithdrawal", value = "update OfflineWithdrawal")
+    @BusinessLog(name = "线下提现", value = "更新 线下提现")
     @PutMapping("/{id}")
     @ApiOperation(value = "修改 OfflineWithdrawal", response = OfflineWithdrawal.class)
     public Tip updateOfflineWithdrawal(@PathVariable Long id, @RequestBody OfflineWithdrawal entity) {
         entity.setId(id);
         return SuccessTip.create(offlineWithdrawalService.updateMaster(entity));
     }
-    @BusinessLog(name = "OfflineWithdrawal", value = "delete OfflineWithdrawal")
+    @BusinessLog(name = "线下提现", value = "删除 线下提现")
     @DeleteMapping("/{id}")
     @ApiOperation("删除 OfflineWithdrawal")
     public Tip deleteOfflineWithdrawal(@PathVariable Long id) {
         return SuccessTip.create(offlineWithdrawalService.deleteMaster(id));
     }
-    /*@BusinessLog(name = "OfflineWithdrawal", value = "查询列表 OfflineWithdrawal")*/
-    @ApiOperation(value = "OfflineWithdrawal 列表信息", response = OfflineWithdrawalRecord.class)
+    /*@BusinessLog(name = "线下提现", value = "查询列表 线下提现")*/
+    @ApiOperation(value = "线下提现 列表信息", response = OfflineWithdrawalRecord.class)
     @GetMapping
     @ApiImplicitParams({
             @ApiImplicitParam(name = "pageNum", dataType = "Integer"),
@@ -145,9 +145,9 @@ public class OfflineWithdrawalEndpoint {
         return SuccessTip.create(page);
     }
 
-    @BusinessLog(name = "OfflineWithdrawal", value = "delete OfflineWithdrawal")
+    @BusinessLog(name = "线下提现", value = "删除线下提现")
     @PostMapping("/pass/{id}")
-    @ApiOperation("审批通过 OfflineWithdrawal")
+    @ApiOperation("审批通过 线下提现")
     public Tip passOfflineWithdrawal(@PathVariable Long id) {
         OfflineWithdrawal offlineWithdrawal = offlineWithdrawalService.retrieveMaster(id);
         if(offlineWithdrawal!=null){
