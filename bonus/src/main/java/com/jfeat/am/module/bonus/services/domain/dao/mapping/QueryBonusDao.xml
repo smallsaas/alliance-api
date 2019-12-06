@@ -65,15 +65,33 @@
         LEFT JOIN t_order o on item.order_id=o.id and o.status='CLOSED_CONFIRMED'
         LEFT JOIN t_product p on p.id=item.product_id
         LEFT JOIN t_product_category pc on p.category_id=pc.id
-
+        where 1=1
         <if test="search != null and search != ''">
-            where
+            and(
             p.name LIKE CONCAT('%',#{search},'%')
             OR pc.name LIKE CONCAT('%',#{search},'%')
+            )
         </if>
 
-        GROUP BY p.id ORDER
-        BY item.quantity desc
+        GROUP BY p.id
+
+        HAVING 1=1
+        <if test="leftMoney != null ">
+            AND sales  >= #{leftMoney}
+        </if>
+        <if test="rightMoney!= null">
+            AND sales  &lt;= #{rightMoney}
+        </if>
+
+        <if test="leftNumber != null ">
+            AND item.quantity  >= #{leftNumber}
+        </if>
+        <if test="rightNumber!= null">
+            AND item.quantity  &lt;= #{rightNumber}
+        </if>
+
+
+        ORDER  BY item.quantity desc
     </select>
 
     <select id="queryReInformation" resultType="com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation">

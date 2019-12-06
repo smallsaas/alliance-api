@@ -48,7 +48,9 @@ public interface QueryBonusDao {
 
     Integer queryAllianceExist(@Param("userId") Long userId);
 
-    List<ProductSalesRecord> querySales(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize, @Param("search") String search);
+    List<ProductSalesRecord> querySales(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize, @Param("search") String search,@Param("leftMoney") BigDecimal leftMoney,
+                                        @Param("rightMoney") BigDecimal rightMoney,
+                                        @Param("leftNumber") Integer leftNumber, @Param("rightNumber") Integer rightNumber);
 
     List<AllianceReconciliation> queryReInformation(@Param("search") String search);
 
