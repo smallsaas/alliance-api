@@ -92,7 +92,7 @@ public class OfflineWithdrawalEndpoint {
     public Tip deleteOfflineWithdrawal(@PathVariable Long id) {
         return SuccessTip.create(offlineWithdrawalService.deleteMaster(id));
     }
-    @BusinessLog(name = "OfflineWithdrawal", value = "查询列表 OfflineWithdrawal")
+    /*@BusinessLog(name = "OfflineWithdrawal", value = "查询列表 OfflineWithdrawal")*/
     @ApiOperation(value = "OfflineWithdrawal 列表信息", response = OfflineWithdrawalRecord.class)
     @GetMapping
     @ApiImplicitParams({
@@ -173,7 +173,7 @@ public class OfflineWithdrawalEndpoint {
                     }
                     ownerBalance.setBalance(subtract);
                     offlineWithdrawal.setStatus(OfflineWithdrawalStatus.OK);
-                    queryOfflineWithdrawalDao.updateById(new OfflineWithdrawal());
+                    queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
                     queryOwnerBalanceDao.updateById(ownerBalance);
                 }
 
