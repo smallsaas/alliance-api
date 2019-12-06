@@ -423,7 +423,7 @@ public class RPCAllianceEndpoint {
         if (aFloat == null) {
             aFloat = 0F;
         }
-        alliance.setProportion(aFloat * 100);
+        alliance.setProportion(Math.round(aFloat * 100));
 //        JSONArray royalties = new JSONArray();
 //        List<Long> team = queryBonusDao.getTeam(id);
 //        if (team != null && team.size() > 0) {
