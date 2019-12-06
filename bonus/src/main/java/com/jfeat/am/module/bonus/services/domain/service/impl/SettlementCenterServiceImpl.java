@@ -281,30 +281,46 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
     }
 
     @Override
-    public BigDecimal getRatioBonus(Long userId) {
-        List<Long> userIds = queryBonusDao.queryStockholderUserId();
-        BigDecimal allBonusRatio = queryBonusDao.getAllBonusRatio();
-        if(allBonusRatio==null){
-            allBonusRatio=new BigDecimal(0.00);
-        }
+    public BigDecimal getRatioBonusPercent(Long userId) {
+
         BigDecimal mySelf = queryBonusDao.queryMyTeamOrderAmount(userId);
         if(mySelf==null){
             mySelf=new BigDecimal(0.00);
         }
+
+        /// get total
         BigDecimal total=new BigDecimal(0.00);
-        if(userIds!=null&&userIds.size()>0){
-            for(Long id:userIds){
-                BigDecimal bigDecimal = queryBonusDao.queryMyTeamOrderAmount(id);
-                if(bigDecimal==null){
-                    bigDecimal=new BigDecimal(0.00);
+        {
+
+            List<Long> userIds = queryBonusDao.queryStockholderUserId();
+            if (userIds != null && userIds.size() > 0) {
+                for (Long id : userIds) {
+                    BigDecimal bigDecimal = queryBonusDao.queryMyTeamOrderAmount(id);
+                    if (bigDecimal == null) {
+                        bigDecimal = new BigDecimal(0.00);
+                    }
+                    total = total.add(bigDecimal);
                 }
-                total=total.add(bigDecimal);
             }
         }
+
         if(total.intValue()==0){
-            return new BigDecimal(0.00);
+            return new BigDecimal(0.0);
         }
-        return allBonusRatio.multiply((mySelf.divide(total,2)));
+
+        return mySelf.divide(total,2);
+    }
+
+    @Override
+    public BigDecimal getRatioBonus(Long userId) {
+        BigDecimal allBonusRatio = queryBonusDao.getAllBonusRatio();
+        if(allBonusRatio==null){
+            allBonusRatio=new BigDecimal(0.00);
+        }
+
+        BigDecimal percentage = getRatioBonusPercent(userId);
+
+        return allBonusRatio.multiply(percentage);
     }
 
     @Override

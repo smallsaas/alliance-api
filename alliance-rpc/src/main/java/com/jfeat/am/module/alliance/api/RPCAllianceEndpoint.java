@@ -243,6 +243,12 @@ public class RPCAllianceEndpoint {
         }
         Alliance user = queryAllianceDao.selectById(id);
         entity.setUserId(user.getUserId());
+
+        // 更新t_user.real_name
+        if(user.getAllianceName()!=null && ! user.getAllianceName().equals(entity.getAllianceName())){
+            queryAllianceDao.upUserRealNameByPhone(entity.getInvitorPhoneNumber(), entity.getAllianceName());
+        }
+
         return SuccessCip.create(allianceService.updateMaster(entity));
     }
 
@@ -402,9 +408,9 @@ public class RPCAllianceEndpoint {
             if (allBonusRatio == null) {
                 allBonusRatio = zero;
             }
-            alliance.setSelfBonus(averageBonus);
-            alliance.setTeamSelfBonus(allBonusRatio);
-            alliance.setTotalSelfBonus(averageBonus.add(allBonusRatio).setScale(2, BigDecimal.ROUND_HALF_UP));
+            alliance.setSelfBonus(averageBonus.setScale(2, BigDecimal.ROUND_HALF_UP));  //平均分红
+            alliance.setTeamSelfBonus(allBonusRatio.setScale(2, BigDecimal.ROUND_HALF_UP)); //占比分红
+            alliance.setTotalSelfBonus(averageBonus.add(allBonusRatio).setScale(2, BigDecimal.ROUND_HALF_UP));  //总收益
             BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalMonth(id);
             if (commissionOrderMonth == null) {
                 commissionOrderMonth = zero;
@@ -419,11 +425,20 @@ public class RPCAllianceEndpoint {
             alliance.setTotalSelfBonus(new BigDecimal(0.00));
         }
         alliance.setStockholderCount(queryBonusDao.stockholderCount());
-        Float aFloat = queryBonusDao.queryProportion(id);
-        if (aFloat == null) {
-            aFloat = 0F;
+
+        /// 分红占比百分比
+        {
+            //Float aFloat = queryBonusDao.queryProportion(id);
+            //if (aFloat == null) {
+            //    aFloat = 0F;
+            //}
+            //alliance.setProportion(Math.round(aFloat * 100));
+
+            // fix
+            BigDecimal percentage = settlementCenterService.getRatioBonusPercent(id);
+            alliance.setProportion(percentage.setScale(3,BigDecimal.ROUND_HALF_UP).floatValue() * 100);
         }
-        alliance.setProportion(Math.round(aFloat * 100));
+
 //        JSONArray royalties = new JSONArray();
 //        List<Long> team = queryBonusDao.getTeam(id);
 //        if (team != null && team.size() > 0) {
