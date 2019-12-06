@@ -34,6 +34,7 @@ public class BonusEndpoint {
             }
             BigDecimal selfBonus = bonusService.getSelfBonus(userId,dateType).add(bonusService.getTeamProportionBonus(userId,dateType));
             JSONObject object = new JSONObject();
+            selfBonus = selfBonus.setScale(2, BigDecimal.ROUND_HALF_UP);
             object.put("selfBonus", selfBonus);
             return SuccessCip.create(object);
         } else if (id != null) {
@@ -41,6 +42,7 @@ public class BonusEndpoint {
             if (allianceUserId != null) {
                 BigDecimal selfBonus = bonusService.getSelfBonus(allianceUserId,dateType).add(bonusService.getTeamProportionBonus(allianceUserId,dateType));
                 JSONObject object = new JSONObject();
+                selfBonus = selfBonus.setScale(2, BigDecimal.ROUND_HALF_UP);
                 object.put("selfBonus", selfBonus);
                 return SuccessCip.create(object);
             }
@@ -62,6 +64,7 @@ public class BonusEndpoint {
             }
             BigDecimal selfBonus = bonusService.getTeamBonus(userId,dateType);
             JSONObject object = new JSONObject();
+            selfBonus = selfBonus.setScale(2, BigDecimal.ROUND_HALF_UP);
             object.put("teamBonus", selfBonus);
             return SuccessCip.create(object);
         } else if (id != null) {
@@ -69,6 +72,7 @@ public class BonusEndpoint {
             if (allianceUserId != null) {
                 BigDecimal selfBonus = bonusService.getTeamBonus(allianceUserId,dateType);
                 JSONObject object = new JSONObject();
+                selfBonus = selfBonus.setScale(2, BigDecimal.ROUND_HALF_UP);
                 object.put("teamBonus", selfBonus);
                 return SuccessCip.create(object);
             }
@@ -92,6 +96,7 @@ public class BonusEndpoint {
             }
             BigDecimal selfBonus = bonusService.getSelfBonus(userId,dateType).add(bonusService.getTeamProportionBonus(userId,dateType)).add(bonusService.getTeamBonus(userId,dateType));
             JSONObject object = new JSONObject();
+            selfBonus = selfBonus.setScale(2, BigDecimal.ROUND_HALF_UP);
             object.put("totalSelfBonus", selfBonus);
             return SuccessCip.create(object);
         } else if (id != null) {
@@ -99,6 +104,7 @@ public class BonusEndpoint {
             if (allianceUserId != null) {
                 BigDecimal selfBonus = bonusService.getSelfBonus(allianceUserId,dateType).add(bonusService.getTeamProportionBonus(allianceUserId,dateType)).add(bonusService.getTeamBonus(allianceUserId,dateType));
                 JSONObject object = new JSONObject();
+                selfBonus = selfBonus.setScale(2, BigDecimal.ROUND_HALF_UP);
                 object.put("totalSelfBonus", selfBonus);
                 return SuccessCip.create(object);
             }
