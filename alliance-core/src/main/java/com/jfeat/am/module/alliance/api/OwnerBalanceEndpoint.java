@@ -130,6 +130,7 @@ public class OwnerBalanceEndpoint {
                                   @RequestParam(name = "balance", required = false) BigDecimal balance,
                                   @RequestParam(name = "version", required = false) Integer version,
                                   @RequestParam(name = "orderBy", required = false) String orderBy,
+                                  @RequestParam(name = "searchMoney", required = false) BigDecimal searchMoney[],
                                   @RequestParam(name = "sort", required = false) String sort) {
         if (orderBy != null && orderBy.length() > 0) {
             if (sort != null && sort.length() > 0) {
@@ -145,12 +146,16 @@ public class OwnerBalanceEndpoint {
         page.setCurrent(pageNum);
         page.setSize(pageSize);
 
+        BigDecimal leftMoney = searchMoney!=null? (searchMoney.length > 0?searchMoney[0]:null) : null;
+        BigDecimal rightMoney = searchMoney!=null ? (searchMoney.length==2?searchMoney[1]:(searchMoney.length==1?searchMoney[0]:null)) : null;
+
+
         OwnerBalanceRecord record = new OwnerBalanceRecord();
         record.setId(id);
         record.setUserId(userId);
         record.setBalance(balance);
         record.setVersion(version);
-        page.setRecords(queryOwnerBalanceDao.findOwnerBalancePage(page, record, search, orderBy, null, null));
+        page.setRecords(queryOwnerBalanceDao.findOwnerBalancePage(page, record, search, orderBy, null, null,leftMoney,rightMoney));
 
         return SuccessTip.create(page);
     }

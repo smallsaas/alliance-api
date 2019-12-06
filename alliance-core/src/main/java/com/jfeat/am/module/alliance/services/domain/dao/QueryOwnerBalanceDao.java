@@ -17,7 +17,10 @@ import java.util.List;
 public interface QueryOwnerBalanceDao extends BaseMapper<OwnerBalance> {
     List<OwnerBalanceRecord> findOwnerBalancePage(Page<OwnerBalanceRecord> page, @Param("record") OwnerBalanceRecord record,
                                             @Param("search") String search, @Param("orderBy") String orderBy,
-                                            @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+                                            @Param("startTime") Date startTime, @Param("endTime") Date endTime,
+                                                 @Param("leftMoney") BigDecimal leftMoney,
+                                                  @Param("rightMoney") BigDecimal rightMoney
+    );
 
     OwnerBalanceRecord findOneOwnerBalance (@Param("id") Integer id);
     Integer withdrawal(@Param("id") Integer id,@Param("money") BigDecimal money);
