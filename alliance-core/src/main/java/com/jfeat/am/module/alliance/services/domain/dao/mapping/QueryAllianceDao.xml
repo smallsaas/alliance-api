@@ -268,7 +268,9 @@
     </select>
     <select id="selectAllianceOneByUserId"
             resultType="com.jfeat.am.module.alliance.services.domain.model.AllianceRecord">
-        select * from t_alliance where user_id=#{id}
+        select a.*,u.avatar as wechatAvatar,u.name as wechatNick from t_alliance a
+        left join t_user u on u.id=a.user_id
+        where a.user_id=#{id}
     </select>
 
     <select id="getSelfProductByUserId" resultType="java.util.Map">
