@@ -2,8 +2,13 @@ package com.jfeat.am.module.bonus.api;
 
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.jfeat.am.module.alliance.api.RechargeType;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryOfflineWithdrawalDao;
 import com.jfeat.am.module.bonus.services.domain.model.OfflineWithdrawalRecord;
 import com.jfeat.am.module.bonus.services.domain.service.OfflineWithdrawalService;
@@ -44,6 +49,10 @@ public class OfflineWithdrawalEndpoint {
 
     @Resource
     QueryOfflineWithdrawalDao queryOfflineWithdrawalDao;
+    @Resource
+    QueryWalletDao queryWalletDao;
+    @Resource
+    QueryWalletHistoryDao queryWalletHistoryDao;
     @Resource
     QueryOwnerBalanceDao queryOwnerBalanceDao;
 
@@ -150,6 +159,7 @@ public class OfflineWithdrawalEndpoint {
     @ApiOperation("审批通过 线下提现")
     public Tip passOfflineWithdrawal(@PathVariable Long id) {
         OfflineWithdrawal offlineWithdrawal = offlineWithdrawalService.retrieveMaster(id);
+        int res=0;
         if(offlineWithdrawal!=null){
             if(offlineWithdrawal.getStatus().equals(OfflineWithdrawalStatus.WAIT)){
 
@@ -173,12 +183,26 @@ public class OfflineWithdrawalEndpoint {
                     }
                     ownerBalance.setBalance(subtract);
                     offlineWithdrawal.setStatus(OfflineWithdrawalStatus.OK);
-                    queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
-                    queryOwnerBalanceDao.updateById(ownerBalance);
+                    res+=queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
+                    res+=queryOwnerBalanceDao.updateById(ownerBalance);
+                    Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+                    if(wallet!=null){
+                        BigDecimal balance2 = wallet.getBalance();
+                        if(balance2==null){
+                            balance2=new BigDecimal(0.00);
+                        }
+                        BigDecimal add = balance2.add(balance);
+                        wallet.setBalance(add);
+                        res+=queryWalletDao.updateById(wallet);
+                        WalletHistory walletHistory = new WalletHistory().setNote("提成线下提现").setType(RechargeType.CASH_OUT).setBalance(wallet.getBalance()).setCreatedTime(new Date()).setAmount(balance).setWalletId(wallet.getId());
+                        res+=queryWalletHistoryDao.insert(walletHistory);
+                    }
+                }else {
+                    throw new BusinessException(BusinessCode.BadRequest,"申请失败，请联系管理员");
                 }
 
             }
         }
-        return SuccessTip.create();
+        return SuccessTip.create(res);
     }
 }
