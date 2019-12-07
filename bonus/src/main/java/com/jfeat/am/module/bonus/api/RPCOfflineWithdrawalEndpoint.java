@@ -55,6 +55,7 @@ public class RPCOfflineWithdrawalEndpoint {
     @ApiOperation(value = "新建OfflineWithdrawal", response = OfflineWithdrawal.class)
     public Cip createOfflineWithdrawal(@RequestHeader("X-USER-ID") Long userId, @RequestBody OfflineWithdrawal entity) {
         entity.setUserId(userId);
+        entity.setCreateTime(new Date());
         Integer affected = 0;
         try {
             affected = offlineWithdrawalService.createMaster(entity);

@@ -160,6 +160,9 @@ public class OfflineWithdrawalEndpoint {
     public Tip passOfflineWithdrawal(@PathVariable Long id) {
         OfflineWithdrawal offlineWithdrawal = offlineWithdrawalService.retrieveMaster(id);
         int res=0;
+        if(offlineWithdrawal.getStatus()!=0){
+            throw new BusinessException(BusinessCode.BadRequest,"提现失败，状态不符合要求");
+        }
         if(offlineWithdrawal!=null){
             if(offlineWithdrawal.getStatus().equals(OfflineWithdrawalStatus.WAIT)){
 
@@ -191,10 +194,10 @@ public class OfflineWithdrawalEndpoint {
                         if(balance2==null){
                             balance2=new BigDecimal(0.00);
                         }
-                        BigDecimal add = balance2.add(balance);
+                        BigDecimal add = balance2.add(balance1);
                         wallet.setBalance(add);
                         res+=queryWalletDao.updateById(wallet);
-                        WalletHistory walletHistory = new WalletHistory().setNote("提成线下提现").setType(RechargeType.CASH_OUT).setBalance(wallet.getBalance()).setCreatedTime(new Date()).setAmount(balance).setWalletId(wallet.getId());
+                        WalletHistory walletHistory = new WalletHistory().setNote("提成线下提现").setType(RechargeType.CASH_OUT).setBalance(wallet.getBalance()).setCreatedTime(new Date()).setAmount(balance1).setWalletId(wallet.getId());
                         res+=queryWalletHistoryDao.insert(walletHistory);
                     }
                 }else {
