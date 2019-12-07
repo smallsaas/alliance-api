@@ -197,7 +197,7 @@ public class OfflineWithdrawalEndpoint {
                         BigDecimal add = balance2.add(balance1);
                         wallet.setBalance(add);
                         res+=queryWalletDao.updateById(wallet);
-                        WalletHistory walletHistory = new WalletHistory().setNote("提成线下提现").setType(RechargeType.CASH_OUT).setBalance(wallet.getBalance()).setCreatedTime(new Date()).setAmount(balance1).setWalletId(wallet.getId());
+                        WalletHistory walletHistory = new WalletHistory().setNote("提成线下提现（转入）钱包").setType(RechargeType.CASH_OUT).setBalance(ownerBalance.getBalance()).setCreatedTime(new Date()).setAmount(balance1).setWalletId(wallet.getId());
                         res+=queryWalletHistoryDao.insert(walletHistory);
                     }
                 }else {
