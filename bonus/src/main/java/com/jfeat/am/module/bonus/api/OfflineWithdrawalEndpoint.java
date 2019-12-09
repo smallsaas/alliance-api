@@ -88,6 +88,7 @@ public class OfflineWithdrawalEndpoint {
         }
         return SuccessTip.create(offlineWithdrawal);
     }
+
     @BusinessLog(name = "线下提现", value = "更新 线下提现")
     @PutMapping("/{id}")
     @ApiOperation(value = "修改 OfflineWithdrawal", response = OfflineWithdrawal.class)
@@ -95,12 +96,14 @@ public class OfflineWithdrawalEndpoint {
         entity.setId(id);
         return SuccessTip.create(offlineWithdrawalService.updateMaster(entity));
     }
+
     @BusinessLog(name = "线下提现", value = "删除 线下提现")
     @DeleteMapping("/{id}")
     @ApiOperation("删除 OfflineWithdrawal")
     public Tip deleteOfflineWithdrawal(@PathVariable Long id) {
         return SuccessTip.create(offlineWithdrawalService.deleteMaster(id));
     }
+
     /*@BusinessLog(name = "线下提现", value = "查询列表 线下提现")*/
     @ApiOperation(value = "线下提现 列表信息", response = OfflineWithdrawalRecord.class)
     @GetMapping
@@ -159,49 +162,49 @@ public class OfflineWithdrawalEndpoint {
     @ApiOperation("审批通过 线下提现")
     public Tip passOfflineWithdrawal(@PathVariable Long id) {
         OfflineWithdrawal offlineWithdrawal = offlineWithdrawalService.retrieveMaster(id);
-        int res=0;
-        if(offlineWithdrawal.getStatus()!=0){
-            throw new BusinessException(BusinessCode.BadRequest,"提现失败，状态不符合要求");
+        int res = 0;
+        if (offlineWithdrawal.getStatus() != 0) {
+            throw new BusinessException(BusinessCode.BadRequest, "提现失败，状态不符合要求");
         }
-        if(offlineWithdrawal!=null){
-            if(offlineWithdrawal.getStatus().equals(OfflineWithdrawalStatus.WAIT)){
+        if (offlineWithdrawal != null) {
+            if (offlineWithdrawal.getStatus().equals(OfflineWithdrawalStatus.WAIT)) {
 
                 Long userId = offlineWithdrawal.getUserId();
-                if(userId!=null){
+                if (userId != null) {
                     OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(userId));
-                    if(ownerBalance==null){
-                        throw new BusinessException(BusinessCode.BadRequest,"该账户提成不足");
+                    if (ownerBalance == null) {
+                        throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
                     }
                     BigDecimal balance = ownerBalance.getBalance();
                     BigDecimal balance1 = offlineWithdrawal.getBalance();
-                    if(balance1==null){
-                        balance1=new BigDecimal(0.00);
+                    if (balance1 == null) {
+                        balance1 = new BigDecimal(0.00);
                     }
-                    if(balance==null||balance.compareTo(new BigDecimal(0.00))<=0){
-                        throw new BusinessException(BusinessCode.BadRequest,"该账户提成不足");
+                    if (balance == null || balance.compareTo(new BigDecimal(0.00)) <= 0) {
+                        throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
                     }
                     BigDecimal subtract = balance.subtract(balance1);
-                    if(subtract.compareTo(new BigDecimal(0.00))<0){
-                        throw new BusinessException(BusinessCode.BadRequest,"该账户提成不足");
+                    if (subtract.compareTo(new BigDecimal(0.00)) < 0) {
+                        throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
                     }
                     ownerBalance.setBalance(subtract);
                     offlineWithdrawal.setStatus(OfflineWithdrawalStatus.OK);
-                    res+=queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
-                    res+=queryOwnerBalanceDao.updateById(ownerBalance);
+                    res += queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
+                    res += queryOwnerBalanceDao.updateById(ownerBalance);
                     Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
-                    if(wallet!=null){
+                    if (wallet != null) {
                         BigDecimal balance2 = wallet.getBalance();
-                        if(balance2==null){
-                            balance2=new BigDecimal(0.00);
+                        if (balance2 == null) {
+                            balance2 = new BigDecimal(0.00);
                         }
                         BigDecimal add = balance2.add(balance1);
                         wallet.setBalance(add);
-                        res+=queryWalletDao.updateById(wallet);
+                        res += queryWalletDao.updateById(wallet);
                         WalletHistory walletHistory = new WalletHistory().setNote("提成线下提现（转入）钱包").setType(RechargeType.CASH_OUT).setBalance(ownerBalance.getBalance()).setCreatedTime(new Date()).setAmount(balance1).setWalletId(wallet.getId());
-                        res+=queryWalletHistoryDao.insert(walletHistory);
+                        res += queryWalletHistoryDao.insert(walletHistory);
                     }
-                }else {
-                    throw new BusinessException(BusinessCode.BadRequest,"申请失败，请联系管理员");
+                } else {
+                    throw new BusinessException(BusinessCode.BadRequest, "申请失败，请联系管理员");
                 }
 
             }

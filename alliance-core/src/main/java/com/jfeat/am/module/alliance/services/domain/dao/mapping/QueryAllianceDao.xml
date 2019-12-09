@@ -8,6 +8,7 @@
         SELECT children.id FROM t_sys_org, t_sys_org as children WHERE t_sys_org.left_num &lt;= children.left_num AND
         t_sys_org.right_num >= children.left_num and t_sys_org.id=#{ownerOrgId} order by t_sys_org.node_level ASC
     </sql>
+<!--    盟友详情信息-->
     <select id="allianceDetails" resultType="AllianceRecord">
         select t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as
         invitorPhone
@@ -125,7 +126,7 @@
         order by t_alliance.creation_time desc
     </select>
 
-
+<!--rpc分页列表-->
     <select id="findAlliancePageShip" resultType="AllianceRecord" parameterType="AllianceRecord">
         select (case when t_alliance.alliance_ship=0 or t_alliance.alliance_ship=3 then ((case when t_wallet.balance is
         NULL  then t_alliance.alliance_inventory_amount else t_wallet.balance end) ) else (0 ) end
@@ -266,17 +267,18 @@
         select * from t_order where user_id=#{id} and DATE_FORMAT(created_date,'%Y%m')=DATE_FORMAT(CURDATE() ,'%Y%m')
         order by created_date desc
     </select>
+<!--    根据userId查询盟友信息-->
     <select id="selectAllianceOneByUserId"
             resultType="com.jfeat.am.module.alliance.services.domain.model.AllianceRecord">
         select a.*,u.avatar as wechatAvatar,u.name as wechatNick from t_alliance a
         left join t_user u on u.id=a.user_id
         where a.user_id=#{id}
     </select>
-
+<!--查询自己的自营商品-->
     <select id="getSelfProductByUserId" resultType="java.util.Map">
         select p.* from t_product p,t_user_settled_merchant m where m.merchant_id=p.mid
     </select>
-
+<!--    查询自己的邀请码-->
     <select id="selectUserIdByInvitationCode" resultType="java.lang.Long" parameterType="java.lang.String">
         select id from t_user where invitation_code =#{invitationCode}
     </select>
