@@ -240,7 +240,7 @@ public class RPCAllianceRegisterEndpoint {
                         } else {
                             originWallet.setAccumulativeAmount(bigDecimal);
                         }
-                    }
+
                     WalletHistory walletHistory = new WalletHistory();
                     walletHistory.setWalletId(originWallet.getId());
                     walletHistory.setAmount(new BigDecimal(common_alliance_inventory));
@@ -249,6 +249,7 @@ public class RPCAllianceRegisterEndpoint {
                     walletHistory.setType(RechargeType.RECHARGE);
                     walletHistory.setNote("绑定盟友");
                     queryWalletHistoryDao.insert(walletHistory);
+                    }
 
                 } else if (registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_BONUS) {
                     if (!isBindUser) {
@@ -263,7 +264,7 @@ public class RPCAllianceRegisterEndpoint {
                         } else {
                             originWallet.setAccumulativeAmount(bigDecimal);
                         }
-                    }
+
                     WalletHistory walletHistory = new WalletHistory();
                     walletHistory.setWalletId(originWallet.getId());
                     walletHistory.setAmount(new BigDecimal(bonus_alliance_inventory));
@@ -272,6 +273,8 @@ public class RPCAllianceRegisterEndpoint {
                     walletHistory.setType(RechargeType.RECHARGE);
                     walletHistory.setNote("绑定盟友");
                     queryWalletHistoryDao.insert(walletHistory);
+                    }
+
                 }
                 queryWalletDao.updateById(originWallet);
 

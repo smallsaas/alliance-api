@@ -7,6 +7,12 @@ public interface SettlementCenterService {
 
     public boolean cancelSettlementOrder(Long orderId);
 
+    /// 动态分红占比
     public BigDecimal getRatioBonus(Long userId);
+
+    /// 动态分红占比百分比
+    public BigDecimal getRatioBonusPercent(Long userId);
+
+
     public BigDecimal getRatioBonusMonth(Long userId);
 }

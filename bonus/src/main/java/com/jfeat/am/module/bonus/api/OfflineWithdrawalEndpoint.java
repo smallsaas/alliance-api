@@ -2,8 +2,13 @@ package com.jfeat.am.module.bonus.api;
 
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.jfeat.am.module.alliance.api.RechargeType;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryOfflineWithdrawalDao;
 import com.jfeat.am.module.bonus.services.domain.model.OfflineWithdrawalRecord;
 import com.jfeat.am.module.bonus.services.domain.service.OfflineWithdrawalService;
@@ -45,12 +50,16 @@ public class OfflineWithdrawalEndpoint {
     @Resource
     QueryOfflineWithdrawalDao queryOfflineWithdrawalDao;
     @Resource
+    QueryWalletDao queryWalletDao;
+    @Resource
+    QueryWalletHistoryDao queryWalletHistoryDao;
+    @Resource
     QueryOwnerBalanceDao queryOwnerBalanceDao;
 
 
-    @BusinessLog(name = "OfflineWithdrawal", value = "create OfflineWithdrawal")
+    @BusinessLog(name = "线下提现", value = "新建 线下提现")
     @PostMapping
-    @ApiOperation(value = "新建OfflineWithdrawal", response = OfflineWithdrawal.class)
+    @ApiOperation(value = "新建线下提现", response = OfflineWithdrawal.class)
     public Tip createOfflineWithdrawal(@RequestHeader("X-USER-ID") Long userId, @RequestBody OfflineWithdrawal entity) {
         entity.setUserId(userId);
         entity.setCreateTime(new Date());
@@ -62,7 +71,7 @@ public class OfflineWithdrawalEndpoint {
         }
         return SuccessTip.create(affected);
     }
-    @BusinessLog(name = "OfflineWithdrawal", value = "查看 OfflineWithdrawal")
+
     @GetMapping("/{id}")
     @ApiOperation(value = "查看 OfflineWithdrawal", response = OfflineWithdrawal.class)
     public Tip getOfflineWithdrawal(@PathVariable Long id) {
@@ -79,21 +88,21 @@ public class OfflineWithdrawalEndpoint {
         }
         return SuccessTip.create(offlineWithdrawal);
     }
-    @BusinessLog(name = "OfflineWithdrawal", value = "update OfflineWithdrawal")
+    @BusinessLog(name = "线下提现", value = "更新 线下提现")
     @PutMapping("/{id}")
     @ApiOperation(value = "修改 OfflineWithdrawal", response = OfflineWithdrawal.class)
     public Tip updateOfflineWithdrawal(@PathVariable Long id, @RequestBody OfflineWithdrawal entity) {
         entity.setId(id);
         return SuccessTip.create(offlineWithdrawalService.updateMaster(entity));
     }
-    @BusinessLog(name = "OfflineWithdrawal", value = "delete OfflineWithdrawal")
+    @BusinessLog(name = "线下提现", value = "删除 线下提现")
     @DeleteMapping("/{id}")
     @ApiOperation("删除 OfflineWithdrawal")
     public Tip deleteOfflineWithdrawal(@PathVariable Long id) {
         return SuccessTip.create(offlineWithdrawalService.deleteMaster(id));
     }
-    /*@BusinessLog(name = "OfflineWithdrawal", value = "查询列表 OfflineWithdrawal")*/
-    @ApiOperation(value = "OfflineWithdrawal 列表信息", response = OfflineWithdrawalRecord.class)
+    /*@BusinessLog(name = "线下提现", value = "查询列表 线下提现")*/
+    @ApiOperation(value = "线下提现 列表信息", response = OfflineWithdrawalRecord.class)
     @GetMapping
     @ApiImplicitParams({
             @ApiImplicitParam(name = "pageNum", dataType = "Integer"),
@@ -145,11 +154,15 @@ public class OfflineWithdrawalEndpoint {
         return SuccessTip.create(page);
     }
 
-    @BusinessLog(name = "OfflineWithdrawal", value = "delete OfflineWithdrawal")
+    @BusinessLog(name = "线下提现", value = "删除线下提现")
     @PostMapping("/pass/{id}")
-    @ApiOperation("审批通过 OfflineWithdrawal")
+    @ApiOperation("审批通过 线下提现")
     public Tip passOfflineWithdrawal(@PathVariable Long id) {
         OfflineWithdrawal offlineWithdrawal = offlineWithdrawalService.retrieveMaster(id);
+        int res=0;
+        if(offlineWithdrawal.getStatus()!=0){
+            throw new BusinessException(BusinessCode.BadRequest,"提现失败，状态不符合要求");
+        }
         if(offlineWithdrawal!=null){
             if(offlineWithdrawal.getStatus().equals(OfflineWithdrawalStatus.WAIT)){
 
@@ -173,12 +186,26 @@ public class OfflineWithdrawalEndpoint {
                     }
                     ownerBalance.setBalance(subtract);
                     offlineWithdrawal.setStatus(OfflineWithdrawalStatus.OK);
-                    queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
-                    queryOwnerBalanceDao.updateById(ownerBalance);
+                    res+=queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
+                    res+=queryOwnerBalanceDao.updateById(ownerBalance);
+                    Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+                    if(wallet!=null){
+                        BigDecimal balance2 = wallet.getBalance();
+                        if(balance2==null){
+                            balance2=new BigDecimal(0.00);
+                        }
+                        BigDecimal add = balance2.add(balance1);
+                        wallet.setBalance(add);
+                        res+=queryWalletDao.updateById(wallet);
+                        WalletHistory walletHistory = new WalletHistory().setNote("提成线下提现（转入）钱包").setType(RechargeType.CASH_OUT).setBalance(ownerBalance.getBalance()).setCreatedTime(new Date()).setAmount(balance1).setWalletId(wallet.getId());
+                        res+=queryWalletHistoryDao.insert(walletHistory);
+                    }
+                }else {
+                    throw new BusinessException(BusinessCode.BadRequest,"申请失败，请联系管理员");
                 }
 
             }
         }
-        return SuccessTip.create();
+        return SuccessTip.create(res);
     }
 }
