@@ -490,6 +490,7 @@ public class RPCAllianceEndpoint {
         calendar.setTime(date);
         calendar.add(Calendar.MONTH, configFieldService.getFieldInteger(AllianceFields.ALLIANCE_FIELD_STARTING_CYCLE));
         Date endTime = calendar.getTime();
+        alliance.setSettlementCommission(queryBonusDao.getCommissionTotalToMonth(id,new Date()));
         alliance.setDividedTime(starting_time + "至" + formatter.format(endTime));
         return SuccessCip.create(alliance);
     }
@@ -606,6 +607,7 @@ public class RPCAllianceEndpoint {
         alliance.setOrderAmount(queryBonusDao.queryOrderAmountMonth(id, date));//每个月订单入货额度
         alliance.setEffectiveCommission(queryBonusDao.getCommissionTotalToMonth(id, date));//当前月的提成
         alliance.setConditionOrderAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)).subtract(queryBonusDao.queryOrderAmountMonth(id, date)));
+        alliance.setSettlementCommission(queryBonusDao.getCommissionTotalToMonth(id,date));
         return SuccessCip.create(alliance);
     }
 
