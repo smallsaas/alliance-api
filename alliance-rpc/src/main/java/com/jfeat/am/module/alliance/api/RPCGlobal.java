@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
-@RequestMapping("/rpc/alliance/global")
+@RequestMapping("/openrpc/alliance/global")
 @RestController
 public class RPCGlobal {
     @Resource
