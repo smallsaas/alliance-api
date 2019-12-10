@@ -17,7 +17,7 @@ public class RPCGlobal {
     @Resource
     ConfigFieldService configFieldService;
     @GetMapping
-    public Cip global(@RequestHeader("X-USER-ID") Long id){
+    public Cip global(){
         String condition = configFieldService.getFieldString(AllianceFields.GLOBAL_DELAY_REGISTER);
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("globalDelayRegister", Boolean.parseBoolean(condition));
