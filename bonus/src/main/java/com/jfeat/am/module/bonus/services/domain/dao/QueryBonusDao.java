@@ -120,8 +120,9 @@ public interface QueryBonusDao {
     //查询所有分红盟友的userId
     List<Long> queryStockholderUserId();
 
-
-
+    //查询所有未结算订单
+    @Select("select id from t_order where settlement_status!=1")
+    List<Long> queryOrderId();
 }
 
 
