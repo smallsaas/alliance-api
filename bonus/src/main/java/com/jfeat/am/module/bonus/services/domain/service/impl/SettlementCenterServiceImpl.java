@@ -53,21 +53,28 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
             if (c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH)) {//判断订单日期是否当前月
                 return true;
             }
-//推荐人
+            //推荐人
             Long invitorUserId = queryBonusDao.queryInvitorUserId(orderCommissionInfo.getUserId());
             if (invitorUserId != null) {
+                //推荐人进货额
                 BigDecimal bigDecimal = queryBonusDao.queryOrderAmountMonth(invitorUserId, orderCommissionInfo.getCreateTime());
                 if (bigDecimal == null) {
                     bigDecimal = new BigDecimal(0.00);
                 }
+                //configFieldService 查找结算条件  每月至低可提现进货额 condition 查找数据库得出 2000
                 BigDecimal condition = bigDecimal.subtract(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)));
+                //进货额符合条件
                 if (condition.compareTo(new BigDecimal(0.00)) >= 0) {
+
                     OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(invitorUserId));
+                    //可提现金额
                     if (ownerBalance != null) {
+                        //当前 可提现金额
                         BigDecimal bonus_balance = ownerBalance.getBalance();
                         if (bonus_balance == null) {
                             bonus_balance = new BigDecimal(0.00);
                         }
+                        //根据邀请人id 订单创造时间 查找
                         List<OrderCommissionInfo> orderCommissionInfos = queryBonusDao.queryFormerOrder(invitorUserId, orderCommissionInfo.getCreateTime());
                         if (orderCommissionInfos != null && orderCommissionInfos.size() > 0) {
                             for (OrderCommissionInfo item : orderCommissionInfos) {

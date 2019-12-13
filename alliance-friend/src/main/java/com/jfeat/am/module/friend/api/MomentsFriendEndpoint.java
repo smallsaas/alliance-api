@@ -192,13 +192,6 @@ public class MomentsFriendEndpoint {
 //        return SuccessTip.create(queryMomentsFriendDao.selectOne(entity));
 //    }
 
-    @PostMapping("/order/create")
-    @ApiOperation(value = "插入订单,下单人输入时必须数据库t_user表存在才行，根据name进行对比的")
-    public Tip createOrder(@RequestBody RequestOrder requestOrder) throws ServerException {
-
-        return SuccessTip.create(momentsFriendService.createOrder(requestOrder));
-
-    }
 
     @PostMapping("/order/status/closeConfirmed/{id}")
     @ApiOperation(value = "修改订单为已确认收货 并进行结算")
@@ -207,40 +200,18 @@ public class MomentsFriendEndpoint {
         return SuccessTip.create(momentsFriendService.closeConfirmedOrder(id));
 
     }
-
     @PostMapping("/order/status/cancelCloseConfirmedOrder/{id}")
     @ApiOperation(value = "取消订单确认 已确认收货--》已发货")
     public Tip cancelCloseConfirmedOrder(@PathVariable Long id) throws ServerException {
         return SuccessTip.create(momentsFriendService.cancelCloseConfirmedOrder(id));
 
     }
-
-
-
     @PostMapping("/order/status/cancelOrder/{id}")
     @ApiOperation(value = "取消订单")
     public Tip cancelOrder(@PathVariable Long id) throws ServerException {
         return SuccessTip.create(momentsFriendService.cancelOrder(id));
 
     }
-
-    @GetMapping("/order/getUsers")
-    @ApiOperation(value = "获取所有订单用户")
-    public Tip getUsers( @RequestParam(name = "search", required = false) String search)  {
-
-        return SuccessTip.create(momentsFriendService.getUsers(search));
-
-    }
-
-    @GetMapping("/order/getProducts")
-    @ApiOperation(value = "获取所有产品")
-    public Tip getProducts(@RequestParam(name = "search", required = false) String search)  {
-
-        return SuccessTip.create(momentsFriendService.getProducts(search));
-
-    }
-
-
 
 
 
