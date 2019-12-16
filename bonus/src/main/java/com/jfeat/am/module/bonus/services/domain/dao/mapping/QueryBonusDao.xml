@@ -73,9 +73,7 @@
             OR pc.name LIKE CONCAT('%',#{search},'%')
             )
         </if>
-
         GROUP BY p.id
-
         HAVING 1=1
         <if test="leftMoney != null ">
             AND sales  >= #{leftMoney}
@@ -83,15 +81,12 @@
         <if test="rightMoney!= null">
             AND sales  &lt;= #{rightMoney}
         </if>
-
         <if test="leftNumber != null ">
             AND item.quantity  >= #{leftNumber}
         </if>
         <if test="rightNumber!= null">
             AND item.quantity  &lt;= #{rightNumber}
         </if>
-
-
         ORDER  BY item.quantity desc
     </select>
 <!--查询所有分红盟友信息以及团队个数-->

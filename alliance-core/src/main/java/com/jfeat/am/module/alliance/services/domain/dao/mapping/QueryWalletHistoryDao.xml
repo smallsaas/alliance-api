@@ -27,15 +27,12 @@
         <if test="type!= null and type != ''">
             AND t_wallet_history.type LIKE CONCAT('%',#{type},'%')
         </if>
-
         <if test="leftMoney != null ">
             AND t_wallet_history.amount  >= #{leftMoney}
         </if>
         <if test="rightMoney!= null">
             AND t_wallet_history.amount  &lt;= #{rightMoney}
         </if>
-
-
         order by t_wallet_history.created_time DESC
     </select>
 

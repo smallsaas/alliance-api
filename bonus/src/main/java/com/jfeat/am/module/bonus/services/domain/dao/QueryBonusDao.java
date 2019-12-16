@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
 import com.jfeat.am.module.bonus.services.domain.model.OrderCommissionInfo;
 import com.jfeat.am.module.bonus.services.domain.model.ProductSalesRecord;
@@ -48,7 +49,9 @@ public interface QueryBonusDao {
     //查询盟友是否存在
     Integer queryAllianceExist(@Param("userId") Long userId);
     //销量查询
-    List<ProductSalesRecord> querySales(@Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize
+    List<ProductSalesRecord> querySales(
+            Page<ProductSalesRecord> page,
+            @Param("pageNum") Integer pageNum, @Param("pageSize") Integer pageSize
             , @Param("search") String search
                                         ,@Param("leftMoney") BigDecimal leftMoney,
                                         @Param("rightMoney") BigDecimal rightMoney,
