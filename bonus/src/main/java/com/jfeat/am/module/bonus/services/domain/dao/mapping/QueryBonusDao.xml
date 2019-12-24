@@ -409,16 +409,35 @@ AND psp.type = 'STOCKHOLDER'
 
     <!--    查询团队以及自己的订单总额-->
     <select id="queryMyTeamOrderAmount" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
-    SELECT sum(o.total_price) FROM t_order o
-    LEFT JOIN t_user u on u.id=o.user_id
-    LEFT JOIN t_alliance a on a.user_id = #{userId}
-    LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id
-    -- 过滤订单
-    WHERE ( o.user_id=a.user_id OR o.user_id=kid.user_id)
-    AND o.`status`='CLOSED_CONFIRMED'
-    AND o.created_date>STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d')
-    AND o.created_date &lt; DATE_ADD(STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d') , interval (SELECT value FROM t_config_field WHERE field='settlement_cycle') MONTH);
+        SELECT
+        (
+        SELECT sum(total_price) FROM t_order o WHERE user_id = #{userId}
+        AND o.`status`='CLOSED_CONFIRMED'
+        AND o.created_date>STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d')
+        AND o.created_date &lt; DATE_ADD(STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d') , interval (SELECT value FROM t_config_field WHERE field='settlement_cycle') MONTH)
+        ) +
+        (
+        SELECT sum(o.total_price) FROM t_order o
+        LEFT JOIN t_user u on u.id=o.user_id
+        LEFT JOIN t_alliance a on a.user_id = #{userId}
+        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=o.user_id
+        WHERE kid.user_id!=a.user_id
+        AND o.`status`='CLOSED_CONFIRMED'
+        AND o.created_date>STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d')
+        AND o.created_date &lt; DATE_ADD(STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d') , interval (SELECT value FROM t_config_field WHERE field='settlement_cycle') MONTH)
+        );
    </select>
+    <!--
+        SELECT sum(o.total_price) FROM t_order o
+        LEFT JOIN t_user u on u.id=o.user_id
+        LEFT JOIN t_alliance a on a.user_id = #{userId}
+        LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id
+        WHERE ( o.user_id=a.user_id OR o.user_id=kid.user_id)
+        AND o.`status`='CLOSED_CONFIRMED'
+        AND o.created_date>STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d')
+        AND o.created_date &lt; DATE_ADD(STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d') , interval (SELECT value FROM t_config_field WHERE field='settlement_cycle') MONTH);
+    -->
+
     <!--
     <select id="queryMyTeamOrderAmount" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
        SELECT
