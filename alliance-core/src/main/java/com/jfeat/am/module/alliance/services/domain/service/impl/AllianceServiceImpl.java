@@ -138,7 +138,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         //获取过期天数配置
         Integer expiryTime = configFieldService.getFieldInteger(AllianceFields.ALLIANCE_FIELD_TEMP_ALLIANCE_EXPIRY_TIME);
         //设置支付过期时间3天。
-        alliance.setTempAllianceExpiryTime(new Date(createTime.getTime() + expiryTime * 24 * 60 * 60 * 1000));
+        alliance.setTempAllianceExpiryTime(new Date(createTime.getTime() + expiryTime * millisecond));
         return queryAllianceDao.insert(alliance);
     }
 

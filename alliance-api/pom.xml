@@ -50,11 +50,11 @@
             <version>${uaas.version}</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.jfeat</groupId>-->
-<!--            <artifactId>cms-api</artifactId>-->
-<!--            <version>1.0.0</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>cms-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
 
 

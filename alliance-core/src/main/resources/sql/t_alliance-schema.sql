@@ -41,3 +41,4 @@ CREATE TABLE `t_offline_withdrawal` (
   `note` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `t_config_field` VALUES ('204', 'global_delay_register', '1', 'zh', '延时注册', 'true', 'STRING', '延时注册');

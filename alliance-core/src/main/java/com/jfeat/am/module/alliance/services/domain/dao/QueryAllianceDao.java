@@ -20,40 +20,41 @@ import java.util.Map;
  * Created by Code Generator on 2019-10-14
  */
 public interface QueryAllianceDao extends BaseMapper<Alliance> {
+//
     List<AllianceRecord> findAlliancePage(Page<AllianceRecord> page, @Param("record") AllianceRecord record,
                                           @Param("search") String search, @Param("orderBy") String orderBy,
                                           @Param("startingCycleStartTime") Date startingCycleStartTime,
                                           @Param("startingCycleEndTime") Date startingCycleEndTime,
                                           @Param("leftNumber") Integer leftNumber, @Param("rightNumber") Integer rightNumber);
-
+    //rpc分页列表
     List<AllianceRecord> findAlliancePageShip(Page<AllianceRecord> page, @Param("record") AllianceRecord record,
                                               @Param("search") String search, @Param("orderBy") String orderBy,
                                               @Param("startingCycleStartTime") Date startingCycleStartTime,
                                               @Param("startingCycleEndTime") Date startingCycleEndTime);
-
+    //根据userID查询当月的订单
     List<Map> getCurrentMonthOrderByUserId(@Param("id") Long id);
-
+    //根据userID 查询盟友信息
     AllianceRecord selectAllianceOneByUserId(@Param("id") Long id);
-
+    //查询自营商品
     public List<Map> getSelfProductByUserId(@Param("id") Long id);
-
+    //充值套餐
     @Select("select CONCAT('充值',value) as title,value from t_config_field where group_id=1")
     List<JSONObject> getSetMeal();
-
+    //查询邀请码
     Long selectUserIdByInvitationCode(@Param("invitationCode") String invitationCode);
 
-
+    //查询盟友详情
     AllianceRecord allianceDetails(@Param("id") Long id);
-
+    //查询电话号码是否存在
     @Select("select alliance_phone from t_alliance where alliance_phone=#{phone} ")
     String queryPhone(@Param("phone") String phone);
 
-
+    //查询自己的团队
     List<AllianceRecord> myTeam(Page<AllianceRecord> page,
                                 @Param("id") Long id,
                                 @Param("record") AllianceRecord record,
                                 @Param("search") String search);
-
+    //查询自己的订单总额
     @Select("select total_price as totalPrice,user_id as userId from t_order where id=#{orderId}")
     public JSONObject queryOrderMoney(@Param("orderId") Long orderId);
 
@@ -81,14 +82,14 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     //删除表的数据
     @Delete("delete from ${tableName}")
     public Integer deleteTableData(@Param("tableName") String tableName);
-
+    //获取数据库json字段信息测试
     @Select("select JSON_EXTRACT(t_product_settlement_proportion.proportion, '$.value')  from t_product_settlement_proportion")
     public List<Float> getJson();
 
     //查询userid
     @Select("select id from t_user where phone=${phone}")
     Long queryUserIdByPhone(@Param("phone") String phone);
-
+    //同步t_user real_name 和 alliance表 alliance_name
     @Update("update t_user set real_name=#{name} where phone=#{alliancePhone}")
     Integer upUserRealNameByPhone(@Param("alliancePhone") String alliancePhone,@Param("name") String name);
 }

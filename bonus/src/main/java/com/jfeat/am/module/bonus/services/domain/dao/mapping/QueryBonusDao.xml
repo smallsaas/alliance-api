@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao">
+<!--    查询总分红-->
     <select id="getAllianceBonus" resultType="java.math.BigDecimal">
         select sum((oi.quantity*(p.price-p.cost_price))*JSON_EXTRACT(b.proportion,'$.value')/(100.0))
         from t_order o,t_order_item oi ,t_product p,t_product_settlement_proportion b
@@ -53,11 +54,11 @@
 
 
     </select>
-
+<!--查询盟友是否存在-->
     <select id="queryAllianceExist" parameterType="java.lang.Long" resultType="java.lang.Integer">
         select count(id) from t_alliance where user_id=#{userId}
     </select>
-
+<!--销量查询-->
     <select id="querySales" resultType="com.jfeat.am.module.bonus.services.domain.model.ProductSalesRecord">
         <bind name="off_set" value="(pageNum-1)*pageSize"/>
         select p.id,p.name,p.cover,item.quantity,pc.name as category ,p.unit as
@@ -93,7 +94,7 @@
 
         ORDER  BY item.quantity desc
     </select>
-
+<!--查询所有分红盟友信息以及团队个数-->
     <select id="queryReInformation" resultType="com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation">
         select a.alliance_type as allianceType,a.id,a.alliance_name as allianceName,a.user_id as userId ,
         count(children.id)+1 as teamCount from
@@ -105,7 +106,7 @@
         </if>
         group by a.id
     </select>
-
+<!--查询订单提成-->
     <select id="queryBonusOrder" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
         select sum(p.price*oi.quantity) from t_alliance a,t_order o,t_order_item oi,t_product p where
         a.user_id=#{userId} and o.user_id=a.user_id
@@ -113,19 +114,19 @@
         oi.order_id=o.id and p.id=oi.product_id and a.alliance_ship=0 and date_format(o.created_date, '%Y%m' ) =
         date_format( curdate() , '%Y%m' )
     </select>
-
+<!--查询盟友名称-->
     <select id="queryAllianceName" resultType="string" parameterType="java.lang.Long">
         select alliance_name from t_alliance where user_id=#{userId}
     </select>
-
+<!--查询盟友状态-->
     <select id="queryShip" resultType="Integer" parameterType="java.lang.Long">
         select alliance_ship from t_alliance where user_id=#{userId}
     </select>
-
+<!--查询盟友类型-->
     <select id="queryType" resultType="Integer" parameterType="java.lang.Long">
         select alliance_type from t_alliance where user_id=#{userId}
     </select>
-
+<!--查询订单提成-->
     <select id="getCommissionOrder" parameterType="java.lang.Long" resultType="com.alibaba.fastjson.JSONObject">
         select u.name as
         invitorName,sum(ROUND((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
@@ -137,7 +138,7 @@
         LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
         o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id group by o.id
     </select>
-
+<!--查询当月的订单提成-->
     <select id="getCommissionOrderMonth" parameterType="java.lang.Long" resultType="com.alibaba.fastjson.JSONObject">
         select u.name as
         invitorName,sum(ROUND((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
@@ -150,7 +151,7 @@
         o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id and month(o.created_date) = month(curdate()) and
         year(o.created_date) = year(curdate()) group by o.id
     </select>
-
+<!--根据月分查询订单提成-->
     <select id="getCommissionOrderToMonth" parameterType="map" resultType="com.alibaba.fastjson.JSONObject">
         select u.name as
         invitorName,sum(ROUND((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100,2))
@@ -164,7 +165,7 @@
         year(o.created_date) = year(#{date}) group by o.id
     </select>
 
-
+<!--查询上个月订单提成-->
     <select id="getCommissionOrderLastMonth" parameterType="java.lang.Long"
             resultType="com.alibaba.fastjson.JSONObject">
         select u.name as
@@ -179,6 +180,7 @@
         and month(o.created_date) =
         month(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) and year(o.created_date) = year(curdate()) group by o.id
     </select>
+<!--    查询总提成-->
     <select id="getCommissionTotal" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
         select
         ROUND(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
@@ -189,6 +191,7 @@
         LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=u.id where
         o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
     </select>
+<!--    根据月分查询提成-->
     <select id="getCommissionTotalMonth" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
         select
         ROUND(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
@@ -200,7 +203,7 @@
         o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
         and month(o.created_date) = month(curdate()) and year(o.created_date) = year(curdate())
     </select>
-
+<!--查询上个月订单提成-->
     <select id="getCommissionOrderTotalLastMonth" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
         select
         ROUND(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
@@ -213,7 +216,7 @@
         and month(o.created_date) =
         month(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) and year(o.created_date) = year(curdate())
     </select>
-
+<!--根据月分查询订单提成-->
     <select id="getCommissionTotalToMonth" parameterType="map" resultType="java.math.BigDecimal">
         select
         ROUND(sum(((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100)),2),o.total_price
@@ -225,7 +228,7 @@
         o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id
         and month(o.created_date) = month(#{date}) and year(o.created_date) = year(#{date})
     </select>
-
+<!--查询总分红-->
     <select id="getAllBonusReal" resultType="java.math.BigDecimal">
         select ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0),2)
         from t_order_item item
@@ -233,7 +236,7 @@
         where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
         LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
-
+<!--查询占比分红-->
     <select id="getAllBonusRatio" resultType="java.math.BigDecimal" >
         SELECT
 	ROUND(
@@ -271,7 +274,7 @@ AND o. STATUS = 'CLOSED_CONFIRMED'
 LEFT JOIN t_product_settlement_proportion psp ON psp.product_id = item.product_id
 AND psp.type = 'STOCKHOLDER'
     </select>
-
+<!--查询平均分红-->
     <select id="getAverageBonus" resultType="java.math.BigDecimal">
         select
         ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
@@ -281,6 +284,7 @@ AND psp.type = 'STOCKHOLDER'
         where field='starting_time'),'%Y-%m-%d') and o.status='CLOSED_CONFIRMED'
         LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
+<!--    查询当月占比分红-->
     <select id="getAllBonusRatioMonth" resultType="java.math.BigDecimal">
         SELECT
 	ROUND(
@@ -319,6 +323,7 @@ AND o. STATUS = 'CLOSED_CONFIRMED' and month(o.created_date) =
 LEFT JOIN t_product_settlement_proportion psp ON psp.product_id = item.product_id
 AND psp.type = 'STOCKHOLDER'
     </select>
+<!--    查询当月占比分红-->
     <select id="getAverageBonusMonth" resultType="java.math.BigDecimal">
         select
         ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*(select
@@ -329,14 +334,15 @@ AND psp.type = 'STOCKHOLDER'
         month(curdate()) and year(o.created_date) = year(curdate())
         LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
     </select>
-
+<!--查询分红盟友总个数-->
     <select id="stockholderCount" resultType="Integer">
         select count(id) from t_alliance where alliance_ship=0 and alliance_type=1
     </select>
+<!--    查询分红盟友的userId-->
     <select id="queryStockholderUserId" resultType="Long">
         select user_id from t_alliance where alliance_ship=0 and alliance_type=1
     </select>
-
+<!--废弃的比例-->
     <select id="queryProportion" resultType="FLOAT" parameterType="java.lang.Long">
         select ROUND(((
         (
@@ -355,13 +361,14 @@ AND psp.type = 'STOCKHOLDER'
         )/(select sum(alliance_inventory_amount) from t_alliance where alliance_ship=0)),2)
 
     </select>
-
+<!--订单总额-->
     <select id="queryOrderAmount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
         select ifnull(sum(ROUND(item.price*item.quantity,2)),0) from t_order_item item
         inner join t_order o on item.order_id=o.id and o.status='CLOSED_CONFIRMED' and month(o.created_date) =
         month(curdate()) and year(o.created_date) = year(curdate()) and o.user_id=#{userId}
         LEFT JOIN t_user u on u.id=o.user_id
     </select>
+<!--    当月订单总额-->
     <select id="queryOrderAmountMonth" resultType="java.math.BigDecimal">
         select ifnull(sum(ROUND(item.price*item.quantity,2)),0) from t_order_item item
         inner join t_order o on item.order_id=o.id and o.status='CLOSED_CONFIRMED' and month(o.created_date) =
@@ -389,11 +396,11 @@ AND psp.type = 'STOCKHOLDER'
         o.`status`='CLOSED_CONFIRMED' and kid.user_id!=a.user_id and month(o.created_date) = month(#{createTime}) and
         year(o.created_date) = year(#{createTime}) and o.settlement_status=2 group by o.id
     </select>
-
+<!--更新结算状态-->
     <update id="upOrderSettlementStatus" parameterType="map">
         update t_order set settlement_status=#{status} where id=#{orderId}
     </update>
-
+<!--查询自己邀请人的user_id-->
     <select id="queryInvitorUserId" resultType="java.lang.Long">
         select a.user_id from t_alliance a
         inner join t_alliance kid on a.id=kid.invitor_alliance_id and kid.user_id=#{userId}
@@ -534,7 +541,7 @@ DATE_ADD(
 )
     </select>
     -->
-
+<!--查询我团队当月的订单总额-->
     <select id="queryMyTeamOrderAmountMonth" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
        SELECT
 	ROUND(
