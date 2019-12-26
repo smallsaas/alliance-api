@@ -317,7 +317,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
             return new BigDecimal(0.0);
         }
 
-        return mySelf.divide(total,3,ROUND_HALF_UP);
+        return mySelf.divide(total,4,ROUND_HALF_UP);
     }
 
     @Override
