@@ -492,6 +492,10 @@ public class RPCAllianceEndpoint {
         Date endTime = calendar.getTime();
         alliance.setSettlementCommission(queryBonusDao.getCommissionTotalToMonth(id,new Date()));
         alliance.setDividedTime(starting_time + "至" + formatter.format(endTime));
+        //保留一位小数
+        BigDecimal  proportionB  =  new  BigDecimal(alliance.getProportion());
+        float  proportion  =  proportionB.setScale(1,  BigDecimal.ROUND_HALF_UP).floatValue();
+        alliance.setProportion(proportion);
         return SuccessCip.create(alliance);
     }
 
