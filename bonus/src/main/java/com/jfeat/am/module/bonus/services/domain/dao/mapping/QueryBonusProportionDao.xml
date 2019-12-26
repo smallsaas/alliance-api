@@ -1,51 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jfeat.am.module.bonus.services.domain.dao.QueryBonusProportionDao">
-        <sql id="Base_Column_List">
-            t_bonus_proportion.*
+    <sql id="Base_Column_List">
+        t_bonus_proportion.*
     </sql>
 
     <sql id="QueryOwnedOrgIds">
-            SELECT children.id FROM t_sys_org, t_sys_org as children WHERE t_sys_org.left_num &lt;= children.left_num AND
-            t_sys_org.right_num >= children.left_num and t_sys_org.id=#{ownerOrgId} order by t_sys_org.node_level ASC
-        </sql>
+        SELECT children.id FROM t_sys_org, t_sys_org as children WHERE t_sys_org.left_num &lt;= children.left_num AND
+        t_sys_org.right_num >= children.left_num and t_sys_org.id=#{ownerOrgId} order by t_sys_org.node_level ASC
+    </sql>
 
 
-                        
     <select id="findBonusProportionPage" resultType="BonusProportionRecord" parameterType="BonusProportionRecord">
-            SELECT t_bonus_proportion.*
+        SELECT t_bonus_proportion.*
         FROM t_bonus_proportion
-                WHERE 1=1
-                                                                            <if test="record.id != null and record.id>0 ">
-                AND t_bonus_proportion.id LIKE CONCAT('%',#{record.id},'%')
-            </if>
-                                                                    
-                                                                                        <if test="record.productId != null and record.productId>0 ">
-                AND t_bonus_proportion.product_id LIKE CONCAT('%',#{record.productId},'%')
-            </if>
-                                                                    
-                                                                                        <if test="record.bonusProportion != null and record.bonusProportion>0 ">
-                AND t_bonus_proportion.bonus_proportion LIKE CONCAT('%',#{record.bonusProportion},'%')
-            </if>
-                                                                    <if test="record.type != null and record.type!= ''">
-                AND t_bonus_proportion.type LIKE CONCAT('%',#{record.type},'%')
-            </if>
-                                                                    <if test="record.name != null and record.name!= ''">
-                AND t_bonus_proportion.name LIKE CONCAT('%',#{record.name},'%')
-            </if>
-                                                                    <if test="record.level != null and record.level>0 ">
-                AND t_bonus_proportion.level LIKE CONCAT('%',#{record.level},'%')
-            </if>
-                <if test="startTime != null">
+        WHERE 1=1
+        <if test="record.id != null and record.id>0 ">
+            AND t_bonus_proportion.id LIKE CONCAT('%',#{record.id},'%')
+        </if>
+
+        <if test="record.productId != null and record.productId>0 ">
+            AND t_bonus_proportion.product_id LIKE CONCAT('%',#{record.productId},'%')
+        </if>
+
+        <if test="record.bonusProportion != null and record.bonusProportion>0 ">
+            AND t_bonus_proportion.bonus_proportion LIKE CONCAT('%',#{record.bonusProportion},'%')
+        </if>
+        <if test="record.type != null and record.type!= ''">
+            AND t_bonus_proportion.type LIKE CONCAT('%',#{record.type},'%')
+        </if>
+        <if test="record.name != null and record.name!= ''">
+            AND t_bonus_proportion.name LIKE CONCAT('%',#{record.name},'%')
+        </if>
+        <if test="record.level != null and record.level>0 ">
+            AND t_bonus_proportion.level LIKE CONCAT('%',#{record.level},'%')
+        </if>
+        <if test="startTime != null">
             <![CDATA[AND t_bonus_proportion.start_time >= DATE(#{startTime})]]>
         </if>
         <if test="endTime != null">
             <![CDATA[AND t_bonus_proportion.end_time <= DATE(#{endTime)]]>
         </if>
-            <!--
-        <if test="search != null and search != ''">
-            OR t_bonus_proportion.name LIKE CONCAT('%',#{search},'%')
-        </if>
-        -->
-                                    </select>
+        <!--
+    <if test="search != null and search != ''">
+        OR t_bonus_proportion.name LIKE CONCAT('%',#{search},'%')
+    </if>
+    -->
+    </select>
 </mapper>
