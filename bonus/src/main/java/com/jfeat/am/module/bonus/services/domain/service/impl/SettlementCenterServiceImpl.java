@@ -22,6 +22,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static java.math.BigDecimal.ROUND_HALF_UP;
+
 @Service("settlementCenterService")
 public class SettlementCenterServiceImpl implements SettlementCenterService {
     private Integer OK = 1;//结算成功
@@ -315,7 +317,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
             return new BigDecimal(0.0);
         }
 
-        return mySelf.divide(total);
+        return mySelf.divide(total,3,ROUND_HALF_UP);
     }
 
     @Override
