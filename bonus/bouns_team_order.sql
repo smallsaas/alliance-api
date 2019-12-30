@@ -70,3 +70,25 @@ SELECT u.real_name, a.id, kid.id, o.user_id, o.order_number, o.created_date, o.t
         AND o.created_date>STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d')
         AND o.created_date<DATE_ADD(STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d') , interval (SELECT value FROM t_config_field WHERE field='settlement_cycle') MONTH)
 
+-- 查询平均分红
+select
+   ROUND(sum((item.price-item.cost_price)*item.quantity*JSON_EXTRACT(psp.proportion,'$.value')/100.0)*
+   (
+     select
+     value/100.0
+     from t_config_field
+     where field='fixed_proportion')/
+    (
+      select count(id)
+      from t_alliance
+      where
+       alliance_type=1 and alliance_ship=0
+     )
+    ,2)
+from t_order_item item
+     inner JOIN t_order o on item.order_id=o.id and
+            o.created_date>STR_TO_DATE(
+           (select value from t_config_field
+            where field='starting_time'),'%Y-%m-%d')
+            and o.status='CLOSED_CONFIRMED'
+     LEFT JOIN t_product_settlement_proportion psp on psp.product_id=item.product_id and psp.type='STOCKHOLDER'
