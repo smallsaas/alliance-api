@@ -289,6 +289,28 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
         return true;
     }
 
+    //设置所有盟友订单总额
+    @Override
+    public Integer setTotal(){
+        /// get total
+        BigDecimal total=new BigDecimal(0.00);
+        {
+
+            List<Long> userIds = queryBonusDao.queryStockholderUserId();
+            if (userIds != null && userIds.size() > 0) {
+                for (Long id : userIds) {
+                    BigDecimal bigDecimal = queryBonusDao.queryMyTeamOrderAmount(id);
+                    if (bigDecimal == null) {
+                        bigDecimal = new BigDecimal(0.00);
+                    }
+                    total = total.add(bigDecimal);
+                }
+            }
+        }
+        Integer i = queryBonusDao.updateAllianceTotlePrice(total);
+        return i;
+    }
+
     @Override
     public BigDecimal getRatioBonusPercent(Long userId) {
 

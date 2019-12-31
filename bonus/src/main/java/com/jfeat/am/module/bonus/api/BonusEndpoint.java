@@ -3,6 +3,7 @@ package com.jfeat.am.module.bonus.api;
 import com.alibaba.fastjson.JSONObject;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
+import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
 import com.jfeat.am.module.bonus.util.Cip;
 import com.jfeat.am.module.bonus.util.SuccessCip;
 import com.jfeat.crud.base.exception.BusinessCode;
@@ -23,6 +24,8 @@ public class BonusEndpoint {
     BonusService bonusService;
     @Resource
     QueryBonusDao queryBonusDao;
+    @Resource
+    SettlementCenterService settlementCenterService;
 
     @GetMapping("/selfBonus")
     @ApiOperation("获取自己的分红，可以传盟友id，也可以Header的X-USER-ID，dateType--->1当天，2当月，3当季，不传时算总的")
@@ -117,5 +120,15 @@ public class BonusEndpoint {
         object.put("totalSelfBonus", object);
         return SuccessCip.create(object);
     }
+
+
+    @ApiOperation("手动计算并设置所有分红盟友总订单")
+    @GetMapping("/setTotal")
+    public Integer setAllianceTotal(){
+        // 设置所有分红盟友总订单
+        Integer i = settlementCenterService.setTotal();
+        return i;
+    }
+
 }
 

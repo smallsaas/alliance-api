@@ -12,6 +12,7 @@ import com.jfeat.am.module.bonus.services.domain.model.OrderCommissionInfo;
 import com.jfeat.am.module.bonus.services.domain.model.ProductSalesRecord;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 public interface QueryBonusDao {
 
@@ -126,6 +127,11 @@ public interface QueryBonusDao {
     //查询所有未结算订单
     @Select("select id from t_order where settlement_status!=1")
     List<Long> queryOrderId();
+
+
+    //更新所有盟友总额
+    @Update("UPDATE `st_statistics_record` SET `record_value` = #{value} WHERE(`identifier` = 'all_alliance_totle');")
+    Integer updateAllianceTotlePrice(BigDecimal value);
 }
 
 

@@ -72,6 +72,7 @@ public class BonusHandle {
             }
         }
     }
+    //凌晨
     @Scheduled(cron = "0 0 0 * * ?")
     public void task2() {
         List<Alliance> alliances = queryAllianceDao.selectList(null);
@@ -83,5 +84,12 @@ public class BonusHandle {
                 }
             }
         }
+
+        // 计算所有分红盟友总订单
+        Integer i = settlementCenterService.setTotal();
+
+
+
     }
+
 }

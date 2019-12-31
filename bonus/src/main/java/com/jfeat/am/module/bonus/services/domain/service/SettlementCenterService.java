@@ -15,4 +15,7 @@ public interface SettlementCenterService {
 
 
     public BigDecimal getRatioBonusMonth(Long userId);
+
+//获取总盟友订单
+    public Integer setTotal();
 }
