@@ -143,6 +143,20 @@ public class BonusEndpoint {
         return SuccessCip.create(i);
     }
 
+    @ApiOperation("手动批量结算订单")
+    @GetMapping("/manuallySettlementAll")
+    public Cip manuallySettlementAll(){
+        Integer i=0;
+        List<Long> ids = queryBonusDao.queryOrderId();
+        if(ids!=null&&ids.size()>0){
+            for(Long id:ids){
+                if(settlementCenterService.settlementOrder(id)){
+                    i++; }
+            }
+        }
+        return SuccessCip.create(i);
+    }
+
 
 
 
