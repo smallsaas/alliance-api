@@ -5,10 +5,14 @@ import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusProportionDao;
 import com.jfeat.am.module.bonus.services.domain.model.BonusProportionRecord;
 import com.jfeat.am.module.bonus.services.domain.service.BonusProportionService;
+import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
 import com.jfeat.am.module.bonus.services.gen.persistence.model.BonusProportion;
+import com.jfeat.am.module.bonus.util.Cip;
+import com.jfeat.am.module.bonus.util.SuccessCip;
 import com.jfeat.am.module.log.annotation.BusinessLog;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
+import com.jfeat.crud.base.request.Ids;
 import com.jfeat.crud.base.tips.SuccessTip;
 import com.jfeat.crud.base.tips.Tip;
 import io.swagger.annotations.Api;
@@ -42,6 +46,8 @@ public class BonusProportionEndpoint {
     QueryBonusProportionDao queryBonusProportionDao;
     @Resource
     QueryBonusDao queryBonusDao;
+    @Resource
+    SettlementCenterService settlementCenterService;
 
     @BusinessLog(name = "BonusProportion", value = "create BonusProportion")
     @PostMapping
@@ -118,6 +124,18 @@ public class BonusProportionEndpoint {
 
         return SuccessTip.create(page);
     }
+
+    @ApiOperation("批量结算订单")
+    @PostMapping("/settlementAll")
+    public Cip settlementAll(@RequestBody Ids ids){
+        Integer i=0;
+        if(ids!=null&&ids.getIds().size()>0){
+            for(Long id:ids.getIds()){
+                if(settlementCenterService.settlementOrder(id)){
+                    i++; } } }
+        return SuccessCip.create(i);
+    }
+
 }
 
 

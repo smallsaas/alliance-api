@@ -132,16 +132,7 @@ public class BonusEndpoint {
         return i;
     }
 
-    @ApiOperation("批量结算订单")
-    @PostMapping("/settlementAll")
-    public Cip settlementAll(@RequestBody Ids ids){
-        Integer i=0;
-        if(ids!=null&&ids.getIds().size()>0){
-            for(Long id:ids.getIds()){
-                if(settlementCenterService.settlementOrder(id)){
-                    i++; } } }
-        return SuccessCip.create(i);
-    }
+
 
     @ApiOperation("手动批量结算订单")
     @GetMapping("/manuallySettlementAll")
