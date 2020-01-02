@@ -8,9 +8,11 @@ import com.jfeat.am.module.bonus.util.Cip;
 import com.jfeat.am.module.bonus.util.SuccessCip;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
+import com.jfeat.crud.base.request.Ids;
 import io.swagger.annotations.Api;
 
 import java.math.BigDecimal;
+import java.util.List;
 import javax.annotation.Resource;
 
 import io.swagger.annotations.ApiOperation;
@@ -129,6 +131,20 @@ public class BonusEndpoint {
         Integer i = settlementCenterService.setTotal();
         return i;
     }
+
+    @ApiOperation("批量结算订单")
+    @GetMapping("/settlementAll")
+    public Cip settlementAll(@RequestParam(name = "ids", required = false) Ids ids){
+        Integer i=0;
+        if(ids!=null&&ids.getIds().size()>0){
+            for(Long id:ids.getIds()){
+                if(settlementCenterService.settlementOrder(id)){
+                    i++; } } }
+        return SuccessCip.create(i);
+    }
+
+
+
 
 }
 
