@@ -1,5 +1,6 @@
 package com.jfeat.am.module.bonus.services.domain.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
 
 import java.math.BigDecimal;
@@ -15,6 +16,6 @@ public interface BonusService {
   //获得自己的团队奖励
   BigDecimal getTeamBonus(Long paramLong, Integer dateType);
 
-  List<AllianceReconciliation> getAllianceReconciliation(Integer pageNum, Integer pageSize,String search);
+  List<AllianceReconciliation> getAllianceReconciliation(Page<AllianceReconciliation> page, String search);
 }
 

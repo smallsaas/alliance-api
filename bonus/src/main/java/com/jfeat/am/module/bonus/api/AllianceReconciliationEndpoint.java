@@ -52,15 +52,17 @@ public class AllianceReconciliationEndpoint {
         return SuccessTip.create(page);
     }
 
+    //盟友结算
     @GetMapping("/allianceReconciliation")
     @Permission(BonusPermission.BONUS_DIVIDEND)
-    public Tip allianceReconciliation(@RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+    public Tip allianceReconciliation(Page<AllianceReconciliation> page,
+                                      @RequestParam(name = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                       @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                       @RequestParam(name = "search", required = false) String search) {
-        Page<AllianceReconciliation> page=new Page<>();
-        page.setRecords(bonusService.getAllianceReconciliation(pageNum, pageSize, search));
         page.setSize(pageSize);
         page.setCurrent(pageNum);
+        page.setRecords(bonusService.getAllianceReconciliation(page, search));
+
         return SuccessTip.create(page);
     }
 }

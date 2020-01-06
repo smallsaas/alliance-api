@@ -112,6 +112,12 @@
             <groupId>com.jfeat</groupId>
             <artifactId>saas-app-api</artifactId>
             <version>${saas-app-api.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.jfeat</groupId>
+                    <artifactId>portal-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
@@ -167,6 +173,12 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
             <version>1.9.4</version>
+        </dependency>
+
+        <dependency>
+        <groupId>com.jfeat</groupId>
+        <artifactId>statistic</artifactId>
+        <version>1.0.0</version>
         </dependency>
 
 

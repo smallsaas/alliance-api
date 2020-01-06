@@ -58,7 +58,9 @@ public interface QueryBonusDao {
                                         @Param("rightMoney") BigDecimal rightMoney,
                                         @Param("leftNumber") Integer leftNumber, @Param("rightNumber") Integer rightNumber);
     //查询正式盟友的信息
-    List<AllianceReconciliation> queryReInformation(@Param("search") String search);
+    List<AllianceReconciliation> queryReInformation(
+            Page<AllianceReconciliation> page,
+            @Param("search") String search);
     //查询订单分红
     BigDecimal queryBonusOrder(@Param("userId") Long userId);
     //查询盟友名称

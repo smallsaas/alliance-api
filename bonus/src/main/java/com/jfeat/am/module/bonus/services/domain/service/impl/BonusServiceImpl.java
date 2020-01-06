@@ -1,5 +1,6 @@
 package com.jfeat.am.module.bonus.services.domain.service.impl;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.jfeat.am.module.bonus.api.BonusDateType;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.filter.AllianceField;
@@ -117,9 +118,11 @@ public class BonusServiceImpl implements BonusService {
         return teamBonus.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
+    //盟友结算
     @Override
-    public List<AllianceReconciliation> getAllianceReconciliation(Integer pageNum, Integer pageSize, String search) {
-        List<AllianceReconciliation> allianceReconciliations = queryBonusDao.queryReInformation(search);
+    public List<AllianceReconciliation> getAllianceReconciliation(Page<AllianceReconciliation> page, String search) {
+        //查询正式盟友的信息
+        List<AllianceReconciliation> allianceReconciliations = queryBonusDao.queryReInformation(page,search);
         if (allianceReconciliations != null && allianceReconciliations.size() > 0) {
             for (AllianceReconciliation r : allianceReconciliations) {
                 BigDecimal commissionTotal = queryBonusDao.getCommissionTotalMonth(r.getUserId());
@@ -127,6 +130,7 @@ public class BonusServiceImpl implements BonusService {
                     commissionTotal=new BigDecimal(0.00);
                 }
                 r.setRoyalty(commissionTotal);
+                //如果为分红盟友
                 if (r.getAllianceType() == AllianceField.ALLIANCE_TYPE_BONUS) {
                     BigDecimal averageBonusMonth = queryBonusDao.getAverageBonusMonth();
                     BigDecimal allBonusRatioMonth = settlementCenterService.getRatioBonusMonth(r.getUserId());
