@@ -81,6 +81,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                         if (orderCommissionInfos != null && orderCommissionInfos.size() > 0) {
                             for (OrderCommissionInfo item : orderCommissionInfos) {
                                 if (!item.getId().equals(orderCommissionInfo.getId()))
+                                    if(item.getCommission()==null){item.setCommission(new BigDecimal(0));}
                                     bonus_balance = bonus_balance.add(item.getCommission());
                                 queryBonusDao.upOrderSettlementStatus(OK, item.getId());
                                 List<OrderItem> orderItems = queryOrderItemDao.selectList(new Condition().eq(OrderItem.ORDER_ID, item.getId()));

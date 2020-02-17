@@ -57,6 +57,16 @@
             <groupId>com.jfeat</groupId>
             <artifactId>saas-mall-api</artifactId>
             <version>${saas-mall-api.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.jfeat</groupId>
+                    <artifactId>portal-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.jfeat</groupId>
+                    <artifactId>zero-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--springboot test-->
         <dependency>

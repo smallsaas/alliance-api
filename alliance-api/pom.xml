@@ -100,6 +100,16 @@
             <groupId>com.jfeat</groupId>
             <artifactId>crud-core</artifactId>
             <version>${crud-core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.jfeat</groupId>
+                    <artifactId>portal-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.jfeat</groupId>
+                    <artifactId>zero-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--sub-system modules-->
@@ -112,17 +122,21 @@
             <groupId>com.jfeat</groupId>
             <artifactId>saas-app-api</artifactId>
             <version>${saas-app-api.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.jfeat</groupId>
-                    <artifactId>portal-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-mall-api</artifactId>
             <version>${saas-mall-api.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.jfeat</groupId>
+                    <artifactId>portal-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.jfeat</groupId>
+                    <artifactId>zero-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--business modules-->
@@ -176,11 +190,21 @@
         </dependency>
 
         <dependency>
-        <groupId>com.jfeat</groupId>
-        <artifactId>statistic</artifactId>
-        <version>1.0.0</version>
+            <groupId>com.jfeat</groupId>
+            <artifactId>statistic</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>zero-io</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+       <!-- <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>env-test-saas</artifactId>
+            <version>1.0.0</version>
+        </dependency>-->
 
 
     </dependencies>

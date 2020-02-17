@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 
 @RestController
@@ -65,4 +67,11 @@ public class AllianceReconciliationEndpoint {
 
         return SuccessTip.create(page);
     }
+
+    @GetMapping(value = "/text")
+    public String exportExcelFile(HttpServletRequest request , HttpServletResponse response)  {
+        response.setContentType("application/octet-stream");
+        return "111";
+    }
+
 }
