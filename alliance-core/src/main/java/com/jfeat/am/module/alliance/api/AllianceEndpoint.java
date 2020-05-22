@@ -639,11 +639,18 @@ public class AllianceEndpoint {
             wallet.setAccumulativeAmount(accumulativeAmount.add(balance));
             res += queryWalletDao.updateById(wallet);
         }
+
         WalletHistory walletHistory = new WalletHistory();
         walletHistory.setWalletId(wallet.getId());
-        walletHistory.setType(RechargeType.RECHARGE);
-        walletHistory.setAmount(balance);
-        walletHistory.setNote("线下充值");
+        if(balance.longValue()<0){
+            walletHistory.setType(RechargeType.CASH_OUT);
+            walletHistory.setNote("线下充值-提现");
+            walletHistory.setAmount(new BigDecimal(0).subtract(balance));
+        }else {
+            walletHistory.setType(RechargeType.RECHARGE);
+            walletHistory.setNote("线下充值-充值");
+            walletHistory.setAmount(balance);
+        }
         walletHistory.setBalance(wallet.getBalance());
         walletHistory.setCreatedTime(new Date());
         res += queryWalletHistoryDao.insert(walletHistory);
