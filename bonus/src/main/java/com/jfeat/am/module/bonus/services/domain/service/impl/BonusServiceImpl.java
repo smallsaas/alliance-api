@@ -189,14 +189,14 @@ public class BonusServiceImpl implements BonusService {
     public Integer settlementAllicanceBatch(List<Long> ids){
         Integer res = 0;
         for (Long id : ids){
-            res += settlementAlliance(id);
+            res += settlementAlliance(id,true);
         }
         return res;
     }
 
     @Override
     @Transactional
-    public Integer settlementAlliance(Long id){
+    public Integer settlementAlliance(Long id,Boolean isBatch){
         Integer res = 0;
         Alliance alliance = allianceMapper.selectById(id);
 
@@ -204,7 +204,7 @@ public class BonusServiceImpl implements BonusService {
         Long userId;
         if(alliance.getUserId() == null){
             throw new BusinessException(BusinessCode.CRUD_GENERAL_ERROR,"该盟友没有被绑定，无法进行结算");
-        }else if(!BonusStatus.NOT_SETTLEMENT.equals(alliance.getBonusSettlement())){
+        }else if(!BonusStatus.NOT_SETTLEMENT.equals(alliance.getBonusSettlement()) && !isBatch){
             throw new BusinessException(BusinessCode.CRUD_GENERAL_ERROR,"该盟友已结算");
         }
         else{

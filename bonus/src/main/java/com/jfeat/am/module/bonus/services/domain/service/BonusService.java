@@ -2,6 +2,7 @@ package com.jfeat.am.module.bonus.services.domain.service;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,6 +21,8 @@ public interface BonusService {
 
     Integer settlementAllicanceBatch(List<Long> ids);
 
-    Integer settlementAlliance(Long id);
+
+    @Transactional
+    Integer settlementAlliance(Long id, Boolean isBatch);
 }
 

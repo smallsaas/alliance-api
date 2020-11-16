@@ -28,10 +28,10 @@ public class AllianceReconciliationEndpoint {
     BonusService bonusService;
 
 
-    @PutMapping("/settlementAlliance/{id}")
+    @PostMapping("/settlementAlliance/{id}")
     @ApiOperation(value = "盟友 分红结算", response = Tip.class)
     public Tip settlementAlliance(@PathVariable Long id){
-        Integer integer = bonusService.settlementAlliance(id);
+        Integer integer = bonusService.settlementAlliance(id,false);
         return SuccessTip.create(integer);
     }
 
