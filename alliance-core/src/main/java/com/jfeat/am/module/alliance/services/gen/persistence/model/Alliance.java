@@ -198,6 +198,21 @@ public class Alliance extends Model<Alliance> {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date allianceDob;
 
+    /**
+     * 0 未结算
+     * 1 已结算
+     * */
+    @TableField("bonus_settlement")
+    private Integer bonusSettlement;
+
+    public Integer getBonusSettlement() {
+        return bonusSettlement;
+    }
+
+    public void setBonusSettlement(Integer bonusSettlement) {
+        this.bonusSettlement = bonusSettlement;
+    }
+
     public String getRole() {
         return role;
     }

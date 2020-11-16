@@ -152,19 +152,6 @@ public class BonusEndpoint {
 
 
 
-    @PutMapping("/settlementAlliance/{id}")
-    @ApiOperation(value = "盟友 分红结算", response = Tip.class)
-    public Tip settlementAlliance(@PathVariable Long id){
-        Integer integer = bonusService.settlementAlliance(id);
-        return SuccessTip.create(integer);
-    }
-
-    @PutMapping("/settlementAlliance")
-    @ApiOperation(value = "批量 盟友 分红结算", response = Tip.class)
-    public Tip settlementAllianceList(@PathVariable List<Long> ids){
-        Integer integer = bonusService.settlementAllicanceBatch(ids);
-        return SuccessTip.create(integer);
-    }
 
 
 }

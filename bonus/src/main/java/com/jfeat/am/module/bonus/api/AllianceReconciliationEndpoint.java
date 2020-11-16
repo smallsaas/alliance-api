@@ -10,15 +10,14 @@ import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
 import com.jfeat.crud.base.tips.SuccessTip;
 import com.jfeat.crud.base.tips.Tip;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/bonus/reconciliation")
@@ -28,6 +27,20 @@ public class AllianceReconciliationEndpoint {
     @Resource
     BonusService bonusService;
 
+
+    @PutMapping("/settlementAlliance/{id}")
+    @ApiOperation(value = "盟友 分红结算", response = Tip.class)
+    public Tip settlementAlliance(@PathVariable Long id){
+        Integer integer = bonusService.settlementAlliance(id);
+        return SuccessTip.create(integer);
+    }
+
+    @PostMapping("/settlementAlliance")
+    @ApiOperation(value = "批量 盟友 分红结算", response = Tip.class)
+    public Tip settlementAllianceList(@RequestBody List<Long> ids){
+        Integer integer = bonusService.settlementAllicanceBatch(ids);
+        return SuccessTip.create(integer);
+    }
 
     //产品销量
     @GetMapping("/sales")

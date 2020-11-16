@@ -12,6 +12,7 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.bonus.api.BonusDateType;
 import com.jfeat.am.module.bonus.api.BonusError;
+import com.jfeat.am.module.bonus.api.BonusStatus;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.filter.AllianceField;
 import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
@@ -28,6 +29,7 @@ import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("bonusService")
@@ -193,29 +195,29 @@ public class BonusServiceImpl implements BonusService {
     }
 
     @Override
+    @Transactional
     public Integer settlementAlliance(Long id){
         Integer res = 0;
         Alliance alliance = allianceMapper.selectById(id);
-        //dateType--->1当天，2当月，3当季，null 算总的
+
         Integer dateType = null;
         Long userId;
         if(alliance.getUserId() == null){
             throw new BusinessException(BusinessCode.CRUD_GENERAL_ERROR,"该盟友没有被绑定，无法进行结算");
-        }else{
+        }else if(!BonusStatus.NOT_SETTLEMENT.equals(alliance.getBonusSettlement())){
+            throw new BusinessException(BusinessCode.CRUD_GENERAL_ERROR,"该盟友已结算");
+        }
+        else{
             userId = alliance.getUserId();
         }
         Wallet wallet = null ;
         List<Wallet> wallets = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID, alliance.getUserId()));
 
 
-        /****/
-        Integer allianceExist = queryBonusDao.queryAllianceExist(userId);
-        if(allianceExist==0){
-            throw new BusinessException(BusinessCode.BadRequest, BonusError.ALLIANCE_NOT_EXIST);
-        }
-        BigDecimal selfBonus = this.getSelfBonus(userId,dateType).add(this.getTeamProportionBonus(userId,dateType)).add(this.getTeamBonus(userId,dateType));
-        selfBonus = selfBonus.setScale(2, BigDecimal.ROUND_HALF_UP);
-        BigDecimal balance = selfBonus;
+        /** 分红计算 **/
+        BigDecimal averageBonus = queryBonusDao.getAverageBonus();
+        BigDecimal allBonusRatio = settlementCenterService.getRatioBonus(userId);
+        BigDecimal balance = averageBonus.add(allBonusRatio).setScale(2, BigDecimal.ROUND_HALF_UP);  //总收益
         /****/
 
 
@@ -245,11 +247,15 @@ public class BonusServiceImpl implements BonusService {
         WalletHistory walletHistory = new WalletHistory();
         walletHistory.setWalletId(wallet.getId());
         walletHistory.setType(RechargeType.RECHARGE);
-        walletHistory.setNote("分红结算-充值");
+        walletHistory.setNote("分红结算");
         walletHistory.setAmount(balance);
         walletHistory.setBalance(wallet.getBalance());
         walletHistory.setCreatedTime(new Date());
         res += queryWalletHistoryDao.insert(walletHistory);
+
+        //设为已结算
+        alliance.setBonusSettlement(BonusStatus.SETTLEMENT_END);
+        allianceMapper.updateAllColumnById(alliance);
 
         return res;
     }
