@@ -9,6 +9,8 @@ import com.jfeat.am.module.bonus.util.SuccessCip;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
 import com.jfeat.crud.base.request.Ids;
+import com.jfeat.crud.base.tips.SuccessTip;
+import com.jfeat.crud.base.tips.Tip;
 import io.swagger.annotations.Api;
 
 import java.math.BigDecimal;
@@ -149,6 +151,20 @@ public class BonusEndpoint {
     }
 
 
+
+    @PutMapping("/settlementAlliance/{id}")
+    @ApiOperation(value = "盟友 分红结算", response = Tip.class)
+    public Tip settlementAlliance(@PathVariable Long id){
+        Integer integer = bonusService.settlementAlliance(id);
+        return SuccessTip.create(integer);
+    }
+
+    @PutMapping("/settlementAlliance")
+    @ApiOperation(value = "批量 盟友 分红结算", response = Tip.class)
+    public Tip settlementAllianceList(@PathVariable List<Long> ids){
+        Integer integer = bonusService.settlementAllicanceBatch(ids);
+        return SuccessTip.create(integer);
+    }
 
 
 }

@@ -44,6 +44,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
     @Override
     @Transactional
     public boolean settlementOrder(Long orderId) {
+        //查询订单提成
         OrderCommissionInfo orderCommissionInfo = queryBonusDao.queryEveryOrderCommission(orderId);
 
         if (orderCommissionInfo != null) {

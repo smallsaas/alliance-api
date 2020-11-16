@@ -1,7 +1,17 @@
 package com.jfeat.am.module.bonus.services.domain.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.jfeat.am.module.alliance.api.RechargeType;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
+import com.jfeat.am.module.alliance.services.gen.persistence.dao.AllianceMapper;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.bonus.api.BonusDateType;
+import com.jfeat.am.module.bonus.api.BonusError;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.filter.AllianceField;
 import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
@@ -10,6 +20,7 @@ import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
 
@@ -23,6 +34,13 @@ import org.springframework.stereotype.Service;
 public class BonusServiceImpl implements BonusService {
     @Resource
     QueryBonusDao queryBonusDao;
+    @Resource
+    AllianceMapper allianceMapper;
+    @Resource
+    QueryWalletDao queryWalletDao;
+
+    @Resource
+    QueryWalletHistoryDao queryWalletHistoryDao;
 
     @Resource
     SettlementCenterService settlementCenterService;
@@ -164,6 +182,78 @@ public class BonusServiceImpl implements BonusService {
         List<AllianceReconciliation> currentPageList=new ArrayList<>();
         return allianceReconciliations;
     }
+
+    @Override
+    public Integer settlementAllicanceBatch(List<Long> ids){
+        Integer res = 0;
+        for (Long id : ids){
+            res += settlementAlliance(id);
+        }
+        return res;
+    }
+
+    @Override
+    public Integer settlementAlliance(Long id){
+        Integer res = 0;
+        Alliance alliance = allianceMapper.selectById(id);
+        //dateType--->1当天，2当月，3当季，null 算总的
+        Integer dateType = null;
+        Long userId;
+        if(alliance.getUserId() == null){
+            throw new BusinessException(BusinessCode.CRUD_GENERAL_ERROR,"该盟友没有被绑定，无法进行结算");
+        }else{
+            userId = alliance.getUserId();
+        }
+        Wallet wallet = null ;
+        List<Wallet> wallets = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID, alliance.getUserId()));
+
+
+        /****/
+        Integer allianceExist = queryBonusDao.queryAllianceExist(userId);
+        if(allianceExist==0){
+            throw new BusinessException(BusinessCode.BadRequest, BonusError.ALLIANCE_NOT_EXIST);
+        }
+        BigDecimal selfBonus = this.getSelfBonus(userId,dateType).add(this.getTeamProportionBonus(userId,dateType)).add(this.getTeamBonus(userId,dateType));
+        selfBonus = selfBonus.setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal balance = selfBonus;
+        /****/
+
+
+
+        //设置钱包逻辑
+        if(wallets!=null && wallets.size()>0){
+            wallet = wallets.get(0);
+            BigDecimal balance1 = wallet.getBalance();
+            if (balance1 == null) {
+                balance1 = new BigDecimal(0.00);
+            }
+            wallet.setBalance(balance1.add(balance));
+            BigDecimal accumulativeAmount = wallet.getAccumulativeAmount();
+            if (accumulativeAmount == null) {
+                accumulativeAmount = new BigDecimal(0.00);
+            }
+            wallet.setAccumulativeAmount(accumulativeAmount.add(balance));
+            res += queryWalletDao.updateById(wallet);
+        }else{
+            wallet = new Wallet();
+            wallet.setUserId(alliance.getUserId());
+            wallet.setBalance(balance);
+            wallet.setAccumulativeAmount(balance);
+            res += queryWalletDao.insert(wallet);
+        }
+
+        WalletHistory walletHistory = new WalletHistory();
+        walletHistory.setWalletId(wallet.getId());
+        walletHistory.setType(RechargeType.RECHARGE);
+        walletHistory.setNote("分红结算-充值");
+        walletHistory.setAmount(balance);
+        walletHistory.setBalance(wallet.getBalance());
+        walletHistory.setCreatedTime(new Date());
+        res += queryWalletHistoryDao.insert(walletHistory);
+
+        return res;
+    }
+
 }
 
 

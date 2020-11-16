@@ -17,5 +17,9 @@ public interface BonusService {
   BigDecimal getTeamBonus(Long paramLong, Integer dateType);
 
   List<AllianceReconciliation> getAllianceReconciliation(Page<AllianceReconciliation> page, String search);
+
+    Integer settlementAllicanceBatch(List<Long> ids);
+
+    Integer settlementAlliance(Long id);
 }
 

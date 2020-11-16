@@ -256,13 +256,10 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
         alliance.setAllianceShip(AllianceShips.ALLIANCE_SHIP_PAID);
-//<<<<<<< Updated upstream
-        //alliance.setAllianceShipTime(new Date());
-        this.updateMaster(alliance);
-//=======
+
         alliance.setAllianceShipTime(new Date());
         set += this.updateMaster(alliance);
-//>>>>>>> Stashed changes
+
 
         Long userId = alliance.getUserId();
         if (userId == null) {
