@@ -2,6 +2,8 @@ package com.jfeat.am.module.bonus.api;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.jfeat.am.common.annotation.Permission;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao;
+import com.jfeat.am.module.alliance.services.gen.persistence.dao.AllianceMapper;
 import com.jfeat.am.module.bonus.definition.BonusPermission;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
@@ -26,6 +28,8 @@ public class AllianceReconciliationEndpoint {
     QueryBonusDao queryBonusDao;
     @Resource
     BonusService bonusService;
+    @Resource
+    QueryAllianceDao queryAllianceDao;
 
 
     @PostMapping("/settlementAlliance/{id}")
@@ -38,6 +42,15 @@ public class AllianceReconciliationEndpoint {
     @PostMapping("/settlementAlliance")
     @ApiOperation(value = "批量 盟友 分红结算", response = Tip.class)
     public Tip settlementAllianceList(@RequestBody List<Long> ids){
+        Integer integer = bonusService.settlementAllicanceBatch(ids);
+        return SuccessTip.create(integer);
+    }
+
+    @PostMapping("/settlementAlliance/all")
+    @ApiOperation(value = "批量  所有盟友 分红结算", response = Tip.class)
+    public Tip settlementAllianceList(){
+        //获取所有盟友的id
+        List<Long> ids = queryAllianceDao.getAllAllianceIds();
         Integer integer = bonusService.settlementAllicanceBatch(ids);
         return SuccessTip.create(integer);
     }

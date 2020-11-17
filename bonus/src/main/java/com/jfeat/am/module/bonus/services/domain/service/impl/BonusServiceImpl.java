@@ -31,6 +31,8 @@ import com.jfeat.crud.base.exception.BusinessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.jfeat.am.module.alliance.api.AllianceType.ALLIANCE_TYPE_DIVIDEND;
+
 
 @Service("bonusService")
 public class BonusServiceImpl implements BonusService {
@@ -200,28 +202,49 @@ public class BonusServiceImpl implements BonusService {
         Integer res = 0;
         Alliance alliance = allianceMapper.selectById(id);
 
+
         Integer dateType = null;
         Long userId;
-        if(alliance.getUserId() == null){
+        if(alliance.getUserId() == null && !isBatch){
             throw new BusinessException(BusinessCode.CRUD_GENERAL_ERROR,"该盟友没有被绑定，无法进行结算");
         }else if(!BonusStatus.NOT_SETTLEMENT.equals(alliance.getBonusSettlement()) && !isBatch){
             throw new BusinessException(BusinessCode.CRUD_GENERAL_ERROR,"该盟友已结算");
         }
-        else{
+        else
+            //确保 未结算 才执行   且用户id不为空
+            if(BonusStatus.NOT_SETTLEMENT.equals(alliance.getBonusSettlement()) && alliance.getUserId() != null){
             userId = alliance.getUserId();
-        }
-        Wallet wallet = null ;
-        List<Wallet> wallets = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID, alliance.getUserId()));
+
+         //如果是分红盟友才价钱
+         if(alliance.getAllianceType().equals(ALLIANCE_TYPE_DIVIDEND)){
 
 
         /** 分红计算 **/
         BigDecimal averageBonus = queryBonusDao.getAverageBonus();
         BigDecimal allBonusRatio = settlementCenterService.getRatioBonus(userId);
-        BigDecimal balance = averageBonus.add(allBonusRatio).setScale(2, BigDecimal.ROUND_HALF_UP);  //总收益
+        BigDecimal selfBonus = averageBonus.setScale(2, BigDecimal.ROUND_HALF_UP);  //平均分红
+        BigDecimal  teamSelfBonus = allBonusRatio.setScale(2, BigDecimal.ROUND_HALF_UP); //占比分红
+       // BigDecimal balance = averageBonus.add(allBonusRatio).setScale(2, BigDecimal.ROUND_HALF_UP);  //总收益
         /****/
 
+        res +=createWalletRecord(alliance.getUserId(),selfBonus,"分红结算-平均分红");
+        res +=createWalletRecord(alliance.getUserId(),teamSelfBonus,"分红结算-动态分红");
+
+        };
+
+        //设为已结算
+        alliance.setBonusSettlement(BonusStatus.SETTLEMENT_END);
+        allianceMapper.updateAllColumnById(alliance);
+        }
 
 
+        return res;
+    }
+
+    Integer createWalletRecord(Long userId,BigDecimal balance,String note){
+        Wallet wallet = null ;
+        List<Wallet> wallets = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID,userId));
+        Integer res = 0;
         //设置钱包逻辑
         if(wallets!=null && wallets.size()>0){
             wallet = wallets.get(0);
@@ -238,25 +261,32 @@ public class BonusServiceImpl implements BonusService {
             res += queryWalletDao.updateById(wallet);
         }else{
             wallet = new Wallet();
-            wallet.setUserId(alliance.getUserId());
+            wallet.setUserId(userId);
             wallet.setBalance(balance);
             wallet.setAccumulativeAmount(balance);
             res += queryWalletDao.insert(wallet);
         }
+        //判断空 再查询一次获取id
+        if(wallet.getId()==null){
+            List<Wallet> walletList = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID,userId));
+            wallet =  walletList.get(0);
+        }
+        res += createWalletHistory(wallet,balance,note);
 
+        return res;
+    }
+
+
+    Integer createWalletHistory(Wallet wallet,BigDecimal balance,String note){
+        Integer res = 0;
         WalletHistory walletHistory = new WalletHistory();
         walletHistory.setWalletId(wallet.getId());
         walletHistory.setType(RechargeType.RECHARGE);
-        walletHistory.setNote("分红结算");
+        walletHistory.setNote(note);
         walletHistory.setAmount(balance);
         walletHistory.setBalance(wallet.getBalance());
         walletHistory.setCreatedTime(new Date());
         res += queryWalletHistoryDao.insert(walletHistory);
-
-        //设为已结算
-        alliance.setBonusSettlement(BonusStatus.SETTLEMENT_END);
-        allianceMapper.updateAllColumnById(alliance);
-
         return res;
     }
 

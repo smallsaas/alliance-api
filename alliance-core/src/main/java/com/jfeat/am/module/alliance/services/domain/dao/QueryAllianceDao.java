@@ -92,4 +92,8 @@ public interface QueryAllianceDao extends BaseMapper<Alliance> {
     //同步t_user real_name 和 alliance表 alliance_name
     @Update("update t_user set real_name=#{name} where phone=#{alliancePhone}")
     Integer upUserRealNameByPhone(@Param("alliancePhone") String alliancePhone,@Param("name") String name);
+
+    //获取所有盟友的id
+    @Select("select id from t_alliance")
+    List<Long> getAllAllianceIds();
 }

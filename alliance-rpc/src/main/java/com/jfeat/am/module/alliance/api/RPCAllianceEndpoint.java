@@ -12,6 +12,7 @@ import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 import com.jfeat.am.module.alliance.services.domain.model.OwnerBalanceRecord;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.*;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
+import com.jfeat.am.module.bonus.api.BonusStatus;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
@@ -408,10 +409,17 @@ public class RPCAllianceEndpoint {
             if (allBonusRatio == null) {
                 allBonusRatio = zero;
             }
-            alliance.setSelfBonus(averageBonus.setScale(2, BigDecimal.ROUND_HALF_UP));  //平均分红
-            alliance.setTeamSelfBonus(allBonusRatio.setScale(2, BigDecimal.ROUND_HALF_UP)); //占比分红
-            alliance.setTotalSelfBonus(averageBonus.add(allBonusRatio).setScale(2, BigDecimal.ROUND_HALF_UP));  //总收益
-            BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalMonth(id);
+            //已结算
+            if(BonusStatus.SETTLEMENT_END.equals(alliance.getBonusSettlement())){
+                alliance.setSelfBonus(zero);  //平均分红
+                alliance.setTeamSelfBonus(zero); //占比分红
+                alliance.setTotalSelfBonus(zero);  //总收益
+            }else{
+                alliance.setSelfBonus(averageBonus.setScale(2, BigDecimal.ROUND_HALF_UP));  //平均分红
+                alliance.setTeamSelfBonus(allBonusRatio.setScale(2, BigDecimal.ROUND_HALF_UP)); //占比分红
+                alliance.setTotalSelfBonus(averageBonus.add(allBonusRatio).setScale(2, BigDecimal.ROUND_HALF_UP));  //总收益
+            }
+           BigDecimal commissionOrderMonth = queryBonusDao.getCommissionTotalMonth(id);
             if (commissionOrderMonth == null) {
                 commissionOrderMonth = zero;
             }

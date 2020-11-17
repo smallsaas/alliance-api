@@ -33,7 +33,7 @@
         <if test="rightMoney!= null">
             AND t_wallet_history.amount  &lt;= #{rightMoney}
         </if>
-        order by t_wallet_history.created_time DESC
+        order by t_wallet_history.id DESC
     </select>
 
 </mapper>
