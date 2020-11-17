@@ -3,11 +3,14 @@ package com.jfeat.am.module.bonus.services.domain.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.jfeat.AmApplication;
 import com.jfeat.am.module.alliance.api.RechargeType;
+import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.dao.AllianceMapper;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.bonus.api.BonusDateType;
@@ -28,6 +31,8 @@ import javax.annotation.Resource;
 import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +53,13 @@ public class BonusServiceImpl implements BonusService {
 
     @Resource
     SettlementCenterService settlementCenterService;
+
+    @Resource
+    QueryOwnerBalanceDao queryOwnerBalanceDao;
+
+    protected final static Logger logger = LoggerFactory.getLogger(AmApplication.class);
+
+
     //获得自己的分红 user_id=4 ---> 15.75 只是订单所得
     @Override
     public BigDecimal getSelfBonus(Long id, Integer dateType) {
@@ -224,11 +236,28 @@ public class BonusServiceImpl implements BonusService {
         BigDecimal allBonusRatio = settlementCenterService.getRatioBonus(userId);
         BigDecimal selfBonus = averageBonus.setScale(2, BigDecimal.ROUND_HALF_UP);  //平均分红
         BigDecimal  teamSelfBonus = allBonusRatio.setScale(2, BigDecimal.ROUND_HALF_UP); //占比分红
-       // BigDecimal balance = averageBonus.add(allBonusRatio).setScale(2, BigDecimal.ROUND_HALF_UP);  //总收益
+        BigDecimal balance = averageBonus.add(allBonusRatio).setScale(2, BigDecimal.ROUND_HALF_UP);  //总收益
+        logger.info("Balance: {} ",balance);
         /****/
 
-        res +=createWalletRecord(alliance.getUserId(),selfBonus,"分红结算-平均分红");
-        res +=createWalletRecord(alliance.getUserId(),teamSelfBonus,"分红结算-动态分红");
+        //提成钱包 增加数据
+        OwnerBalance queryOwnerBalance = new OwnerBalance();
+        queryOwnerBalance.setUserId(userId);
+        OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(queryOwnerBalance);
+        if(ownerBalance!=null){
+            BigDecimal selfBalance = ownerBalance.getBalance();
+            selfBalance = selfBalance.add(balance);
+            logger.info("selfBalance: {} ",selfBalance);
+            ownerBalance.setBalance(selfBalance);
+            res +=queryOwnerBalanceDao.updateAllColumnById(ownerBalance);
+        }else{
+            //为空 设置金钱
+            queryOwnerBalance.setBalance(balance);
+            res +=queryOwnerBalanceDao.insert(queryOwnerBalance);
+        }
+
+        //res +=createWalletRecord(alliance.getUserId(),selfBonus,"分红结算-平均分红");
+        //res +=createWalletRecord(alliance.getUserId(),teamSelfBonus,"分红结算-动态分红");
 
         };
 
@@ -241,6 +270,7 @@ public class BonusServiceImpl implements BonusService {
         return res;
     }
 
+    //钱包加钱 同时加记录
     Integer createWalletRecord(Long userId,BigDecimal balance,String note){
         Wallet wallet = null ;
         List<Wallet> wallets = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID,userId));
@@ -276,7 +306,7 @@ public class BonusServiceImpl implements BonusService {
         return res;
     }
 
-
+    //钱包提取记录
     Integer createWalletHistory(Wallet wallet,BigDecimal balance,String note){
         Integer res = 0;
         WalletHistory walletHistory = new WalletHistory();
