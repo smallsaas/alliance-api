@@ -61,7 +61,7 @@ public class BonusHandle {
         }
 
         // 计算所有分红盟友总订单
-        Integer i = settlementCenterService.setTotal();
+       // Integer i = settlementCenterService.setTotal();
 
 
 
