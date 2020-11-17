@@ -412,7 +412,7 @@ AND psp.type = 'STOCKHOLDER'
         AND o.created_date &lt; DATE_ADD(STR_TO_DATE((SELECT value FROM t_config_field WHERE field='starting_time'),'%Y-%m-%d') , interval (SELECT value FROM t_config_field WHERE field='settlement_cycle') MONTH)
         ) +
         (
-        SELECT sum(o.total_price) FROM t_order o
+        SELECT IFNULL(sum(o.total_price),0) FROM t_order o
         LEFT JOIN t_user u on u.id=o.user_id
         LEFT JOIN t_alliance a on a.user_id = #{userId}
         LEFT JOIN t_alliance kid on kid.invitor_alliance_id=a.id and kid.user_id=o.user_id

@@ -315,7 +315,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
 
     @Override
     public BigDecimal getRatioBonusPercent(Long userId) {
-
+        //获取进货额
         BigDecimal mySelf = queryBonusDao.queryMyTeamOrderAmount(userId);
         if(mySelf==null){
             mySelf=new BigDecimal(0.00);

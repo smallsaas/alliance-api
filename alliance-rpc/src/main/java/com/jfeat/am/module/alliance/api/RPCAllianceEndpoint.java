@@ -390,7 +390,7 @@ public class RPCAllianceEndpoint {
             }
         } else {
             return SuccessCip.create(null);
-        }
+        }  //查询此账户邀请的人
         List<Alliance> alliancesByUserId = allianceService.getAlliancesByUserId(id);
         if (alliancesByUserId != null && alliancesByUserId.size() > 0) {
             alliance.setAllianceTeam(JSON.parseArray(JSON.toJSONString(alliancesByUserId, SerializerFeature.WriteDateUseDateFormat)));
