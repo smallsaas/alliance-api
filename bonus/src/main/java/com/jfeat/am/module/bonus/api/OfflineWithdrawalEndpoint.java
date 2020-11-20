@@ -63,12 +63,33 @@ public class OfflineWithdrawalEndpoint {
     public Tip createOfflineWithdrawal(@RequestHeader("X-USER-ID") Long userId, @RequestBody OfflineWithdrawal entity) {
         entity.setUserId(userId);
         entity.setCreateTime(new Date());
+        entity.setStatus(OfflineWithdrawalStatus.WAIT);
+
         Integer affected = 0;
-        try {
-            affected = offlineWithdrawalService.createMaster(entity);
-        } catch (DuplicateKeyException e) {
-            throw new BusinessException(BusinessCode.DuplicateKey);
-        }
+
+                OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(userId));
+                if (ownerBalance == null) {
+                    throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
+                }
+                BigDecimal ownerBalanceBalance = ownerBalance.getBalance();
+                BigDecimal getBalance = entity.getBalance();
+
+                //检查可提现余额
+                if (getBalance == null) {
+                    getBalance = new BigDecimal(0.00);
+                }
+                if (ownerBalanceBalance == null || ownerBalanceBalance.compareTo(new BigDecimal(0.00)) <= 0) {
+                    throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
+                }
+                BigDecimal subtract = ownerBalanceBalance.subtract(getBalance);
+                if (subtract.compareTo(new BigDecimal(0.00)) < 0) {
+                    throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
+                }
+                ownerBalance.setBalance(subtract);
+
+                affected += queryOwnerBalanceDao.updateById(ownerBalance);
+                affected += offlineWithdrawalService.createMaster(entity);
+
         return SuccessTip.create(affected);
     }
 
@@ -157,58 +178,47 @@ public class OfflineWithdrawalEndpoint {
         return SuccessTip.create(page);
     }
 
-    @BusinessLog(name = "线下提现", value = "删除线下提现")
+    @BusinessLog(name = "线下提现", value = "审批通过")
     @PostMapping("/pass/{id}")
     @ApiOperation("审批通过 线下提现")
     public Tip passOfflineWithdrawal(@PathVariable Long id) {
         OfflineWithdrawal offlineWithdrawal = offlineWithdrawalService.retrieveMaster(id);
         int res = 0;
-        if (offlineWithdrawal.getStatus() != 0) {
+        if (offlineWithdrawal.getStatus() != OfflineWithdrawalStatus.WAIT) {
             throw new BusinessException(BusinessCode.BadRequest, "提现失败，状态不符合要求");
         }
-        if (offlineWithdrawal != null) {
-            if (offlineWithdrawal.getStatus().equals(OfflineWithdrawalStatus.WAIT)) {
+        offlineWithdrawal.setStatus(OfflineWithdrawalStatus.OK);
+        res += queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
 
-                Long userId = offlineWithdrawal.getUserId();
-                if (userId != null) {
-                    OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(userId));
-                    if (ownerBalance == null) {
-                        throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
-                    }
-                    BigDecimal balance = ownerBalance.getBalance();
-                    BigDecimal balance1 = offlineWithdrawal.getBalance();
-                    if (balance1 == null) {
-                        balance1 = new BigDecimal(0.00);
-                    }
-                    if (balance == null || balance.compareTo(new BigDecimal(0.00)) <= 0) {
-                        throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
-                    }
-                    BigDecimal subtract = balance.subtract(balance1);
-                    if (subtract.compareTo(new BigDecimal(0.00)) < 0) {
-                        throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
-                    }
-                    ownerBalance.setBalance(subtract);
-                    offlineWithdrawal.setStatus(OfflineWithdrawalStatus.OK);
-                    res += queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
-                    res += queryOwnerBalanceDao.updateById(ownerBalance);
-                    Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
-                    if (wallet != null) {
-                        BigDecimal balance2 = wallet.getBalance();
-                        if (balance2 == null) {
-                            balance2 = new BigDecimal(0.00);
-                        }
-                        BigDecimal add = balance2.add(balance1);
-                        wallet.setBalance(add);
-                        res += queryWalletDao.updateById(wallet);
-                        WalletHistory walletHistory = new WalletHistory().setNote("提成线下提现（转入）钱包").setType(RechargeType.CASH_OUT).setBalance(ownerBalance.getBalance()).setCreatedTime(new Date()).setAmount(balance1).setWalletId(wallet.getId());
-                        res += queryWalletHistoryDao.insert(walletHistory);
-                    }
-                } else {
-                    throw new BusinessException(BusinessCode.BadRequest, "申请失败，请联系管理员");
-                }
+        return SuccessTip.create(res);
+    }
 
-            }
+
+    @BusinessLog(name = "线下提现", value = "审批不通过")
+    @PostMapping("/notPass/{id}")
+    @ApiOperation("审批不通过 线下提现")
+    public Tip notPassOfflineWithdrawal(@PathVariable Long id) {
+        OfflineWithdrawal offlineWithdrawal = offlineWithdrawalService.retrieveMaster(id);
+        int res = 0;
+        Long userId = offlineWithdrawal.getUserId();
+        if (offlineWithdrawal.getStatus() != OfflineWithdrawalStatus.WAIT) {
+            throw new BusinessException(BusinessCode.BadRequest, "状态错误，申请中的状态才能不通过");
         }
+
+
+        OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(userId));
+        if (ownerBalance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "禁用失败，可能存在脏数据，用户没绑定账户，但是有提现申请");
+        }
+        BigDecimal ownerBalanceBalance = ownerBalance.getBalance();
+        BigDecimal getBalance = offlineWithdrawal.getBalance();
+        if (getBalance == null) { getBalance = new BigDecimal(0.00); }
+        BigDecimal add = ownerBalanceBalance.add(getBalance);
+        ownerBalance.setBalance(add);
+
+        offlineWithdrawal.setStatus(OfflineWithdrawalStatus.NOT_OK);
+        res += queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
+        res += queryOwnerBalanceDao.updateById(ownerBalance);
         return SuccessTip.create(res);
     }
 }
