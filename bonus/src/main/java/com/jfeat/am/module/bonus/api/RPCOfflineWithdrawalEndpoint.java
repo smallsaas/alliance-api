@@ -1,6 +1,8 @@
 package com.jfeat.am.module.bonus.api;
 
 
+import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
+import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
 import com.jfeat.am.module.bonus.util.Cip;
 import com.jfeat.am.module.bonus.util.SuccessCip;
 import io.swagger.annotations.Api;
@@ -49,6 +51,8 @@ public class RPCOfflineWithdrawalEndpoint {
 
     @Resource
     QueryOfflineWithdrawalDao queryOfflineWithdrawalDao;
+    @Resource
+    QueryOwnerBalanceDao queryOwnerBalanceDao;
 
     @BusinessLog(name = "线下提现", value = "创建线下提现")
     @PostMapping
@@ -56,13 +60,32 @@ public class RPCOfflineWithdrawalEndpoint {
     public Cip createOfflineWithdrawal(@RequestHeader("X-USER-ID") Long userId, @RequestBody OfflineWithdrawal entity) {
         entity.setUserId(userId);
         entity.setCreateTime(new Date());
-        Integer affected = 0;
-        try {
-            affected = offlineWithdrawalService.createMaster(entity);
+        entity.setStatus(OfflineWithdrawalStatus.WAIT);
 
-        } catch (DuplicateKeyException e) {
-            throw new BusinessException(BusinessCode.DuplicateKey);
+        Integer affected = 0;
+
+        OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(userId));
+        if (ownerBalance == null) {
+            throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
         }
+        BigDecimal ownerBalanceBalance = ownerBalance.getBalance();
+        BigDecimal getBalance = entity.getBalance();
+
+        //检查可提现余额
+        if (getBalance == null) {
+            getBalance = new BigDecimal(0.00);
+        }
+        if (ownerBalanceBalance == null || ownerBalanceBalance.compareTo(new BigDecimal(0.00)) <= 0) {
+            throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
+        }
+        BigDecimal subtract = ownerBalanceBalance.subtract(getBalance);
+        if (subtract.compareTo(new BigDecimal(0.00)) < 0) {
+            throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
+        }
+        ownerBalance.setBalance(subtract);
+
+        affected += queryOwnerBalanceDao.updateById(ownerBalance);
+        affected += offlineWithdrawalService.createMaster(entity);
 
         return SuccessCip.create(affected);
     }
