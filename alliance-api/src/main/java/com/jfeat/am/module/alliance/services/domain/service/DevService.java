@@ -11,4 +11,6 @@ public interface DevService {
 
     @Transactional
     Integer deleteOwnerBalance();
+
+    Integer deleteOfflineWithdrawal();
 }

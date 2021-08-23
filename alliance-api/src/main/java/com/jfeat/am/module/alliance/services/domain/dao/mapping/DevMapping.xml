@@ -105,4 +105,8 @@
 		delete from t_owner_balance;
 	</delete>
 
+	<delete id="deleteOfflineWithdrawal">
+		delete from t_offline_withdrawal
+	</delete>
+
 </mapper>

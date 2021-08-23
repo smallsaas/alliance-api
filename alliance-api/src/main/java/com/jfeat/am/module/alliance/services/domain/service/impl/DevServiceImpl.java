@@ -43,4 +43,13 @@ public class DevServiceImpl implements DevService {
         return i;
     }
 
+    @Transactional
+    @Override
+    public Integer deleteOfflineWithdrawal(){
+        Integer i = 0;
+        i += devMapping.deleteOfflineWithdrawal();
+
+        return i;
+    }
+
 }
