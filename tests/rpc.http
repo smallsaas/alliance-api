@@ -1,0 +1,17 @@
+@endpoint=https://api.mall.smallsaas.cn
+@restToken=eyJsb2dpbl9uYW1lIjoibzhNMUw1TGRTbGhqOWFNcFRwck4zenhvNjhkWSIsImlkIjoiNDQxIiwidG9rZW4iOiI2OTY0MGMxNDRmMzE4Y2FhNTI0ZjkxZmIyNmQ2ZWFjNGI1OGExYWNjIn0=
+
+### 手机获取验证码
+POST {{endpoint}}/rest/pub/sms
+Content-Type: application/json
+
+{"name":"q", "phone":"15800254850"}
+
+
+### 盟友注册
+POST {{endpoint}}/rest/rpc/alliance/register
+Content-Type: application/json
+Authorization: {{restToken}}
+
+{"phoneNumber":"15800254850"}
+
