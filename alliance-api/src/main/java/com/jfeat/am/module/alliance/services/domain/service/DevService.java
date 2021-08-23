@@ -13,4 +13,6 @@ public interface DevService {
     Integer deleteOwnerBalance();
 
     Integer deleteOfflineWithdrawal();
+
+    Integer deleteAlliance();
 }

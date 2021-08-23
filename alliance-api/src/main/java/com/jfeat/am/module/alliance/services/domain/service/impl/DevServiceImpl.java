@@ -52,4 +52,12 @@ public class DevServiceImpl implements DevService {
         return i;
     }
 
+    //删除盟友
+    @Override
+    public Integer deleteAlliance(){
+        Integer i = 0;
+        i += devMapping.deleteAlliance();
+
+        return i;
+    }
 }

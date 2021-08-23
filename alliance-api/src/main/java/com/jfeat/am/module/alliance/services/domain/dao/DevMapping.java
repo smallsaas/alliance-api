@@ -13,4 +13,7 @@ public interface DevMapping {
     Integer deleteOwnerBalance();
     //线下提现记录
     Integer deleteOfflineWithdrawal();
+
+    //删除盟友
+    Integer deleteAlliance();
 }
