@@ -28,6 +28,12 @@
             <artifactId>field-config</artifactId>
             <version>1.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>uaas</artifactId>
+            <version>2.1.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
