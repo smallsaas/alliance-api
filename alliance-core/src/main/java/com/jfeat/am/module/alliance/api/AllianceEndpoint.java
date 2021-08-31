@@ -20,7 +20,6 @@ import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.alliance.util.RestClient;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import com.jfeat.am.module.log.annotation.BusinessLog;
-import com.jfeat.am.uaas.common.Md5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
