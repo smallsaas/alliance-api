@@ -17,6 +17,7 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.alliance.util.AllianceUtil;
+import com.jfeat.am.module.alliance.util.Md5Utils;
 import com.jfeat.am.module.alliance.util.RestClient;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import com.jfeat.am.module.log.annotation.BusinessLog;

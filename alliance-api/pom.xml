@@ -5,7 +5,7 @@
 
     <groupId>com.jfeat</groupId>
     <artifactId>alliance-api</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <name>alliance-api</name>
@@ -13,93 +13,48 @@
 
     <parent>
         <groupId>com.jfeat</groupId>
-        <artifactId>pom-parent</artifactId>
+        <artifactId>pom-base</artifactId>
         <version>1.0.0</version>
         <relativePath/>
     </parent>
 
     <properties>
         <skipStandalone>false</skipStandalone>
-        <!--商城子系统 -->
-        <saas-mall-api.version>1.0.0</saas-mall-api.version>
-
-        <!--produce provided -->
-        <uaas.version>2.1.0</uaas.version>
-
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.jfeat</groupId>
-            <artifactId>uaas</artifactId>
-            <version>${uaas.version}</version>
+            <artifactId>field-config</artifactId>
+            <version>1.2.1</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>cms-api</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>org</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-      <!--  <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>jwt-core</artifactId>
-            <version>0.0.2</version>
-        </dependency>-->
 
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-mall-api</artifactId>
-            <version>${saas-mall-api.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.jfeat</groupId>
-                    <artifactId>portal-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.jfeat</groupId>
-                    <artifactId>zero-io</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>1.2.0</version>
         </dependency>
 
         <!--business modules-->
 	    <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>alliance-core</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
         </dependency>
 		<dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>bonus</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>alliance-friend</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>alliance-rpc</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>statistic</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>zero-io</artifactId>
-            <version>0.0.1</version>
+            <version>2.0.0</version>
         </dependency>
     </dependencies>
 
@@ -179,5 +134,4 @@
             </resource>
         </resources>
     </build>
-
 </project>

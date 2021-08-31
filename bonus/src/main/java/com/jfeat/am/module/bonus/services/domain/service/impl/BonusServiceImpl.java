@@ -247,7 +247,8 @@ public class BonusServiceImpl implements BonusService {
             selfBalance = selfBalance.add(balance);
             logger.info("selfBalance: {} ",selfBalance);
             ownerBalance.setBalance(selfBalance);
-            res +=queryOwnerBalanceDao.updateAllColumnById(ownerBalance);
+            //res +=queryOwnerBalanceDao.updateAllColumnById(ownerBalance);
+            res +=queryOwnerBalanceDao.updateById(ownerBalance);
         }else{
             //为空 设置金钱
             queryOwnerBalance.setBalance(balance);
@@ -261,7 +262,8 @@ public class BonusServiceImpl implements BonusService {
 
         //设为已结算
         alliance.setBonusSettlement(BonusStatus.SETTLEMENT_END);
-        allianceMapper.updateAllColumnById(alliance);
+        //allianceMapper.updateAllColumnById(alliance);
+        allianceMapper.updateById(alliance);
         }
 
 
@@ -296,7 +298,7 @@ public class BonusServiceImpl implements BonusService {
         }
         //判断空 再查询一次获取id
         if(wallet.getId()==null){
-            List<Wallet> walletList = queryWalletDao.selectList(new LambdaQueryWrapper<>().eq(Wallet.USER_ID,userId));
+            List<Wallet> walletList = queryWalletDao.selectList(new QueryWrapper<Wallet>().eq(Wallet.USER_ID,userId));
             wallet =  walletList.get(0);
         }
         res += createWalletHistory(wallet,balance,note);

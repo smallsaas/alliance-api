@@ -5,7 +5,7 @@
 
     <groupId>com.jfeat</groupId>
     <artifactId>alliance-core</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <name>alliance-core</name>
@@ -26,13 +26,19 @@
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>field-config</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
         </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
-            <artifactId>uaas</artifactId>
-            <version>2.1.0</version>
-            <scope>compile</scope>
+            <artifactId>field-config-pcd</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-crypto-hash -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-crypto-hash</artifactId>
+            <version>1.8.0</version>
         </dependency>
     </dependencies>
 

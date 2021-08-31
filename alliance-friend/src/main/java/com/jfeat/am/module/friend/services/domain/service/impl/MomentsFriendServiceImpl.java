@@ -33,7 +33,6 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     SettlementCenterService settlementCenterService;
 
 
-
     @Override
     public Integer closeConfirmedOrder(Long id) {
      /*   AllianceProduct allianceProduct = queryMomentsFriendDao.queryProductById(id);

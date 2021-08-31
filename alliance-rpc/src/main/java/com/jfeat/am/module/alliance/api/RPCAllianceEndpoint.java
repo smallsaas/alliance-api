@@ -1,11 +1,11 @@
 package com.jfeat.am.module.alliance.api;
 
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.baomidou.mybatisplus.mapper.Condition;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.dao.DuplicateKeyException;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao;
 import com.jfeat.crud.base.exception.BusinessCode;
@@ -101,13 +101,13 @@ public class RPCAllianceEndpoint {
         if (entity.getAllianceDob() != null) {
             entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
-        List alliance_phone = queryAllianceDao.selectList(new Condition().eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone()));
+        List<Alliance> alliance_phone = queryAllianceDao.selectList(new QueryWrapper<Alliance>().eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone()));
         if (alliance_phone.size() > 0) {
             throw new ServerException("该手机号以被注册盟友，不能重复");
         }
         String invitorPhoneNumber = entity.getInvitorPhoneNumber();
         if (invitorPhoneNumber != null && invitorPhoneNumber.length() > 0) {
-            Alliance invitor = queryAllianceDao.selectOne(new Alliance().setAlliancePhone(entity.getInvitorPhoneNumber()));
+            Alliance invitor = queryAllianceDao.selectOne(new LambdaQueryWrapper<>(new Alliance().setAlliancePhone(entity.getInvitorPhoneNumber())));
             if (invitor != null) {
                 entity.setInvitorAllianceId(invitor.getId());
             } else {
@@ -123,7 +123,7 @@ public class RPCAllianceEndpoint {
             } else if (entity.getUserId() != null && entity.getUserId() > 0) {
                 walletCondition.setUserId(entity.getUserId());
             }
-            Wallet wallet = queryWalletDao.selectOne(walletCondition);
+            Wallet wallet = queryWalletDao.selectOne(new LambdaQueryWrapper<>(walletCondition));
 
             if (wallet == null) {
                 walletCondition.setBalance(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
@@ -164,7 +164,7 @@ public class RPCAllianceEndpoint {
             } else if (entity.getUserId() != null && entity.getUserId() > 0) {
                 walletCondition.setUserId(entity.getUserId());
             }
-            Wallet wallet = queryWalletDao.selectOne(walletCondition);
+            Wallet wallet = queryWalletDao.selectOne(new LambdaQueryWrapper<>(walletCondition));
             if (wallet == null) {
                 wallet = new Wallet();
                 walletCondition.setAccumulativeAmount(new BigDecimal(0));
@@ -224,7 +224,9 @@ public class RPCAllianceEndpoint {
     public Cip updateAlliance(@PathVariable Long id, @RequestBody AllianceRequest entity) throws ServerException, ParseException {
         entity.setCreationTime(new Date());
         entity.setId(id);
-        List alliance_phone = queryAllianceDao.selectList(new Condition().eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone()).ne("id", id));
+        List<Alliance> alliance_phone = queryAllianceDao.selectList(new QueryWrapper<Alliance>()
+                .eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone())
+                .ne("id", id));
         if (alliance_phone.size() > 0) {
             throw new ServerException("该手机号以被注册盟友，不能重复");
         }
@@ -375,7 +377,7 @@ public class RPCAllianceEndpoint {
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不存在");
         }
-        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(id));
+        Wallet wallet = queryWalletDao.selectOne(new LambdaQueryWrapper<>(new Wallet().setUserId(id)));
         if (wallet != null) {
             if (wallet.getBalance() != null)
                 alliance.setBalance(wallet.getBalance());
@@ -535,14 +537,14 @@ public class RPCAllianceEndpoint {
 
 
     private OwnerBalanceRecord queryOwnerBalance(Long id) {
-        Alliance alliance = queryAllianceDao.selectOne(new Alliance().setUserId(id));
+        Alliance alliance = queryAllianceDao.selectOne(new LambdaQueryWrapper<>(new Alliance().setUserId(id)));
         if (alliance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "当前盟友不存在");
         }
         if (alliance.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_OK) {
             OwnerBalance theownerBalance = new OwnerBalance();
             theownerBalance.setUserId(id);
-            OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(theownerBalance);
+            OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new LambdaQueryWrapper<>(theownerBalance));
             if (ownerBalance == null) {
                 ownerBalance = new OwnerBalance();
             }
@@ -627,7 +629,7 @@ public class RPCAllianceEndpoint {
     @PostMapping("/changePhone")
     public Cip changePhone(@RequestHeader("X-USER-ID") Long userId, @RequestBody RequestAlliance requestAlliance) {
         String alliancePhone = requestAlliance.getAlliancePhone();
-        Alliance alliance = queryAllianceDao.selectOne(new Alliance().setUserId(userId));
+        Alliance alliance = queryAllianceDao.selectOne(new LambdaQueryWrapper<>(new Alliance().setUserId(userId)));
         if (alliancePhone != null && alliancePhone.length() > 0) {
             if (alliance != null) {
                 alliance.setAlliancePhone(alliancePhone);

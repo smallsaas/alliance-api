@@ -11,7 +11,6 @@ map[com.baomidou.mybatisplus.mapper.EntityWrapper]=com.baomidou.mybatisplus.core
 map['EntityWrapper<']='QueryWrapper<'
 map[com.jfeat.am.common.annotation.BusinessLog]=com.jfeat.am.module.log.annotation.BusinessLog
 #map[com.baomidou.mybatisplus.toolkit.IdWorker]=
-map[com.baomidou.mybatisplus.mapper.Condition]=
 
 for key in ${!map[@]};do
    value=${map[$key]}
