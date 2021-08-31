@@ -1,6 +1,7 @@
 package com.jfeat.am.module.bonus.api;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
 import com.jfeat.am.module.bonus.util.Cip;
@@ -10,16 +11,13 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
-import com.baomidou.mybatisplus.plugins.Page;
-import org.springframework.dao.DuplicateKeyException;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryOfflineWithdrawalDao;
 import com.jfeat.crud.base.tips.SuccessTip;
-import com.jfeat.crud.base.tips.Ids;
 import com.jfeat.crud.base.tips.Tip;
 import com.jfeat.am.module.log.annotation.BusinessLog;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
-import com.jfeat.crud.plus.CRUDObject;
 
 import java.math.BigDecimal;
 
@@ -64,7 +62,7 @@ public class RPCOfflineWithdrawalEndpoint {
 
         Integer affected = 0;
 
-        OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(userId));
+        OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new LambdaQueryWrapper<>(new OwnerBalance().setUserId(userId)));
         if (ownerBalance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
         }

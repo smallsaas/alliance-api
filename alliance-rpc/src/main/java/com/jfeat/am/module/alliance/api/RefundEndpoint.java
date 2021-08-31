@@ -1,6 +1,7 @@
 package com.jfeat.am.module.alliance.api;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
@@ -32,7 +33,7 @@ public class RefundEndpoint {
         BigDecimal totalPrice = object.getBigDecimal("totalPrice");
         Long userId = object.getLong("userId");
         if (totalPrice != null && userId != null) {
-            Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+            Wallet wallet = queryWalletDao.selectOne(new LambdaQueryWrapper<>(new Wallet().setUserId(userId)));
             if (wallet != null) {
                 BigDecimal balance = wallet.getBalance();
                 if (balance != null) {

@@ -1,7 +1,7 @@
 package com.jfeat.am.module.bonus.services.domain.service.impl;
 
-import com.baomidou.mybatisplus.mapper.Condition;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jfeat.am.module.alliance.api.AllianceFields;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
@@ -69,7 +69,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                 //进货额符合条件
                 if (condition.compareTo(new BigDecimal(0.00)) >= 0) {
 
-                    OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(invitorUserId));
+                    OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new LambdaQueryWrapper<>(new OwnerBalance().setUserId(invitorUserId)));
                     //可提现金额
                     if (ownerBalance != null) {
                         //当前 可提现金额
@@ -85,7 +85,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                                     if(item.getCommission()==null){item.setCommission(new BigDecimal(0));}
                                     bonus_balance = bonus_balance.add(item.getCommission());
                                 queryBonusDao.upOrderSettlementStatus(OK, item.getId());
-                                List<OrderItem> orderItems = queryOrderItemDao.selectList(new Condition().eq(OrderItem.ORDER_ID, item.getId()));
+                                List<OrderItem> orderItems = queryOrderItemDao.selectList(new QueryWrapper<OrderItem>().eq(OrderItem.ORDER_ID, item.getId()));
                                 if (orderItems != null && orderItems.size() > 0) {
                                     for (OrderItem orderItem : orderItems) {
                                         OrderItemReward orderItemReward = new OrderItemReward();
@@ -109,7 +109,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                         ownerBalance.setBalance(bonus_balance.add(orderCommissionInfo.getCommission()));
                         queryBonusDao.upOrderSettlementStatus(OK, orderCommissionInfo.getId());
                         queryOwnerBalanceDao.updateById(ownerBalance);
-                        List<OrderItem> orderItems = queryOrderItemDao.selectList(new Condition().eq(OrderItem.ORDER_ID, orderCommissionInfo.getId()));
+                        List<OrderItem> orderItems = queryOrderItemDao.selectList(new QueryWrapper<OrderItem>().eq(OrderItem.ORDER_ID, orderCommissionInfo.getId()));
                         if (orderItems != null && orderItems.size() > 0) {
                             for (OrderItem orderItem : orderItems) {
                                 OrderItemReward orderItemReward = new OrderItemReward();
@@ -136,7 +136,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                                 if (!item.getId().equals(orderCommissionInfo.getId()))
                                     bonus_balance = bonus_balance.add(item.getCommission());
                                 queryBonusDao.upOrderSettlementStatus(OK, item.getId());
-                                List<OrderItem> orderItems = queryOrderItemDao.selectList(new Condition().eq(OrderItem.ORDER_ID, item.getId()));
+                                List<OrderItem> orderItems = queryOrderItemDao.selectList(new QueryWrapper<OrderItem>().eq(OrderItem.ORDER_ID, item.getId()));
                                 if (orderItems != null && orderItems.size() > 0) {
                                     for (OrderItem orderItem : orderItems) {
                                         OrderItemReward orderItemReward = new OrderItemReward();
@@ -159,7 +159,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                         ownerBalance.setBalance(bonus_balance.add(orderCommissionInfo.getCommission()));
                         queryBonusDao.upOrderSettlementStatus(OK, orderCommissionInfo.getId());
                         queryOwnerBalanceDao.insert(ownerBalance);
-                        List<OrderItem> orderItems = queryOrderItemDao.selectList(new Condition().eq(OrderItem.ORDER_ID, orderCommissionInfo.getId()));
+                        List<OrderItem> orderItems = queryOrderItemDao.selectList(new QueryWrapper<OrderItem>().eq(OrderItem.ORDER_ID, orderCommissionInfo.getId()));
                         if (orderItems != null && orderItems.size() > 0) {
                             for (OrderItem orderItem : orderItems) {
                                 OrderItemReward orderItemReward = new OrderItemReward();
@@ -194,7 +194,8 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                 }
                 BigDecimal condition = bigDecimal.subtract(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_WITHDRAWAL_CONDITIONS)));
                 if (condition.compareTo(new BigDecimal(0.00)) >= 0) {
-                    OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(userId));
+
+                    OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new LambdaQueryWrapper<>(new OwnerBalance().setUserId(userId)));
                     if (ownerBalance != null) {
                         BigDecimal bonus_balance = ownerBalance.getBalance();
                         if (bonus_balance == null) {
@@ -207,7 +208,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                                     bonus_balance = bonus_balance.add(item.getCommission());
                                 }
                                 queryBonusDao.upOrderSettlementStatus(OK, item.getId());
-                                List<OrderItem> orderItems = queryOrderItemDao.selectList(new Condition().eq(OrderItem.ORDER_ID, item.getId()));
+                                List<OrderItem> orderItems = queryOrderItemDao.selectList(new QueryWrapper<OrderItem>().eq(OrderItem.ORDER_ID, item.getId()));
                                 if (orderItems != null && orderItems.size() > 0) {
                                     for (OrderItem orderItem : orderItems) {
                                         OrderItemReward orderItemReward = new OrderItemReward();
@@ -239,7 +240,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                                 if (!item.getId().equals(orderCommissionInfo.getId()))
                                     bonus_balance = bonus_balance.add(item.getCommission());
                                 queryBonusDao.upOrderSettlementStatus(OK, item.getId());
-                                List<OrderItem> orderItems = queryOrderItemDao.selectList(new Condition().eq(OrderItem.ORDER_ID, item.getId()));
+                                List<OrderItem> orderItems = queryOrderItemDao.selectList(new QueryWrapper<OrderItem>().eq(OrderItem.ORDER_ID, item.getId()));
                                 if (orderItems != null && orderItems.size() > 0) {
                                     for (OrderItem orderItem : orderItems) {
                                         OrderItemReward orderItemReward = new OrderItemReward();
@@ -284,7 +285,7 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
             //去掉提成金额
             queryOwnerBalanceDao.withdrawalByUserId(userId,orderCommissionInfo.getCommission());
             //删除结算记录
-            queryOrderItemRewardDao.delete(new EntityWrapper<OrderItemReward>().eq("order_number",orderCommissionInfo.getOrderNumber()));
+            queryOrderItemRewardDao.delete(new QueryWrapper<OrderItemReward>().eq("order_number",orderCommissionInfo.getOrderNumber()));
 
         }
 

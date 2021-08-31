@@ -5,7 +5,7 @@
 
     <groupId>com.jfeat</groupId>
     <artifactId>alliance-api</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <name>alliance-api</name>
@@ -13,200 +13,54 @@
 
     <parent>
         <groupId>com.jfeat</groupId>
-        <artifactId>sb-parent</artifactId>
+        <artifactId>pom-base</artifactId>
         <version>1.0.0</version>
         <relativePath/>
     </parent>
 
     <properties>
         <skipStandalone>false</skipStandalone>
-        <crud-plus.version>0.0.6</crud-plus.version>
-        <crud-core.version>0.0.2</crud-core.version>
-        <!--基础系统-->
-        <saas-app-api.version>1.0.0</saas-app-api.version>
-        <!--商城子系统 -->
-        <saas-mall-api.version>1.0.0</saas-mall-api.version>
-
-        <!--produce provided -->
-        <crud-log.version>0.0.1</crud-log.version>
-        <uaas.version>2.1.0</uaas.version>
-
-        <!--dev environment-->
-        <crud-dev.version>0.0.1</crud-dev.version>
-
-
     </properties>
 
     <dependencies>
-        <!--Produce provided  开发环境注释掉以下两项依赖（可免密调试，以及可访问swagger-ui.html）>
         <dependency>
             <groupId>com.jfeat</groupId>
-            <artifactId>crud-log</artifactId>
-            <version>${crud-log.version}</version>
-        </dependency>-->
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>uaas</artifactId>
-            <version>${uaas.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>cms-api</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-
-
-
-   <!--    <dependency>
-        <groupId>com.jfeat</groupId>
-        <artifactId>env-test-saas</artifactId>
-        <version>1.0.0</version>
-    </dependency>-->
-
-       <!-- <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>term-config</artifactId>
-            <version>1.1.0</version>
-        </dependency>
--->
-
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>org</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-      <!--  <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>jwt-core</artifactId>
-            <version>0.0.2</version>
-        </dependency>-->
-        <!---dev 环境依赖crud-dev-->
-<!--        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>crud-dev</artifactId>
-            <version>${crud-dev.version}</version>
-        </dependency>-->
-
-        <!--crud core-->
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>crud-plus</artifactId>
-            <version>${crud-plus.version}</version>
+            <artifactId>field-config</artifactId>
+            <version>1.2.2</version>
         </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
-            <artifactId>crud-core</artifactId>
-            <version>${crud-core.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.jfeat</groupId>
-                    <artifactId>portal-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.jfeat</groupId>
-                    <artifactId>zero-io</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>field-config-pcd</artifactId>
+            <version>1.2.2</version>
         </dependency>
 
-        <!--sub-system modules-->
-<!--        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>saas-app-api</artifactId>
-            <version>${saas-app-api.version}</version>
-        </dependency>-->
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>saas-app-api</artifactId>
-            <version>${saas-app-api.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-mall-api</artifactId>
-            <version>${saas-mall-api.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.jfeat</groupId>
-                    <artifactId>portal-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.jfeat</groupId>
-                    <artifactId>zero-io</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>1.2.0</version>
         </dependency>
 
         <!--business modules-->
 	    <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>alliance-core</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
         </dependency>
 		<dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>bonus</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>alliance-friend</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>alliance-rpc</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
         </dependency>
-
-
-        <!--allow swagger support java 11 (above java9)-->
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.9.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>statistic</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>zero-io</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-       <!-- <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>env-test-saas</artifactId>
-            <version>1.0.0</version>
-        </dependency>-->
-
-
     </dependencies>
 
     <build>
@@ -285,5 +139,4 @@
             </resource>
         </resources>
     </build>
-
 </project>

@@ -1,27 +1,19 @@
 package com.jfeat.am.module.friend.services.domain.service.impl;
 
-import com.baomidou.mybatisplus.toolkit.IdWorker;
 import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
 import com.jfeat.am.module.friend.api.*;
 import com.jfeat.am.module.friend.services.domain.dao.QueryMomentsFriendDao;
 import com.jfeat.am.module.friend.services.domain.dao.mapping.QueryMomentsFriendOverOrderDao;
-import com.jfeat.am.module.friend.services.domain.model.MomentsFriendUser;
 import com.jfeat.am.module.friend.services.domain.service.MomentsFriendService;
 import com.jfeat.am.module.friend.services.gen.crud.service.impl.CRUDMomentsFriendServiceImpl;
 import com.jfeat.am.module.friend.services.gen.persistence.model.FriendOrder;
-import com.jfeat.crud.base.exception.BusinessCode;
-import com.jfeat.crud.base.exception.BusinessException;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.rmi.ServerException;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -38,8 +30,7 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     @Resource
     QueryMomentsFriendOverOrderDao queryMomentsFriendOverOrderDao;
     @Resource
-    SettlementCenterService SettlementCenterService;
-
+    SettlementCenterService settlementCenterService;
 
 
     @Override
@@ -48,7 +39,7 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
         allianceProduct.setStatus(OrderStatus.CLOSED_CONFIRMED);*/
 
         Integer i=queryMomentsFriendDao.closeProduct(id);
-        SettlementCenterService.settlementOrder(id);
+        settlementCenterService.settlementOrder(id);
 
 
         return i;
@@ -57,7 +48,7 @@ public class MomentsFriendServiceImpl extends CRUDMomentsFriendServiceImpl imple
     @Override
     public Integer cancelCloseConfirmedOrder(Long id) {
         //回退钱
-        SettlementCenterService.cancelSettlementOrder(id);
+        settlementCenterService.cancelSettlementOrder(id);
         //改状态 已发货 DELIVERED_CONFIRM_PENDING
         //设置 未结算 0
         Integer i=queryMomentsFriendDao.cancelcloseProduct(id);

@@ -5,7 +5,7 @@
 
     <groupId>com.jfeat</groupId>
     <artifactId>alliance-rpc</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <name>alliance-rpc</name>
@@ -13,60 +13,32 @@
 
     <parent>
         <groupId>com.jfeat</groupId>
-        <artifactId>sb-parent</artifactId>
+        <artifactId>pom-base</artifactId>
         <version>1.0.0</version>
         <relativePath/>
     </parent>
 
     <properties>
         <skipStandalone>true</skipStandalone>
-        <crud-plus.version>0.0.6</crud-plus.version>
-        <crud-core.version>0.0.2</crud-core.version>
-        <crud-dev.version>0.0.1</crud-dev.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.jfeat</groupId>
-            <artifactId>crud-plus</artifactId>
-            <version>${crud-plus.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jfeat</groupId>
-            <artifactId>crud-core</artifactId>
-            <version>${crud-core.version}</version>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.jfeat</groupId>-->
-            <!--<artifactId>crud-dev</artifactId>-->
-            <!--<version>${crud-dev.version}</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <!--springboot test-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jfeat</groupId>
             <artifactId>alliance-friend</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>alliance-core</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>bonus</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

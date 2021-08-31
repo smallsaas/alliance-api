@@ -1,6 +1,8 @@
 package com.jfeat.am.module.alliance.api;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
@@ -10,23 +12,17 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
-import com.baomidou.mybatisplus.plugins.Page;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.dao.DuplicateKeyException;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
 import com.jfeat.crud.base.tips.SuccessTip;
-import com.jfeat.crud.base.tips.Ids;
 import com.jfeat.crud.base.tips.Tip;
 import com.jfeat.am.module.log.annotation.BusinessLog;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
-import com.jfeat.crud.plus.CRUDObject;
 
 import java.math.BigDecimal;
 
@@ -94,7 +90,8 @@ public class OwnerBalanceEndpoint {
         walletHistory.setBalance(ownerBalance.getBalance().subtract(ownerBalanceRecord.getMoney()));
         Wallet wallet=new Wallet();
         wallet.setUserId(ownerBalance.getUserId());
-        wallet=queryWalletDao.selectOne(wallet);
+        wallet=queryWalletDao.selectOne(new QueryWrapper<>(wallet));
+
         walletHistory.setWalletId(wallet.getId());
         walletHistory.setType("WITHDRAW");
         walletHistory.setCreatedTime(new Date());

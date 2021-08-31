@@ -1,11 +1,9 @@
 package com.jfeat.am.module.alliance.api;
 
 
-import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jfeat.am.common.annotation.Permission;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
-import com.jfeat.am.module.alliance.services.domain.definition.AlliancePermission;
-import com.jfeat.am.module.alliance.services.domain.model.AllianceRecord;
 import com.jfeat.am.module.alliance.services.domain.model.WalletHistoryRecord;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 import com.jfeat.crud.base.tips.SuccessTip;

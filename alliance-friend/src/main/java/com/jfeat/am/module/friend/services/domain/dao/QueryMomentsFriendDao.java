@@ -7,8 +7,8 @@ import com.jfeat.am.module.friend.api.OrderUserRequest;
 import com.jfeat.am.module.friend.services.domain.model.MomentsFriendOverOrdersRecord;
 import com.jfeat.am.module.friend.services.domain.model.MomentsFriendRecord;
 
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jfeat.am.module.friend.services.domain.model.MomentsFriendUser;
 import org.apache.ibatis.annotations.Param;
 import com.jfeat.am.module.friend.services.gen.persistence.model.MomentsFriend;

@@ -1,7 +1,7 @@
 package com.jfeat.am.module.bonus.services.gen.persistence.dao;
 
 import com.jfeat.am.module.bonus.services.gen.persistence.model.OfflineWithdrawal;
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * <p>

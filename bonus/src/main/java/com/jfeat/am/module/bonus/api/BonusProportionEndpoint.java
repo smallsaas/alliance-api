@@ -1,6 +1,6 @@
 package com.jfeat.am.module.bonus.api;
 
-import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusProportionDao;
 import com.jfeat.am.module.bonus.services.domain.model.BonusProportionRecord;

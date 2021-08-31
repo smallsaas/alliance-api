@@ -1,14 +1,12 @@
 package com.jfeat.am.module.bonus.api;
 
 
-import com.baomidou.mybatisplus.plugins.Page;
-import com.jfeat.am.module.alliance.api.RechargeType;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
-import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
-import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryOfflineWithdrawalDao;
 import com.jfeat.am.module.bonus.services.domain.model.OfflineWithdrawalRecord;
 import com.jfeat.am.module.bonus.services.domain.service.OfflineWithdrawalService;
@@ -22,7 +20,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -67,7 +64,7 @@ public class OfflineWithdrawalEndpoint {
 
         Integer affected = 0;
 
-                OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(userId));
+                OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new LambdaQueryWrapper<>(new OwnerBalance().setUserId(userId)));
                 if (ownerBalance == null) {
                     throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
                 }
@@ -206,7 +203,7 @@ public class OfflineWithdrawalEndpoint {
         }
 
 
-        OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(userId));
+        OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new LambdaQueryWrapper<>(new OwnerBalance().setUserId(userId)));
         if (ownerBalance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "禁用失败，可能存在脏数据，用户没绑定账户，但是有提现申请");
         }
