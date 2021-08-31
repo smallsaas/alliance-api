@@ -3,9 +3,9 @@ package com.jfeat.am.module.alliance.api;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.mapper.Condition;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jfeat.am.common.annotation.Permission;
 import com.jfeat.am.core.jwt.JWTKit;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
@@ -21,21 +21,15 @@ import com.jfeat.am.module.alliance.util.RestClient;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import com.jfeat.am.module.log.annotation.BusinessLog;
 import com.jfeat.am.uaas.common.Md5Utils;
-import com.jfeat.crud.base.tips.ErrorTip;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.ibatis.annotations.Update;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
-import com.baomidou.mybatisplus.plugins.Page;
-import org.springframework.dao.DuplicateKeyException;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao;
 import com.jfeat.crud.base.tips.SuccessTip;
 import com.jfeat.crud.base.tips.Tip;
@@ -128,13 +122,13 @@ public class AllianceEndpoint {
     @ApiOperation("删除 Alliance")
     @Permission(AlliancePermission.ALLIANCE_DEL)
     public Tip deleteAlliance(@PathVariable Long id) {
-        Alliance alliance = queryAllianceDao.selectOne(new Alliance().setId(id));
+        Alliance alliance = queryAllianceDao.selectOne(new LambdaQueryWrapper<Alliance>(new Alliance().setId(id)));
         if (alliance != null) {
             Long userId = queryAllianceDao.queryUserIdByPhone(alliance.getAlliancePhone());
             if (userId != null && userId > 0) {
-                Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+                Wallet wallet = queryWalletDao.selectOne(new LambdaQueryWrapper<>(new Wallet().setUserId(userId)));
                 if (wallet != null) {
-                    queryWalletHistoryDao.delete(new Condition().eq(WalletHistory.WALLET_ID, wallet.getId()));
+                    queryWalletHistoryDao.delete(new QueryWrapper<WalletHistory>().eq(WalletHistory.WALLET_ID, wallet.getId()));
                     queryWalletDao.deleteById(wallet.getId());
                 }
             }
@@ -411,7 +405,7 @@ public class AllianceEndpoint {
                     walletHistory.setCreatedTime(new Date());
                     res += queryWalletHistoryDao.insert(walletHistory);
                 } else {*/
-                List<Wallet> list = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID, userId));
+                List<Wallet> list = queryWalletDao.selectList(new QueryWrapper<Wallet>().eq(Wallet.USER_ID, userId));
                 if(list!=null&&list.size()>1){
                     for(int i=0;i>list.size();i++){
                         if(i>0){
@@ -491,16 +485,14 @@ public class AllianceEndpoint {
         //  重置状态  userId--》null
         /*res += queryAllianceDao.resetUserId(id);*/
         if (alliance.getUserId() != null) {
-            Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+            Wallet wallet = queryWalletDao.selectOne(new LambdaQueryWrapper<>(new Wallet().setUserId(userId)));
             if (wallet != null) {
                 //删提成记录
-                res += queryOwnerBalanceDao.delete(new EntityWrapper<OwnerBalance>().eq("user_id", alliance.getUserId()));
+                res += queryOwnerBalanceDao.delete(new QueryWrapper<OwnerBalance>().eq("user_id", alliance.getUserId()));
                 //删历史记录
-                res += queryWalletHistoryDao.delete(new EntityWrapper<WalletHistory>().eq("wallet_id", wallet.getId()));
+                res += queryWalletHistoryDao.delete(new QueryWrapper<WalletHistory>().eq("wallet_id", wallet.getId()));
                 //删钱包
                 res += queryWalletDao.deleteById(wallet.getId());
-
-
             }
         }
 
@@ -514,14 +506,14 @@ public class AllianceEndpoint {
     public Tip reSetAllianceBalance(@PathVariable Long id) {
         int res=0;
         //根据盟友id查找盟友
-        Alliance alliance= queryAllianceDao.selectOne(new Alliance().setId(id));
+        Alliance alliance= queryAllianceDao.selectOne(new QueryWrapper<>(new Alliance().setId(id)));
         //获取初始化的金额
         if(alliance.getUserId()==null){
             throw new BusinessException(BusinessCode.BadRequest, "该盟友不是正式盟友");
         }
         BigDecimal defaultBalance =alliance.getAllianceInventoryAmount();
         //根据Userid查找钱包
-        List<Wallet> walletList = queryWalletDao.selectList(new EntityWrapper<Wallet>().eq("user_id",alliance.getUserId()));
+        List<Wallet> walletList = queryWalletDao.selectList(new QueryWrapper<Wallet>().eq("user_id",alliance.getUserId()));
         Wallet wallet=null;
         if(walletList==null||walletList.size()==0){
             Wallet insertWallet =new Wallet()
@@ -529,14 +521,14 @@ public class AllianceEndpoint {
                     .setBalance(defaultBalance)
                     .setAccumulativeAmount(defaultBalance);
             queryWalletDao.insert(insertWallet);
-            wallet=queryWalletDao.selectOne(insertWallet);
+            wallet=queryWalletDao.selectOne(new QueryWrapper<>(insertWallet));
         }else
         {
             wallet=walletList.get(0);
             wallet.setBalance(defaultBalance)
                     .setAccumulativeAmount(defaultBalance);
             queryWalletDao.updateById(wallet);
-            queryWalletHistoryDao.delete(new EntityWrapper<WalletHistory>().eq("wallet_id",wallet.getId()));
+            queryWalletHistoryDao.delete(new QueryWrapper<WalletHistory>().eq("wallet_id",wallet.getId()));
         }
         queryWalletHistoryDao.insert(new WalletHistory()
                 .setWalletId(wallet.getId())
@@ -577,7 +569,7 @@ public class AllianceEndpoint {
         //获取金额配置
         Float bonusConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE);
         Float commonConfig = configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE);
-        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+        Wallet wallet = queryWalletDao.selectOne(new LambdaQueryWrapper<>( new Wallet().setUserId(userId)));
         if (wallet != null) {
             if (allianceType.equals(Alliance.ALLIANCE_TYPE_COMMON)) {
                 if (wallet.getBalance() != null && wallet.getBalance().intValue() > 0) {
@@ -616,7 +608,7 @@ public class AllianceEndpoint {
         Long userId = alliance.getUserId();
         Wallet wallet = null;
         if (userId != null && userId > 0) {
-            wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+            wallet = queryWalletDao.selectOne(new LambdaQueryWrapper<>(new Wallet().setUserId(userId)));
         } else {
             throw new BusinessException(BusinessCode.BadRequest, "该盟友没有被绑定，无法进行充值");
         }
@@ -684,7 +676,6 @@ public class AllianceEndpoint {
         } else {
             throw new BusinessException(BusinessCode.BadRequest, parse.getString("message"));
         }
-
 
         return SuccessTip.create(parse);
     }
@@ -769,7 +760,7 @@ public class AllianceEndpoint {
         if (alliancePhone != null && alliancePhone.length() > 0) {
             Long userId = queryAllianceDao.queryUserIdByPhone(alliancePhone);
             if (userId != null) {
-                Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+                Wallet wallet = queryWalletDao.selectOne(new LambdaQueryWrapper<>(new Wallet().setUserId(userId)));
                 if (wallet != null) {
                     BigDecimal balance = wallet.getBalance();
                     if (balance == null) {
@@ -778,8 +769,8 @@ public class AllianceEndpoint {
                     alliance.setHistoricalBalance(balance);
                     alliance.setAllianceInventoryAmount(new BigDecimal(0.00));
                     res += queryAllianceDao.updateById(alliance);
-                    res += queryWalletHistoryDao.delete(new Condition().eq(WalletHistory.WALLET_ID, wallet.getId()));
-                    res += queryWalletDao.delete(new Condition().eq(Wallet.USER_ID, userId));
+                    res += queryWalletHistoryDao.delete(new QueryWrapper<WalletHistory>().eq(WalletHistory.WALLET_ID, wallet.getId()));
+                    res += queryWalletDao.delete(new QueryWrapper<Wallet>().eq(Wallet.USER_ID, userId));
                 }
             }
 
@@ -797,14 +788,20 @@ public class AllianceEndpoint {
         String alliancePhone = alliance.getAlliancePhone();
         Long userId = queryAllianceDao.queryUserIdByPhone(alliancePhone);
 
-        Wallet wallet = queryWalletDao.selectOne(new Wallet().setUserId(userId));
+        Wallet wallet = queryWalletDao.selectOne(new LambdaQueryWrapper<>(new Wallet().setUserId(userId)));
         if (wallet != null) {
-            List list = queryWalletHistoryDao.selectList(new EntityWrapper().eq(WalletHistory.TYPE,RechargeType.RECHARGE).or().eq(WalletHistory.TYPE,RechargeType.CASH_OUT).and().eq(WalletHistory.WALLET_ID, wallet.getId()).orderBy(WalletHistory.CREATED_TIME, false));
+            List<WalletHistory> list = queryWalletHistoryDao.selectList(
+                    new LambdaQueryWrapper<WalletHistory>()
+                    .eq(WalletHistory::getType, RechargeType.RECHARGE)
+                            .or()
+                            .eq(WalletHistory::getType, RechargeType.CASH_OUT)
+                    .and(u->u.eq(WalletHistory::getWalletId, wallet.getId())
+                    .orderBy(true, false, WalletHistory::getCreatedTime)));
+
             return SuccessTip.create(list);
         } else {
             throw new BusinessException(BusinessCode.BadRequest, "钱包未初始化");
         }
-
 
     }
 }

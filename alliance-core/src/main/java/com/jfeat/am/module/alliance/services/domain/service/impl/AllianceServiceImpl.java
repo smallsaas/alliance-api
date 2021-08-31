@@ -1,8 +1,8 @@
 package com.jfeat.am.module.alliance.services.domain.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.Condition;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jfeat.am.module.alliance.api.*;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
@@ -17,7 +17,6 @@ import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
-import com.jfeat.crud.base.tips.SuccessTip;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,15 +53,15 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
     @Override
     public Alliance findAllianceByPhoneNumber(String phoneNumber) {
 
-        return queryAllianceDao.selectOne(new Alliance().setAlliancePhone(phoneNumber));
+        return queryAllianceDao.selectOne(new LambdaQueryWrapper<>(new Alliance().setAlliancePhone(phoneNumber)));
     }
 
     public List<Alliance> getAlliancesByUserId(Long id) {
         Alliance entity = new Alliance();
         entity.setUserId(id);
-        Alliance alliance = queryAllianceDao.selectOne(entity);
+        Alliance alliance = queryAllianceDao.selectOne(new LambdaQueryWrapper<>(entity));
         if (alliance != null) {
-            return queryAllianceDao.selectList(new EntityWrapper<Alliance>().eq("invitor_alliance_id", alliance.getId()));
+            return queryAllianceDao.selectList(new QueryWrapper<Alliance>().eq("invitor_alliance_id", alliance.getId()));
         } else
             return null;
     }
@@ -76,7 +75,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
     public Alliance getAlliancesByBindingUserId(Long id) {
         Alliance entity = new Alliance();
         entity.setUserId(id);
-        Alliance alliance = queryAllianceDao.selectOne(entity);
+        Alliance alliance = queryAllianceDao.selectOne(new LambdaQueryWrapper<>(entity));
         return alliance;
     }
 
@@ -106,7 +105,10 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         if (requestAlliance.getAllianceName() == null || requestAlliance.getAllianceName().length() == 0) {
             throw new BusinessException(BusinessCode.BadRequest, "名字不能为空");
         }
-        List alliance_phone = queryAllianceDao.selectList(new Condition().eq(Alliance.ALLIANCE_PHONE, requestAlliance.getAlliancePhone()).ne(Alliance.USER_ID, userId));
+        List<Alliance> alliance_phone = queryAllianceDao.selectList(
+                new QueryWrapper<Alliance>()
+                        .eq(Alliance.ALLIANCE_PHONE, requestAlliance.getAlliancePhone())
+                        .ne(Alliance.USER_ID, userId));
         if (alliance_phone.size() > 0) {
             throw new BusinessException(BusinessCode.BadRequest, "该手机号码已被注册为盟友");
         }
@@ -121,7 +123,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         if (invitorUserId == null || invitorUserId == 0) {
             throw new BusinessException(BusinessCode.BadRequest, "邀请码找不到对应的用户");
         }
-        Alliance invitor = queryAllianceDao.selectOne(new Alliance().setUserId(invitorUserId));
+        Alliance invitor = queryAllianceDao.selectOne(new LambdaQueryWrapper<>(new Alliance().setUserId(invitorUserId)));
         if (invitor == null) {
             throw new BusinessException(BusinessCode.CodeBase, "邀请码找到的用户不是盟友");
         }
@@ -157,7 +159,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         queryAllianceDao.upUserRealNameByPhone(alliance_phone,entity.getAllianceName());
         String invitorPhoneNumber = entity.getInvitorPhoneNumber();
         if (invitorPhoneNumber != null && invitorPhoneNumber.length() > 0) {
-            Alliance invitor = queryAllianceDao.selectOne(new Alliance().setAlliancePhone(entity.getInvitorPhoneNumber()));
+            Alliance invitor = queryAllianceDao.selectOne(new LambdaQueryWrapper<>(new Alliance().setAlliancePhone(entity.getInvitorPhoneNumber())));
             if (invitor != null) {
                 entity.setInvitorAllianceId(invitor.getId());
             } else {
@@ -195,13 +197,13 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         if (entity.getAllianceDob() != null) {
             entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
         }
-        List alliance_phone = queryAllianceDao.selectList(new Condition().eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone()).ne(Alliance.ID, id));
+        List<Alliance> alliance_phone = queryAllianceDao.selectList(new QueryWrapper<Alliance>().eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone()).ne(Alliance.ID, id));
         if (alliance_phone.size() > 0) {
             throw new BusinessException(BusinessCode.BadRequest, AllianceShips.PHONE_EXITS_ERROR);
         }
         //根据邀请人电话查找邀请人信息
         Alliance alliance = null;
-        Alliance alliance1 = queryAllianceDao.selectOne(new Alliance().setId(id));
+        Alliance alliance1 = queryAllianceDao.selectOne(new LambdaQueryWrapper<>(new Alliance().setId(id)));
         if (alliance1.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_OK && entity.getAlliancePhone() != null && entity.getAlliancePhone().length() > 0) {
             if (!entity.getAlliancePhone().equals(alliance1.getAlliancePhone())) {
                 throw new BusinessException(BusinessCode.BadRequest, "正式盟友的手机号不能修改");
@@ -241,7 +243,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         //阻止用户修改电话
         entity.setAlliancePhone(null);
         Integer integer = this.updateMaster(entity,false);
-        Alliance alliance2 = queryAllianceDao.selectOne(new Alliance().setId(id));
+        Alliance alliance2 = queryAllianceDao.selectOne(new LambdaQueryWrapper<>(new Alliance().setId(id)));
         queryAllianceDao.upUserRealNameByPhone(alliance2.getAlliancePhone(),alliance2.getAllianceName());
         return integer;
     }
@@ -267,7 +269,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         }
         Wallet walletCondition = new Wallet();
 
-        List<Wallet> wallets = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID, userId));
+        List<Wallet> wallets = queryWalletDao.selectList(new QueryWrapper<Wallet>().eq(Wallet.USER_ID, userId));
         Wallet wallet = null;
         if (wallets != null && wallets.size() > 0) {
             wallet = wallets.get(0);

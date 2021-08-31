@@ -1,8 +1,8 @@
 package com.jfeat.am.module.bonus.services.domain.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.mapper.Condition;
-import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jfeat.AmApplication;
 import com.jfeat.am.module.alliance.api.RechargeType;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
@@ -13,8 +13,6 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
-import com.jfeat.am.module.bonus.api.BonusDateType;
-import com.jfeat.am.module.bonus.api.BonusError;
 import com.jfeat.am.module.bonus.api.BonusStatus;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.filter.AllianceField;
@@ -243,7 +241,7 @@ public class BonusServiceImpl implements BonusService {
         //提成钱包 增加数据
         OwnerBalance queryOwnerBalance = new OwnerBalance();
         queryOwnerBalance.setUserId(userId);
-        OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(queryOwnerBalance);
+        OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new LambdaQueryWrapper<>(queryOwnerBalance));
         if(ownerBalance!=null){
             BigDecimal selfBalance = ownerBalance.getBalance();
             selfBalance = selfBalance.add(balance);
@@ -273,7 +271,7 @@ public class BonusServiceImpl implements BonusService {
     //钱包加钱 同时加记录
     Integer createWalletRecord(Long userId,BigDecimal balance,String note){
         Wallet wallet = null ;
-        List<Wallet> wallets = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID,userId));
+        List<Wallet> wallets = queryWalletDao.selectList(new QueryWrapper<Wallet>().eq(Wallet.USER_ID, userId));
         Integer res = 0;
         //设置钱包逻辑
         if(wallets!=null && wallets.size()>0){
@@ -298,7 +296,7 @@ public class BonusServiceImpl implements BonusService {
         }
         //判断空 再查询一次获取id
         if(wallet.getId()==null){
-            List<Wallet> walletList = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID,userId));
+            List<Wallet> walletList = queryWalletDao.selectList(new LambdaQueryWrapper<>().eq(Wallet.USER_ID,userId));
             wallet =  walletList.get(0);
         }
         res += createWalletHistory(wallet,balance,note);

@@ -1,6 +1,6 @@
 package com.jfeat.am.module.bonus.services.gen.crud.service.impl;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jfeat.am.module.bonus.services.gen.crud.service.CRUDBonusProportionService;
 import com.jfeat.am.module.bonus.services.gen.persistence.dao.BonusProportionMapper;
 import com.jfeat.am.module.bonus.services.gen.persistence.model.BonusProportion;

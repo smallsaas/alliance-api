@@ -1,10 +1,10 @@
 package com.jfeat.am.module.alliance.services.domain.dao;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jfeat.am.module.alliance.services.domain.model.AllianceRecord;
 
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
