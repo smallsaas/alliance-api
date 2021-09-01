@@ -28,7 +28,6 @@
             <artifactId>field-config</artifactId>
             <version>1.2.2</version>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-crypto-hash -->
         <dependency>
             <groupId>org.apache.shiro</groupId>

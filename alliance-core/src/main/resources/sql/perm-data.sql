@@ -9,7 +9,6 @@ DELETE FROM sys_perm WHERE id='100000000000005006';
 DELETE FROM sys_perm WHERE id='100000000000005007';
 DELETE FROM sys_perm WHERE id='100000000000005008';
 
-
 INSERT INTO sys_perm_group(`id`, `org_id`, `pid`, `identifier`, `name`) VALUES ('1432625188005834753', '100000000000000001', '100000000000000001', 'Alliance.management', '盟友模块');
 
 INSERT INTO sys_perm(`id`, `group_id`, `identifier`, `name`,`tag`) VALUES('100000000000005001',  '1432625188005834753', 'Alliance.edit',  '编辑盟友', '0');

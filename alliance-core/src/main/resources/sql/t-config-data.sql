@@ -1,4 +1,3 @@
-
 DELETE FROM `t_config_field` WHERE id='101';
 DELETE FROM `t_config_field` WHERE id='102';
 DELETE FROM `t_config_field` WHERE id='103';
