@@ -25,6 +25,11 @@
     <dependencies>
         <dependency>
             <groupId>com.jfeat</groupId>
+            <artifactId>uaas</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jfeat</groupId>
             <artifactId>field-config</artifactId>
             <version>1.2.2</version>
         </dependency>
