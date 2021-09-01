@@ -4,8 +4,6 @@ package com.jfeat.am.module.bonus.api;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
-import com.jfeat.am.module.bonus.util.Cip;
-import com.jfeat.am.module.bonus.util.SuccessCip;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -55,7 +53,7 @@ public class RPCOfflineWithdrawalEndpoint {
     @BusinessLog(name = "线下提现", value = "创建线下提现")
     @PostMapping
     @ApiOperation(value = "新建OfflineWithdrawal", response = OfflineWithdrawal.class)
-    public Cip createOfflineWithdrawal(@RequestHeader("X-USER-ID") Long userId, @RequestBody OfflineWithdrawal entity) {
+    public Tip createOfflineWithdrawal(@RequestHeader("X-USER-ID") Long userId, @RequestBody OfflineWithdrawal entity) {
         entity.setUserId(userId);
         entity.setCreateTime(new Date());
         entity.setStatus(OfflineWithdrawalStatus.WAIT);
@@ -85,7 +83,7 @@ public class RPCOfflineWithdrawalEndpoint {
         affected += queryOwnerBalanceDao.updateById(ownerBalance);
         affected += offlineWithdrawalService.createMaster(entity);
 
-        return SuccessCip.create(affected);
+        return SuccessTip.create(affected);
     }
 
 

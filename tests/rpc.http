@@ -1,5 +1,8 @@
 @endpoint=https://api.mall.smallsaas.cn
+@endpoint=https://api.xiaojiuban.smallsaas.cn
 @restToken=eyJsb2dpbl9uYW1lIjoibzhNMUw1TGRTbGhqOWFNcFRwck4zenhvNjhkWSIsImlkIjoiNDQxIiwidG9rZW4iOiI2OTY0MGMxNDRmMzE4Y2FhNTI0ZjkxZmIyNmQ2ZWFjNGI1OGExYWNjIn0=
+@restToken=eyJsb2dpbl9uYW1lIjoib05oVGQ0dU9vbElfQm5lM1o0ZE9Fd1JHVm9vMCIsImlkIjoiNiIsInRva2VuIjoiODJkODJmYmY3NDNlMmY3YTIwNTliYjhhYzFiNWI2MmVkNzY1YTk2NCJ9
+
 
 ### 手机获取验证码
 POST {{endpoint}}/rest/pub/sms
@@ -14,4 +17,10 @@ Content-Type: application/json
 Authorization: {{restToken}}
 
 {"phoneNumber":"15800254850"}
+
+
+### 获取当前用户盟友信息
+GET {{endpoint}}/rest/rpc/alliance/alliances/getAllianceInformationByUserId
+Authorization: {{restToken}}
+X-USER-ID: 6
 

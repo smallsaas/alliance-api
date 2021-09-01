@@ -7,8 +7,6 @@ import com.jfeat.am.module.bonus.services.domain.model.BonusProportionRecord;
 import com.jfeat.am.module.bonus.services.domain.service.BonusProportionService;
 import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
 import com.jfeat.am.module.bonus.services.gen.persistence.model.BonusProportion;
-import com.jfeat.am.module.bonus.util.Cip;
-import com.jfeat.am.module.bonus.util.SuccessCip;
 import com.jfeat.am.module.log.annotation.BusinessLog;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;

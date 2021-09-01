@@ -3,8 +3,8 @@ package com.jfeat.am.module.bonus.api;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryBonusDao;
 import com.jfeat.am.module.bonus.services.domain.service.BonusService;
 import com.jfeat.am.module.bonus.services.domain.service.SettlementCenterService;
-import com.jfeat.am.module.bonus.util.Cip;
-import com.jfeat.am.module.bonus.util.SuccessCip;
+import com.jfeat.crud.base.tips.SuccessTip;
+import com.jfeat.crud.base.tips.Tip;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +27,7 @@ public class AutoSettlementAllEndpoint {
 
     @ApiOperation("手动批量结算订单")
     @GetMapping("/manuallySettlementAll")
-    public Cip manuallySettlementAll(){
+    public Tip manuallySettlementAll(){
         Integer i=0;
         List<Long> ids = queryBonusDao.queryOrderId();
         if(ids!=null&&ids.size()>0){
@@ -36,6 +36,6 @@ public class AutoSettlementAllEndpoint {
                     i++; }
             }
         }
-        return SuccessCip.create(i);
+        return SuccessTip.create(i);
     }
 }
