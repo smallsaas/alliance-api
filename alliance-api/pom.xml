@@ -23,10 +23,22 @@
     </properties>
 
     <dependencies>
+<!-- fix cors     -->
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>dev-cors</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>uaas</artifactId>
             <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>avatar</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.jfeat</groupId>
@@ -38,12 +50,18 @@
             <artifactId>field-config-pcd</artifactId>
             <version>1.2.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.jfeat</groupId>
+            <artifactId>cms-api</artifactId>
+            <version>2.0.0</version>
+        </dependency>
 
         <dependency>
             <groupId>com.jfeat</groupId>
             <artifactId>saas-mall-api</artifactId>
             <version>1.2.0</version>
         </dependency>
+
 
         <!--business modules-->
 	    <dependency>

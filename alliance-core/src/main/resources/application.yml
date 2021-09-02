@@ -67,9 +67,10 @@ logging:
 spring:
   profiles: dev
   datasource:
-      url: jdbc:mysql://120.79.49.72/alliance?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
+      url: jdbc:mysql://192.168.3.239/alliance?useSSL=false&autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
       username: root
       password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver
       filters: log4j,wall,mergeStat
       sql-script-encoding: UTF-8
       schema: classpath*:sql/**/*-schema.sql
@@ -77,10 +78,8 @@ spring:
       initialize: false
 
 logging:
-#  level: debug
+  level: debug
 #  file: logs/trace.log
-  level:
-    com.jfeat.am.module.alliance.services.domain.dao: debug
 
 am:
   shiro-cache-redis: false

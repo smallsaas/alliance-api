@@ -12,15 +12,37 @@ Content-Type: application/json
 
 
 ### 盟友注册
+// public  static final String COMMON_ALLIANCE_FIELD = "common_alliance";  // 分红盟友配置项
+// public  static final String BONUS_ALLIANCE_FIELD = "bonus_alliance";  // 分红盟友配置项
+
+// public static final int ALLIANCE_SHIP_OK = 0;        // 确定是盟友 （已确认）
+// public static final int ALLIANCE_SHIP_NO = 1;        // 不是盟友
+// public static final int ALLIANCE_SHIP_INVITED = 2;   // 盟友申请中 （待支付）
+// public static final int ALLIANCE_SHIP_PAID = 3;      // 盟友已支付 (等待绑定）
+// public static final int ALLIANCE_SHIP_EXPIRED = 4;   // 支付过期 （支付过期）可改为已支付
+// public static final int ALLIANCE_SHIP_ERROR = 5;     // 盟友状态错误
+
 POST {{endpoint}}/rest/rpc/alliance/register
 Content-Type: application/json
 Authorization: {{restToken}}
-
-{"phoneNumber":"15800254850"}
-
-
-### 获取当前用户盟友信息
-GET {{endpoint}}/rest/rpc/alliance/alliances/getAllianceInformationByUserId
-Authorization: {{restToken}}
 X-USER-ID: 6
 
+{
+    "phoneNumber":"13925206980"
+}
+
+
+
+# @endpoint=http://localhost:8080
+
+### 获取用户信息
+GET {{endpoint}}/rest/rpc/alliance/userinfo/U012008081736370009
+# GET {{endpoint}}/rpc/alliance/userinfo/U012008081736370009
+Authorization: {{restToken}}
+
+
+### 获取盟友信息
+GET {{endpoint}}/rest/rpc/alliance/info/13925206980
+# GET {{endpoint}}/rpc/alliance/info/13925206980
+Authorization: {{restToken}}
+X-USER-ID: 6

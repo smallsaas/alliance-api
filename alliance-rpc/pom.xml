@@ -25,6 +25,12 @@
     <dependencies>
         <dependency>
             <groupId>com.jfeat</groupId>
+            <artifactId>field-config</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jfeat</groupId>
             <artifactId>alliance-friend</artifactId>
             <version>2.0.0</version>
             <scope>compile</scope>

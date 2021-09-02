@@ -33,6 +33,7 @@ public class DevEndpoint {
 
         return SuccessTip.create(integer);
     }
+    
     //删除可提现额
     @DeleteMapping("/delete/ownerBalance")
     public Tip deleteOwnerBalance(){

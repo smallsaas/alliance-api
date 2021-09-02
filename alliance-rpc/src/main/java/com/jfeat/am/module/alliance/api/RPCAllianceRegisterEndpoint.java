@@ -10,9 +10,13 @@ import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Wallet;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.WalletHistory;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
+import com.jfeat.am.module.frontuser.services.gen.crud.service.CRUDFrontUserService;
+import com.jfeat.am.module.frontuser.services.gen.persistence.dao.FrontUserMapper;
+import com.jfeat.am.module.frontuser.services.gen.persistence.model.FrontUser;
 import com.jfeat.am.module.log.annotation.BusinessLog;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
+import com.jfeat.crud.base.tips.SuccessTip;
 import com.jfeat.util.Cip;
 import com.jfeat.util.ErrorCip;
 import com.jfeat.util.SuccessCip;
@@ -53,6 +57,31 @@ public class RPCAllianceRegisterEndpoint {
     ConfigFieldService configFieldService;
     @Resource
     QueryAllianceDao queryAllianceDao;
+
+    @ApiOperation(value = "获取盟友信息")
+    @GetMapping("/info/{phone}")
+    public Cip getAllianceInfoByPhone(@PathVariable("phone") String phone) {
+        Alliance alliance = allianceService.findAllianceByPhoneNumber(phone);
+        if (alliance == null) {
+            return ErrorCip.create(1, "输入的电话找不到盟友: " + phone);
+        }
+        return SuccessCip.create(alliance);
+    }
+
+
+    @Resource
+    FrontUserMapper frontUserMapper;
+    @ApiOperation(value = "获取用户信息")
+    @GetMapping("/userinfo/{uid}")
+    public Cip getUserInfoByUid(@PathVariable("uid") String uid) {
+        FrontUser user = frontUserMapper.selectOne(new LambdaQueryWrapper<>(new FrontUser().setUid(uid)));
+
+        if (user == null) {
+            return ErrorCip.create(1, "输入的UID找不到用户: " + uid);
+        }
+        return SuccessCip.create(user);
+    }
+
 
     @BusinessLog(name = "盟友", value = "改变盟友状态")
     @ApiOperation(value = "改变盟友状太，仅限于测试使用 0-正式盟友 1-不是盟友 2-待支付/申请中 3-已支付 4-支付过期 5-状态错误", response = Cip.class)
@@ -190,6 +219,7 @@ public class RPCAllianceRegisterEndpoint {
             } else {
                 return ErrorCip.create(AllianceShips.ALLIANCE_SHIP_ERROR, "数据库错误：确认盟友状态有误: " + registeredAlliance.getAlliancePhone());
             }
+
         } else if (registeredAlliance.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_EXPIRED) {
             return ErrorCip.create(registeredAlliance.getAllianceShip(), "支付超时，请重新申请");
 
