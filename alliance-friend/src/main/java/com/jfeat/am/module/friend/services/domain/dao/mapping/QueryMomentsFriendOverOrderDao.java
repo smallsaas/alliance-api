@@ -1,6 +1,6 @@
 package com.jfeat.am.module.friend.services.domain.dao.mapping;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jfeat.am.module.friend.services.gen.persistence.model.FriendOrder;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;

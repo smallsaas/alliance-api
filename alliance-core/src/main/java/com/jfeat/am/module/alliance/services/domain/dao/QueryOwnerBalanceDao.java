@@ -1,9 +1,9 @@
 package com.jfeat.am.module.alliance.services.domain.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jfeat.am.module.alliance.services.domain.model.OwnerBalanceRecord;
 
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
 
@@ -16,9 +16,9 @@ import java.util.List;
  */
 public interface QueryOwnerBalanceDao extends BaseMapper<OwnerBalance> {
     List<OwnerBalanceRecord> findOwnerBalancePage(Page<OwnerBalanceRecord> page, @Param("record") OwnerBalanceRecord record,
-                                            @Param("search") String search, @Param("orderBy") String orderBy,
-                                            @Param("startTime") Date startTime, @Param("endTime") Date endTime,
-                                                 @Param("leftMoney") BigDecimal leftMoney,
+                                                  @Param("search") String search, @Param("orderBy") String orderBy,
+                                                  @Param("startTime") Date startTime, @Param("endTime") Date endTime,
+                                                  @Param("leftMoney") BigDecimal leftMoney,
                                                   @Param("rightMoney") BigDecimal rightMoney
     );
 

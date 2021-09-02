@@ -1,7 +1,7 @@
 package com.jfeat.am.module.alliance.api;
 
-
-import com.baomidou.mybatisplus.mapper.Condition;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryAllianceDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletDao;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryWalletHistoryDao;
@@ -202,8 +202,8 @@ public class RPCAllianceRegisterEndpoint {
             //设置钱包库存额
             Wallet wallet = new Wallet();
             wallet.setUserId(userId);
-            List<Wallet> condition = queryWalletDao.selectList(new Condition().eq(Wallet.USER_ID, userId));
-            Wallet originWallet = queryWalletDao.selectOne(wallet);
+            //List<Wallet> condition = queryWalletDao.selectList(new QueryWrapper<Wallet>().eq(Wallet.USER_ID, userId));
+            Wallet originWallet = queryWalletDao.selectOne(new LambdaQueryWrapper<>(wallet));
             if (originWallet == null) {
                 //普通盟友
                 if (registeredAlliance.getAllianceType() == Alliance.ALLIANCE_TYPE_COMMON) {

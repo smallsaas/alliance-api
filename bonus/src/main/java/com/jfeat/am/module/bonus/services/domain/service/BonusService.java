@@ -1,6 +1,6 @@
 package com.jfeat.am.module.bonus.services.domain.service;
 
-import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jfeat.am.module.bonus.services.domain.model.AllianceReconciliation;
 import org.springframework.transaction.annotation.Transactional;
 

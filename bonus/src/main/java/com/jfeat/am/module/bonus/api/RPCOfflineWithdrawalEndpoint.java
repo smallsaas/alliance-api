@@ -1,25 +1,21 @@
 package com.jfeat.am.module.bonus.api;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jfeat.am.module.alliance.services.domain.dao.QueryOwnerBalanceDao;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.OwnerBalance;
-import com.jfeat.am.module.bonus.util.Cip;
-import com.jfeat.am.module.bonus.util.SuccessCip;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
-import com.baomidou.mybatisplus.plugins.Page;
-import org.springframework.dao.DuplicateKeyException;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jfeat.am.module.bonus.services.domain.dao.QueryOfflineWithdrawalDao;
 import com.jfeat.crud.base.tips.SuccessTip;
-import com.jfeat.crud.base.tips.Ids;
 import com.jfeat.crud.base.tips.Tip;
 import com.jfeat.am.module.log.annotation.BusinessLog;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
-import com.jfeat.crud.plus.CRUDObject;
 
 import java.math.BigDecimal;
 
@@ -57,14 +53,14 @@ public class RPCOfflineWithdrawalEndpoint {
     @BusinessLog(name = "线下提现", value = "创建线下提现")
     @PostMapping
     @ApiOperation(value = "新建OfflineWithdrawal", response = OfflineWithdrawal.class)
-    public Cip createOfflineWithdrawal(@RequestHeader("X-USER-ID") Long userId, @RequestBody OfflineWithdrawal entity) {
+    public Tip createOfflineWithdrawal(@RequestHeader("X-USER-ID") Long userId, @RequestBody OfflineWithdrawal entity) {
         entity.setUserId(userId);
         entity.setCreateTime(new Date());
         entity.setStatus(OfflineWithdrawalStatus.WAIT);
 
         Integer affected = 0;
 
-        OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new OwnerBalance().setUserId(userId));
+        OwnerBalance ownerBalance = queryOwnerBalanceDao.selectOne(new LambdaQueryWrapper<>(new OwnerBalance().setUserId(userId)));
         if (ownerBalance == null) {
             throw new BusinessException(BusinessCode.BadRequest, "该账户提成不足");
         }
@@ -87,7 +83,7 @@ public class RPCOfflineWithdrawalEndpoint {
         affected += queryOwnerBalanceDao.updateById(ownerBalance);
         affected += offlineWithdrawalService.createMaster(entity);
 
-        return SuccessCip.create(affected);
+        return SuccessTip.create(affected);
     }
 
 

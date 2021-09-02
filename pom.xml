@@ -11,18 +11,20 @@
 
     <parent>
         <groupId>com.jfeat</groupId>
-        <artifactId>sb-parent</artifactId>
+        <artifactId>pom-parent</artifactId>
         <version>1.0.0</version>
         <relativePath/>
     </parent>
 
+    <properties>
+        <alliance.version>2.0.0</alliance.version>
+    </properties>
+
     <modules>
         <module>alliance-core</module>
-
         <module>alliance-friend</module>
         <module>alliance-api</module>
         <module>alliance-rpc</module>
-
         <module>bonus</module>
 <!--        <module>saas-mall-api</module>-->
     </modules>

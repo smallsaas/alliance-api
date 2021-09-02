@@ -1,7 +1,7 @@
 package com.jfeat.am.module.alliance.services.gen.persistence.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
-import com.baomidou.mybatisplus.mapper.BaseMapper;
 
 /**
  * <p>
