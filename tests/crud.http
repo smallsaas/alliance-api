@@ -1,0 +1,20 @@
+@endpoint=http://localhost:8080
+
+
+@token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJvcmdJZCI6Im51bGwiLCJ1c2VySWQiOiI4NzY3MDgwODI0MzcxOTc4MjciLCJ1c2VyVHlwZSI6MCwiYlVzZXJUeXBlIjoiU1lTVEVNIiwiYWNjb3VudCI6ImFkbWluIiwiZXh0cmFVc2VyVHlwZSI6MCwiaWF0IjoxNjMwNDkyMjc0LCJqdGkiOiI4NzY3MDgwODI0MzcxOTc4MjciLCJzdWIiOiJhZG1pbiIsImV4cCI6MTYzMDc1MTQ3NH0.5NWioJLNaGFeR3lwk2GhYchxu9Fw5l7wfX_Hb99JNTIq6w-ggBIxeZfnkaBQS4idv58Eodch4ucXGipQwhkF_Q
+
+
+### 获取产品分类
+GET {{endpoint}}/api/crud/product/productCategoryies
+Authorization: Bearer {{token}}
+
+
+### 盟友账户重置
+# POST {{endpoint}}/rest/rpc/alliance/info/13925206980
+POST {{endpoint}}/api/crud/alliance/alliances/423/action/reset
+
+
+### 设置盟友为已支付
+# POST {{endpoint}}/rest/rpc/alliance/info/13925206980
+POST {{endpoint}}/api/crud/alliance/alliances/423/action/setexistpaid
+
