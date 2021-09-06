@@ -121,6 +121,8 @@ public interface QueryBonusDao {
     BigDecimal getCommissionToOneItem(@Param("itemId") Long itemId);
     //查询我团队的入货总额
     BigDecimal queryMyTeamOrderAmount(@Param("userId") Long userId);
+    //查询我团队的入货总额-批量
+    BigDecimal queryMyTeamOrderAmountByIds(@Param("ids") List<Long> ids);
     //查询我团队当月的入货总额
     BigDecimal queryMyTeamOrderAmountMonth(@Param("userId") Long userId);
     //查询所有分红盟友的userId

@@ -301,13 +301,14 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
 
             List<Long> userIds = queryBonusDao.queryStockholderUserId();
             if (userIds != null && userIds.size() > 0) {
-                for (Long id : userIds) {
+               /* for (Long id : userIds) {
                     BigDecimal bigDecimal = queryBonusDao.queryMyTeamOrderAmount(id);
                     if (bigDecimal == null) {
                         bigDecimal = new BigDecimal(0.00);
                     }
                     total = total.add(bigDecimal);
-                }
+                }*/
+                total = queryBonusDao.queryMyTeamOrderAmountByIds(userIds);
             }
         }
         Integer i = queryBonusDao.updateAllianceTotlePrice(total);
@@ -328,13 +329,14 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
 
             List<Long> userIds = queryBonusDao.queryStockholderUserId();
             if (userIds != null && userIds.size() > 0) {
-                for (Long id : userIds) {
+              /*  for (Long id : userIds) {
                     BigDecimal bigDecimal = queryBonusDao.queryMyTeamOrderAmount(id);
                     if (bigDecimal == null) {
                         bigDecimal = new BigDecimal(0.00);
                     }
                     total = total.add(bigDecimal);
-                }
+                }*/
+                total = queryBonusDao.queryMyTeamOrderAmountByIds(userIds);
             }
         }
 
