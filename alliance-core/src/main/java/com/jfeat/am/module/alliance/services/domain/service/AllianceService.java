@@ -5,6 +5,7 @@ import com.jfeat.am.module.alliance.api.RequestAlliance;
 import com.jfeat.am.module.alliance.services.domain.model.AllianceRecord;
 import com.jfeat.am.module.alliance.services.gen.crud.service.CRUDAllianceService;
 import com.jfeat.am.module.alliance.services.gen.persistence.model.Alliance;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.util.List;
@@ -30,4 +31,6 @@ public interface AllianceService extends CRUDAllianceService{
     public Integer modifyAllianceShip(Long id);
 
 
+    @Transactional
+    Integer Unbind(Long id);
 }

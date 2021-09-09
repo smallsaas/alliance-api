@@ -40,4 +40,13 @@
         id,role,historical_balance historicalBalance,user_id AS userId,avator,starting_cycle,age,alliance_type,balance, alliance_rank AS allianceRank,invitor_alliance_id AS invitorAllianceId, alliance_ship AS allianceShip, stockholder_ship AS stockholderShip, creation_time AS creationTime, alliance_ship_time AS allianceShipTime, stockholder_ship_time AS stockholderShipTime, temp_alliance_expiry_time AS tempAllianceExpiryTime, alliance_status AS allianceStatus, alliance_inventory_amount AS allianceInventoryAmount, alliance_point AS alliancePoint, alliance_name AS allianceName, alliance_sex AS allianceSex, alliance_occupation AS allianceOccupation, alliance_industry AS allianceIndustry, alliance_address AS allianceAddress, alliance_business AS allianceBusiness, alliance_hobby AS allianceHobby, alliance_phone AS alliancePhone, alliance_dob AS allianceDob
     </sql>
 
+	<!-- 3表示待绑定 其他状态参照AllianceShips类定义 -->
+	<update id="unbind">
+		update t_alliance set  t_alliance.user_id = null,alliance_ship = 3  where id = #{id}
+	</update>
+
+	<update id="unbindUser">
+		update t_user set t_user.phone = null where id = #{id}
+	</update>
+
 </mapper>
