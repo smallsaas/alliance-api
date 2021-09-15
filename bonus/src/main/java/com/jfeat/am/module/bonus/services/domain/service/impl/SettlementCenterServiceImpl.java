@@ -336,7 +336,8 @@ public class SettlementCenterServiceImpl implements SettlementCenterService {
                     }
                     total = total.add(bigDecimal);
                 }*/
-                total = queryBonusDao.queryMyTeamOrderAmountByIds(userIds);
+                 BigDecimal amount = queryBonusDao.queryMyTeamOrderAmountByIds(userIds);
+                if(amount != null ){total = amount;}
             }
         }
 
