@@ -16,6 +16,6 @@ public interface AllianceMapper extends BaseMapper<Alliance> {
     //根据盟友id 解除绑定的微信
     Integer unbind(@Param("id") Long id);
 
-    //根据t_user的id 清空t_user绑定的手机号
+    //根据t_user的id 清空t_user绑定的手机号 和 邀请码的url
     Integer unbindUser(@Param("id") Long id);
 }

@@ -46,7 +46,7 @@
 	</update>
 
 	<update id="unbindUser">
-		update t_user set t_user.phone = null where id = #{id}
+		update t_user set t_user.phone = null , t_user.invitation_qrcode_url = null where id = #{id}
 	</update>
 
 </mapper>
