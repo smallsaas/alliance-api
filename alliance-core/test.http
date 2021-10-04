@@ -1,0 +1,8 @@
+@endpoint=http://localhost:8089
+
+### test put alliance
+PUT {{endpoint}}/api/crud/alliance/alliances/337
+Content-Type: application/json
+
+{"age":null,"allianceAddress":"广东","allianceBusiness":"互联网","allianceDob":null,"allianceHobby":"钓鱼","allianceIndustry":"互联网","allianceInventoryAmount":2000,"allianceMessages":null,"allianceName":"黄某人","allianceOccupation":"IT","alliancePhone":"13660878929","alliancePoint":null,"allianceRank":null,"allianceSex":1,"allianceShip":3,"allianceShipTime":"2021-09-09 22:34:08","allianceStatus":null,"allianceTeam":null,"allianceType":2,"avator":null,"balance":null,"bonusSettlement":0,"bonus_balance":null,"commissionBalance":null,"commissionOrder":null,"conditionOrderAmount":null,"creationTime":"2019-12-01 08:00:00","currentMonthOrder":null,"cutOffTime":null,"deliverMessage":null,"dividedTime":null,"effectiveCommission":null,"expected_bonus":null,"experienceTime":null,"extra":null,"historicalBalance":null,"id":"337","invitorAllianceId":"70","invitorName":"李某某","invitorPhone":"13711694300","noEffectiveCommission":null,"orderAmount":null,"proportion":0,"role":null,"selfBonus":null,"selfProducts":null,"settlementCommission":null,"startingCycle":"2019-12-01 08:00:00","stockholderCount":null,"stockholderShip":null,"stockholderShipTime":null,"teamAllianceOrderMessages":null,"teamCount":1,"teamSelfBonus":null,"tempAllianceExpiryTime":"2021-10-05 20:39:34","totalSelfBonus":null,"userId":null,"wechatAvatar":null,"wechatNick":null,"hidden_1":""}
+

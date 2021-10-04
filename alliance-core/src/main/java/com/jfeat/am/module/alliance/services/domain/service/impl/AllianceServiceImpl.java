@@ -17,6 +17,7 @@ import com.jfeat.am.module.alliance.util.AllianceUtil;
 import com.jfeat.am.module.config.services.service.ConfigFieldService;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -194,35 +195,36 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
     public Integer modify(Long id, AllianceRecord entity) throws ParseException {
         entity.setId(id);
 
-        if (entity.getAllianceDob() != null) {
-            entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
-        }
-        List<Alliance> alliance_phone = queryAllianceDao.selectList(new QueryWrapper<Alliance>().eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone()).ne(Alliance.ID, id));
+        // phone not allowed to changed to exist one
+        List<Alliance> alliance_phone = queryAllianceDao.selectList(new QueryWrapper<Alliance>()
+                .eq(Alliance.ALLIANCE_PHONE, entity.getAlliancePhone())
+                .ne(Alliance.ID, id));
         if (alliance_phone.size() > 0) {
             throw new BusinessException(BusinessCode.BadRequest, AllianceShips.PHONE_EXITS_ERROR);
         }
-        //根据邀请人电话查找邀请人信息
-        Alliance alliance = null;
-        Alliance alliance1 = queryAllianceDao.selectOne(new LambdaQueryWrapper<>(new Alliance().setId(id)));
-        if (alliance1.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_OK && entity.getAlliancePhone() != null && entity.getAlliancePhone().length() > 0) {
-            if (!entity.getAlliancePhone().equals(alliance1.getAlliancePhone())) {
+
+        //正式盟友的手机号不能修改
+        Alliance origin_alliance = queryAllianceDao.selectById(id);
+        if (origin_alliance.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_OK && StringUtils.isNotBlank(entity.getAlliancePhone())) {
+            if (!entity.getAlliancePhone().equals(origin_alliance.getAlliancePhone())) {
                 throw new BusinessException(BusinessCode.BadRequest, "正式盟友的手机号不能修改");
             }
         }
-        if (entity.getInvitorPhone() != null && entity.getInvitorPhone().length() > 0) {
-            alliance = this.findAllianceByPhoneNumber(entity.getInvitorPhone());
-        }
-        if (alliance != null) {
-            Alliance allianceShip = this.retrieveMaster(id);
-//            if(allianceShip.getAllianceShip()!=null&&allianceShip.getAllianceShip()==1){
-//                if(allianceShip.getTempAllianceExpiryTime()!=null&&new Date().getTime()<allianceShip.getTempAllianceExpiryTime().getTime()){
-//                    throw new ServerException("临时盟友不能修改邀请人，请将邀请人手机号去掉");
-//                }
-//            }
-            entity.setInvitorAllianceId(alliance.getId());
-        }else {
+
+        ///根据邀请人电话查找邀请人信息
+        if(origin_alliance.getInvitorAllianceId()==null) {
+            Alliance invitor_alliance = null;
+            if (StringUtils.isNotBlank(entity.getInvitorPhone())) {
+                invitor_alliance = this.findAllianceByPhoneNumber(entity.getInvitorPhone());
+            }
+            if (invitor_alliance != null) {
+                entity.setInvitorAllianceId(invitor_alliance.getId());
+            } else {
 //            throw new BusinessException(BusinessCode.BadRequest,"邀请人不存在");
+            }
         }
+
+        // 设置盟友类型信息
         if (entity.getAllianceType().equals(Alliance.ALLIANCE_TYPE_COMMON)) {
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
             entity.setTempAllianceExpiryTime(new Date((new Date().getTime() + configFieldService.getFieldInteger(AllianceFields.ALLIANCE_FIELD_TEMP_ALLIANCE_EXPIRY_TIME) * millisecond)));
@@ -235,16 +237,21 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
 //            entity.setStockholderShip(1);
 //            entity.setAllianceShip(2);
             entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
-
-
         }
-        Alliance user = queryAllianceDao.selectById(id);
-        entity.setUserId(user.getUserId());
-        //阻止用户修改电话
-        entity.setAlliancePhone(null);
+        if (entity.getAllianceDob() != null) {
+            entity.setAge(AllianceUtil.getAgeByBirth(entity.getAllianceDob()));
+        }
+        entity.setUserId(origin_alliance.getUserId());
+        //如果已经是正式盟友，阻止用户修改电话
+        if(origin_alliance.getAllianceShip() == AllianceShips.ALLIANCE_SHIP_OK) {
+            entity.setAlliancePhone(null);
+        }
+
         Integer integer = this.updateMaster(entity,false);
-        Alliance alliance2 = queryAllianceDao.selectOne(new LambdaQueryWrapper<>(new Alliance().setId(id)));
-        queryAllianceDao.upUserRealNameByPhone(alliance2.getAlliancePhone(),alliance2.getAllianceName());
+        Alliance updated_alliance = queryAllianceDao.selectById(id);
+
+        // update realname into t_user.real_name
+        queryAllianceDao.upUserRealNameByPhone(updated_alliance.getAlliancePhone(), updated_alliance.getAllianceName());
         return integer;
     }
 
