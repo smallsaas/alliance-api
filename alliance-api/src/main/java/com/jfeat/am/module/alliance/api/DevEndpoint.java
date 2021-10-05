@@ -51,4 +51,12 @@ public class DevEndpoint {
     }
 
 
+    //删除盟友
+    @DeleteMapping("/delete/alliance")
+    public Tip deleteAlliance(){
+        Integer integer = devService.deleteAlliance();
+
+        return SuccessTip.create(integer);
+    }
+
 }

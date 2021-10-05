@@ -340,4 +340,19 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         }
         return set;
     }
+
+
+    @Transactional
+    @Override
+    public Integer Unbind(Long id){
+        Integer i = 0;
+        Alliance alliance = allianceMapper.selectById(id);
+        //去掉对应用户的手机号
+        i += allianceMapper.unbindUser(alliance.getUserId());
+        //去掉userId绑定关系 以及盟友状态
+        i += allianceMapper.unbind(id);
+
+        return i;
+    }
+
 }

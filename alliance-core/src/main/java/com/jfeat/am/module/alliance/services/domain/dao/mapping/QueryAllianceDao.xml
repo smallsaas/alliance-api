@@ -11,10 +11,13 @@
 <!--    盟友详情信息-->
     <select id="allianceDetails" resultType="AllianceRecord">
         select t_alliance.*,COUNT(children.id)+1 as team_count,kid.alliance_name as invitorName,kid.alliance_phone as
-        invitorPhone
+        invitorPhone,
+        t_user.avatar as wechatAvatar,
+        t_user.name as wechatNick
         from t_alliance
         left JOIN t_alliance as children on t_alliance.id=children.invitor_alliance_id
         LEFT JOIN t_alliance kid ON t_alliance.invitor_alliance_id=kid.id
+        LEFT JOIN t_user ON t_alliance.user_id = t_user.id
         where t_alliance.id=#{id}
         GROUP BY t_alliance.id
     </select>

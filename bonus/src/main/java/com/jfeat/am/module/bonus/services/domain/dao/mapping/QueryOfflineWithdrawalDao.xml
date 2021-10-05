@@ -42,10 +42,8 @@
         <if test="endTime != null">
             <![CDATA[AND t_offline_withdrawal.end_time <= DATE(#{endTime)]]>
         </if>
-        <!--
-    <if test="search != null and search != ''">
-        OR t_offline_withdrawal.name LIKE CONCAT('%',#{search},'%')
-    </if>
-    -->
+             <if test="search != null and search != ''">
+                 AND t_alliance.alliance_name LIKE CONCAT('%',#{search},'%')
+             </if>
     </select>
 </mapper>

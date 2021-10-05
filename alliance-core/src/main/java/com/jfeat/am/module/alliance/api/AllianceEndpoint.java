@@ -804,4 +804,12 @@ public class AllianceEndpoint {
         }
 
     }
+
+    @PutMapping("/unbind/{id}")
+    @ApiOperation(value = "微信解绑", response = Tip.class)
+    public Tip Unbind(@PathVariable Long id){
+        Integer unbind = allianceService.Unbind(id);
+        return SuccessTip.create(unbind);
+    }
+
 }

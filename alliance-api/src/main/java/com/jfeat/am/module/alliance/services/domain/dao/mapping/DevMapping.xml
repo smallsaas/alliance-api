@@ -109,4 +109,8 @@
 		delete from t_offline_withdrawal
 	</delete>
 
+	<delete id="deleteAlliance">
+		delete from t_alliance
+	</delete>
+
 </mapper>

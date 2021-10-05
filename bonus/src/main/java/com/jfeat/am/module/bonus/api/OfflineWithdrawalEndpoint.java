@@ -194,7 +194,7 @@ public class OfflineWithdrawalEndpoint {
     @BusinessLog(name = "线下提现", value = "审批不通过")
     @PostMapping("/notPass/{id}")
     @ApiOperation("审批不通过 线下提现")
-    public Tip notPassOfflineWithdrawal(@PathVariable Long id) {
+    public Tip notPassOfflineWithdrawal(@PathVariable Long id,@RequestBody NoteBody noteBody) {
         OfflineWithdrawal offlineWithdrawal = offlineWithdrawalService.retrieveMaster(id);
         int res = 0;
         Long userId = offlineWithdrawal.getUserId();
@@ -212,7 +212,7 @@ public class OfflineWithdrawalEndpoint {
         if (getBalance == null) { getBalance = new BigDecimal(0.00); }
         BigDecimal add = ownerBalanceBalance.add(getBalance);
         ownerBalance.setBalance(add);
-
+        offlineWithdrawal.setNote(noteBody.getNote());
         offlineWithdrawal.setStatus(OfflineWithdrawalStatus.NOT_OK);
         res += queryOfflineWithdrawalDao.updateById(offlineWithdrawal);
         res += queryOwnerBalanceDao.updateById(ownerBalance);
