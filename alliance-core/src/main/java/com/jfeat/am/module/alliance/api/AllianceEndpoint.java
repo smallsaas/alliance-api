@@ -384,7 +384,9 @@ public class AllianceEndpoint {
             defaultBonus =new BigDecimal(commonConfig);
         }
         //设置 盟友表 金额
-        alliance.setAllianceInventoryAmount(defaultBonus);
+        if (alliance.getAllianceInventoryAmount().equals(0)) {
+            alliance.setAllianceInventoryAmount(defaultBonus);
+        }
         int res=0;
         //此处检测状态
         if (alliance.getAllianceShip().equals(AllianceShips.ALLIANCE_SHIP_INVITED)) {
