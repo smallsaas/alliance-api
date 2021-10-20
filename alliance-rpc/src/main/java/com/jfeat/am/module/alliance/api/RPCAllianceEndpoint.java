@@ -115,7 +115,9 @@ public class RPCAllianceEndpoint {
             }
         }
         if (entity.getAllianceType().equals(ALLIANCE_TYPE_COMMON)) {
-            entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
+//            //2021/10/20  创建盟友时，设置金额为0，已支付状态后赋值金额
+//            entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_COMMON_ALLIANCE)));
+            entity.setAllianceInventoryAmount(new BigDecimal(0));
             entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
             Wallet walletCondition = new Wallet();
             if (userId != null) {
@@ -157,7 +159,8 @@ public class RPCAllianceEndpoint {
 //            entity.setStockholderShipTime(new Date());
 //            entity.setStockholderShip(1);
             entity.setAllianceShip(AllianceShips.ALLIANCE_SHIP_INVITED);
-            entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
+            entity.setAllianceInventoryAmount(new BigDecimal(0));
+            //entity.setAllianceInventoryAmount(new BigDecimal(configFieldService.getFieldFloat(AllianceFields.ALLIANCE_FIELD_BONUS_ALLIANCE)));
             Wallet walletCondition = new Wallet();
             if (userId != null) {
                 walletCondition.setUserId(userId);
