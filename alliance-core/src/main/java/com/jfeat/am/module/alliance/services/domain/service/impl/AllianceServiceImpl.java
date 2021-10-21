@@ -212,7 +212,9 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
         }
 
         ///根据邀请人电话查找邀请人信息
-        if(origin_alliance.getInvitorAllianceId()==null) {
+//        if(origin_alliance.getInvitorAllianceId()==null)
+        //2021.10.21  调整为不是正式盟友都可以修改邀请人号码
+        if (origin_alliance.getAllianceShip() != AllianceShips.ALLIANCE_SHIP_OK){
             Alliance invitor_alliance = null;
             if (StringUtils.isNotBlank(entity.getInvitorPhone())) {
                 invitor_alliance = this.findAllianceByPhoneNumber(entity.getInvitorPhone());
@@ -220,7 +222,7 @@ public class AllianceServiceImpl extends CRUDAllianceServiceImpl implements Alli
             if (invitor_alliance != null) {
                 entity.setInvitorAllianceId(invitor_alliance.getId());
             } else {
-//            throw new BusinessException(BusinessCode.BadRequest,"邀请人不存在");
+                throw new BusinessException(BusinessCode.BadRequest,"邀请人不存在");
             }
         }
 
