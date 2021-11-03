@@ -25,6 +25,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -63,6 +65,7 @@ import java.util.*;
 @Api("Alliance")
 @RequestMapping("/api/crud/alliance/alliances")
 public class AllianceEndpoint {
+    Logger logger = LoggerFactory.getLogger(AllianceEndpoint.class.getName());
 
     private final static RestClient rest = new RestClient();
     @Resource

@@ -1,4 +1,4 @@
-if [ $1 == up ];then
+if [ $1 = up ];then
 echo docker-compose -f build/build.yml up --remove-orphans
 docker-compose -f build/build.yml up --remove-orphans
 exit
