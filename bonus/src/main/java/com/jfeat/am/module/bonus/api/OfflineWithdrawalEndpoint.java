@@ -11,7 +11,7 @@ import com.jfeat.am.module.bonus.services.domain.dao.QueryOfflineWithdrawalDao;
 import com.jfeat.am.module.bonus.services.domain.model.OfflineWithdrawalRecord;
 import com.jfeat.am.module.bonus.services.domain.service.OfflineWithdrawalService;
 import com.jfeat.am.module.bonus.services.gen.persistence.model.OfflineWithdrawal;
-import com.jfeat.am.module.log.annotation.BusinessLog;
+import com.jfeat.crud.base.annotation.BusinessLog;
 import com.jfeat.crud.base.exception.BusinessCode;
 import com.jfeat.crud.base.exception.BusinessException;
 import com.jfeat.crud.base.tips.SuccessTip;
